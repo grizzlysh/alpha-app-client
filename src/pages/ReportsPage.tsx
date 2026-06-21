@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
+import { OfflineGate } from "@/components/shared/OfflineGate";
 import { SalesReportTab } from "@/components/reports/SalesReportTab";
 import { PurchaseReportTab } from "@/components/reports/PurchaseReportTab";
 import { InventoryReportTab } from "@/components/reports/InventoryReportTab";
@@ -28,6 +29,7 @@ export default function ReportsPage(): JSX.Element {
         <p className="mt-0.5 text-sm text-muted-foreground">{t.reportsSubtitle}</p>
       </div>
 
+      <OfflineGate message="Reports require a live connection to the server. Please reconnect to view analytics.">
       {/* Tabs */}
       <Tabs defaultValue="sales">
         <TabsList className="h-auto flex-wrap gap-1 p-1">
@@ -75,6 +77,7 @@ export default function ReportsPage(): JSX.Element {
           </Card>
         </TabsContent>
       </Tabs>
+      </OfflineGate>
     </div>
   );
 }

@@ -4,8 +4,11 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useLanguage } from "@/hooks/useLanguage";
+import { useMutationQueue } from "@/hooks/useMutationQueue";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
+import { OfflineBanner } from "@/components/shared/OfflineBanner";
+import { SyncConflictPanel } from "@/components/shared/SyncConflictPanel";
 import { NAV_GROUPS } from "@/configs/navigation";
 import { setMobileSidebarOpen } from "@/store/uiSlice";
 import type { Translations } from "@/configs/i18n";
@@ -28,6 +31,8 @@ export function DashboardLayout(): JSX.Element {
   const mobileSidebarOpen = useSelector(
     (state: RootState) => state.ui.mobileSidebarOpen
   );
+  const { failedMutations, retryMutation, retryAllMutations, discardMutation } =
+    useMutationQueue();
 
   const pageTitle = resolvePageTitle(pathname, t);
 
@@ -36,23 +41,33 @@ export function DashboardLayout(): JSX.Element {
   }, [pageTitle, t.appName]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      {/* Backdrop — closes sidebar when tapped on mobile */}
-      {mobileSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm md:hidden"
-          onClick={() => dispatch(setMobileSidebarOpen(false))}
-        />
-      )}
+    <div className="flex h-screen flex-col overflow-hidden bg-background">
+      <OfflineBanner />
+      <SyncConflictPanel
+        failedMutations={failedMutations}
+        onRetry={retryMutation}
+        onRetryAll={retryAllMutations}
+        onDiscard={discardMutation}
+      />
 
-      <Sidebar />
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* Backdrop — closes sidebar when tapped on mobile */}
+        {mobileSidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm md:hidden"
+            onClick={() => dispatch(setMobileSidebarOpen(false))}
+          />
+        )}
 
-      <div className="flex flex-1 flex-col overflow-y-auto">
-        <DashboardHeader pageTitle={pageTitle} />
+        <Sidebar />
 
-        <main className="flex-1 p-4 md:p-6">
-          <Outlet />
-        </main>
+        <div className="flex flex-1 flex-col overflow-y-auto">
+          <DashboardHeader pageTitle={pageTitle} />
+
+          <main className="flex-1 p-4 md:p-6">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );

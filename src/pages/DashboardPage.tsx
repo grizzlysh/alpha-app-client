@@ -34,7 +34,6 @@ export default function DashboardPage(): JSX.Element {
 
   const currentPharmacy = useSelector((state: RootState) => state.auth.currentPharmacy);
   const isManagement = MANAGEMENT_ROLES.has(currentPharmacy?.role?.type ?? "");
-
   const [rangeDays, setRangeDays] = useState<7 | 14 | 30>(7);
 
   const dashboardQuery = useQuery({

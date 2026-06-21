@@ -41,7 +41,7 @@ export function RolePermissionsModal({
 
   const { data: permissionsData, isLoading } = useQuery({
     queryKey: ["permissions-all"],
-    queryFn: () => getPermissions({ limit: 100 }),
+    queryFn: () => getPermissions(),
     staleTime: 10 * 60 * 1000,
   });
 

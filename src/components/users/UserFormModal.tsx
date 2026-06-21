@@ -692,7 +692,7 @@ function UserEditDialog({ user, onClose, onSuccess }: UserEditDialogProps): JSX.
       queryClient.invalidateQueries({ queryKey: ["user", user.uuid] });
       onSuccessRef.current();
     },
-    onError: (err) => handleApiError(err, language, t.unexpectedError),
+    onError: (err) => toast.error(getApiErrorMessage(err, language, t.unexpectedError)),
   });
 
   function onSubmit(values: EditFormValues): void {

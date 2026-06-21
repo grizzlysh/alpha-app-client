@@ -1,12 +1,13 @@
 import type { JSX } from "react";
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, Moon, Sun, Languages, Menu } from "lucide-react";
+import { Search, Bell, Moon, Sun, Languages, Menu, WifiOff } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { cn } from "@/utils/cn";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useTheme } from "@/hooks/useTheme";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { useLogout } from "@/hooks/useLogout";
 import { toggleMobileSidebar } from "@/store/uiSlice";
 import { UserMenu } from "@/components/shared/UserMenu";
@@ -37,6 +38,7 @@ export function DashboardHeader({ pageTitle }: DashboardHeaderProps): JSX.Elemen
   const headerShowPageTitle = useSelector(
     (state: RootState) => state.ui.headerShowPageTitle
   );
+  const { isOnline } = useNetworkStatus();
   // Non-scroll-aware pages always show the title; scroll-aware pages let the
   // IntersectionObserver drive visibility.
   const showTitle = !scrollAwareTitleEnabled || headerShowPageTitle;
@@ -94,6 +96,12 @@ export function DashboardHeader({ pageTitle }: DashboardHeaderProps): JSX.Elemen
           <span className="hidden text-sm text-muted-foreground sm:inline">
             {dateLabel}
           </span>
+          {!isOnline && (
+            <span className="hidden items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs text-amber-700 sm:inline-flex dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+              <WifiOff className="h-3 w-3" />
+              Cached
+            </span>
+          )}
         </div>
       </div>
 
