@@ -31,8 +31,8 @@ export function StockDisposalDetailPanel({
   disposal: listDisposal,
   t,
   onClose,
-  onEdit,
-  onComplete,
+  onEdit: _onEdit,
+  onComplete: _onComplete,
   onCancel,
   onDelete,
 }: StockDisposalDetailPanelProps): JSX.Element {

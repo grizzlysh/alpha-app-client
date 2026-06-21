@@ -51,6 +51,8 @@ export interface ReferenceLabels {
   showing: string;
   of: string;
   rowsPerPage: string;
+  // Empty state CTA button width (optional fixed width for alignment)
+  addBtnWidth?: string;
   // Required prescription (medicine types only)
   requiredPrescriptionLabel?: string;
   requiredPrescriptionYes?: string;

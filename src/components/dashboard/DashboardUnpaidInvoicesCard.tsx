@@ -85,8 +85,8 @@ export function DashboardUnpaidInvoicesCard({
                 className="text-muted-foreground"
               />
               <Tooltip
-                formatter={(value: number, _, props) =>
-                  [`${formatCompactCurrency(value)} · ${props.payload.invoiceCount} inv`]
+                formatter={(value, _, props) =>
+                  [`${formatCompactCurrency(value as number)} · ${props.payload.invoiceCount} inv`]
                 }
                 contentStyle={CHART_TOOLTIP_STYLE}
               />
@@ -94,7 +94,7 @@ export function DashboardUnpaidInvoicesCard({
                 <LabelList
                   dataKey="value"
                   position="right"
-                  formatter={(v: number) => formatCompactCurrency(v)}
+                  formatter={(v) => formatCompactCurrency(v as number)}
                   style={{ fontSize: 11, fill: "currentColor" }}
                   className="text-foreground"
                 />

@@ -243,7 +243,6 @@ export default function PurchaseOrdersPage(): JSX.Element {
           onClose={closeModal}
           onEdit={() => setModal({ mode: "edit", order: modal.order })}
           onPrint={() => setModal({ mode: "print", order: modal.order })}
-          onMarkReceived={() => setModal({ mode: "complete", order: modal.order })}
           onRepurchase={() => setModal({ mode: "repurchase", order: modal.order })}
           onCancel={() => setModal({ mode: "cancel", order: modal.order })}
           onDelete={() => setModal({ mode: "delete", order: modal.order })}

@@ -60,7 +60,7 @@ export async function updateSale(
 
 export async function completeSale(
   uuid: string,
-  payload: CreateSalePayload
+  payload?: CreateSalePayload
 ): Promise<ApiResponse<Sale>> {
   const response = await axiosInstance.patch<ApiResponse<Sale>>(
     `/sales/${uuid}/complete`,

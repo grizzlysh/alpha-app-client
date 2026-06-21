@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getApiErrorMessage } from "@/utils/apiError";
+import type { ApiResponse } from "@/types/api";
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 
 export interface ReferenceDeleteModalProps {

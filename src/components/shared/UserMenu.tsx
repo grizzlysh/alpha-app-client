@@ -22,7 +22,7 @@ interface UserMenuProps {
   email: string;
   labels: UserMenuLabels;
   onSignOut: () => void;
-  onProfileSettings: () => void;
+  onProfileSettings?: () => void;
   isSigningOut: boolean;
   disabled: boolean;
 }
@@ -73,7 +73,7 @@ export function UserMenu({
         {/* Menu items */}
         <div className="p-1">
           <DropdownMenuItem
-            onClick={() => !disabled && onProfileSettings()}
+            onClick={() => !disabled && onProfileSettings?.()}
             className="gap-2.5 rounded-xl px-3 py-2 text-sm text-muted-foreground"
             disabled={disabled}
           >

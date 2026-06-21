@@ -76,7 +76,7 @@ export interface Invoice {
 // ── Raw server shape (pre-normalization) ─────────────
 // The server uses different field names for some fields; this type captures
 // what actually arrives over the wire before normalizeInvoice maps it.
-export interface InvoiceRaw extends Omit<Invoice, "totalAmount" | "ppnNominal" | "ppnEnabled" | "signedBy" | "payment"> {
+export interface InvoiceRaw extends Omit<Invoice, "totalAmount" | "ppnNominal" | "ppnEnabled" | "ppnPercentage" | "signedBy" | "payment"> {
   grandTotal?: number;
   totalAmount?: number;
   ppnAmount?: number;

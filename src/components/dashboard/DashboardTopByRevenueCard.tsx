@@ -48,14 +48,14 @@ export function DashboardTopByRevenueCard({
                 className="text-muted-foreground"
               />
               <Tooltip
-                formatter={(value: number) => [formatCompactCurrency(value)]}
+                formatter={(value) => [formatCompactCurrency(value as number)]}
                 contentStyle={CHART_TOOLTIP_STYLE}
               />
               <Bar dataKey="totalRevenue" fill="hsl(var(--chart-2))" radius={[0, 6, 6, 0]}>
                 <LabelList
                   dataKey="totalRevenue"
                   position="right"
-                  formatter={(v: number) => formatCompactCurrency(v)}
+                  formatter={(v) => formatCompactCurrency(v as number)}
                   style={{ fontSize: 10, fill: "currentColor" }}
                   className="text-muted-foreground"
                 />

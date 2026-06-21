@@ -179,12 +179,13 @@ export function DashboardRevenueAndProfitCard({
                 className="text-muted-foreground"
               />
               <Tooltip
-                formatter={(value: number, name: string, props) => {
+                formatter={(value, name, props) => {
                   const isProfit = name === "grossProfit";
+                  const v = value as number;
                   const margin = isProfit ? props.payload?.marginPercent : undefined;
                   const label = isProfit && margin !== null && margin !== undefined
-                    ? `${formatCompactCurrency(value)} · ${margin.toFixed(1)}% margin`
-                    : formatCompactCurrency(value);
+                    ? `${formatCompactCurrency(v)} · ${margin.toFixed(1)}% margin`
+                    : formatCompactCurrency(v);
                   return [label, isProfit ? t.dashboardGrossProfitTitle : t.dashboardRevenueLabel];
                 }}
                 contentStyle={CHART_TOOLTIP_STYLE}

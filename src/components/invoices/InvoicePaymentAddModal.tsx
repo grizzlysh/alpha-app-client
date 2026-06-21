@@ -57,7 +57,7 @@ interface MethodButtonProps {
   onClick: () => void;
 }
 
-function MethodButton({ value, label, selected, onClick }: MethodButtonProps): JSX.Element {
+function MethodButton({ value: _value, label, selected, onClick }: MethodButtonProps): JSX.Element {
   return (
     <button
       type="button"

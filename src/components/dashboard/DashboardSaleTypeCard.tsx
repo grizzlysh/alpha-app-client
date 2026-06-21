@@ -62,8 +62,8 @@ export function DashboardSaleTypeCard({
                   <Cell fill="hsl(var(--muted-foreground))" opacity={0.4} />
                 </Pie>
                 <Tooltip
-                  formatter={(value: number, name: string, props) =>
-                    [`${value} tx · ${formatCompactCurrency(props.payload.revenue)}`, name]
+                  formatter={(value, name, props) =>
+                    [`${value as number} tx · ${formatCompactCurrency(props.payload.revenue as number)}`, name]
                   }
                   contentStyle={CHART_TOOLTIP_STYLE}
                 />

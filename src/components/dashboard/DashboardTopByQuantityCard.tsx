@@ -48,14 +48,14 @@ export function DashboardTopByQuantityCard({
                 className="text-muted-foreground"
               />
               <Tooltip
-                formatter={(value: number) => [`${value} ${t.dashboardUnitsSoldSuffix}`]}
+                formatter={(value) => [`${value as number} ${t.dashboardUnitsSoldSuffix}`]}
                 contentStyle={CHART_TOOLTIP_STYLE}
               />
               <Bar dataKey="totalQty" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]}>
                 <LabelList
                   dataKey="totalQty"
                   position="right"
-                  formatter={(v: number) => `${v.toLocaleString("id-ID")} ${t.dashboardUnitsSoldSuffix}`}
+                  formatter={(v) => `${(v as number).toLocaleString("id-ID")} ${t.dashboardUnitsSoldSuffix}`}
                   style={{ fontSize: 10, fill: "currentColor" }}
                   className="text-muted-foreground"
                 />

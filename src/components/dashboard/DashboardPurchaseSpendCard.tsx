@@ -113,7 +113,7 @@ export function DashboardPurchaseSpendCard({
                 className="text-muted-foreground"
               />
               <Tooltip
-                formatter={(value: number) => [formatCompactCurrency(value), t.dashboardPurchaseSpendTitle]}
+                formatter={(value) => [formatCompactCurrency(value as number), t.dashboardPurchaseSpendTitle]}
                 contentStyle={CHART_TOOLTIP_STYLE}
               />
               <Bar dataKey="spend" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />

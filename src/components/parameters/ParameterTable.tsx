@@ -8,7 +8,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import { SlidersHorizontal, MonitorCog } from "lucide-react";
+import { MonitorCog } from "lucide-react";
 
 import type { Translations } from "@/configs/i18n";
 import type { Parameter } from "@/types/parameters";

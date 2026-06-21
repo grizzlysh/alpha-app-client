@@ -141,9 +141,10 @@ export function DashboardSalesTrendChart({
                 className="text-muted-foreground"
               />
               <Tooltip
-                formatter={(value: number, name: string) => {
-                  if (name === "revenue") return [formatCompactCurrency(value), t.dashboardRevenueLabel];
-                  return [value, t.dashboardTransactionCount];
+                formatter={(value, name) => {
+                  const v = value as number;
+                  if (name === "revenue") return [formatCompactCurrency(v), t.dashboardRevenueLabel];
+                  return [v, t.dashboardTransactionCount];
                 }}
                 labelFormatter={(_, payload) => payload?.[0]?.payload?.date ?? ""}
                 contentStyle={CHART_TOOLTIP_STYLE}

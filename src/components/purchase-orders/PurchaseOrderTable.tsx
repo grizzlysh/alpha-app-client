@@ -56,7 +56,7 @@ export function PurchaseOrderTable({
   onDetails,
   onEdit,
   onPrint,
-  onMarkReceived,
+  onMarkReceived: _onMarkReceived,
   onRepurchase,
   onCancel,
   onDelete,
@@ -186,7 +186,6 @@ export function PurchaseOrderTable({
                 onDetails={() => onDetails(row.original)}
                 onEdit={() => onEdit(row.original)}
                 onPrint={() => onPrint(row.original)}
-                onMarkReceived={() => onMarkReceived(row.original)}
                 onRepurchase={() => onRepurchase(row.original)}
                 onCancel={() => onCancel(row.original)}
                 onDelete={() => onDelete(row.original)}
