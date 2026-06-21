@@ -1,0 +1,222 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ─────────────────────────────────────────────────────────────
+     LIGHT MODE
+     Primary brand: Forest Green  — mature, trustworthy pharmacy
+     Background:    Warm cream    — inviting, soft
+     Card:          Pure white    — clean elevated surfaces
+  ───────────────────────────────────────────────────────────── */
+  :root {
+    /* Surfaces */
+    --background:           37 30% 95%;          /* warm cream  #f4efe5 */
+    --foreground:           30 5% 10%;            /* warm near-black, no green tint */
+
+    /* Card — white elevated surface (inputs, dialogs, cards) */
+    --card:                 0 0% 100%;
+    --card-foreground:      30 5% 10%;
+
+    /* Popover */
+    --popover:              0 0% 100%;
+    --popover-foreground:   30 5% 10%;
+
+    /* Primary — Rich Forest Green */
+    --primary:              142 52% 28%;
+    --primary-foreground:   0 0% 100%;
+
+    /* Secondary — warm neutral tint */
+    --secondary:            37 18% 93%;
+    --secondary-foreground: 30 10% 18%;
+
+    /* Muted — warm neutral */
+    --muted:                37 18% 91%;
+    --muted-foreground:     37 6% 48%;
+
+    /* Accent — warm neutral hover surface */
+    --accent:               37 16% 90%;
+    --accent-foreground:    30 8% 16%;
+
+    /* Destructive */
+    --destructive:          0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Form chrome — warm borders */
+    --border:               37 14% 84%;
+    --input:                37 14% 84%;
+    --ring:                 142 52% 28%;
+
+    /* Shape */
+    --radius: 0.5rem;
+
+    /* ── Brand Gradient ──────────────────────────────────────
+       Rich forest green — vibrant, not sage
+       Maps: from-brand-start via-brand-mid to-brand-end
+    ──────────────────────────────────────────────────────── */
+    --brand-start:          142 52% 34%;           /* lush forest green    */
+    --brand-mid:            140 56% 25%;           /* deep forest green    */
+    --brand-end:            138 60% 18%;           /* dark forest green    */
+    --brand-hover-start:    142 52% 28%;
+    --brand-hover-end:      138 60% 14%;
+
+    /* ── Status ──────────────────────────────────────────────
+       Pharmacy-specific indicator colors
+    ──────────────────────────────────────────────────────── */
+    --success:              120 22% 28%;
+    --success-foreground:   0 0% 100%;
+    --warning:              38 92% 50%;
+    --warning-foreground:   0 0% 100%;
+    --info:                 214 84% 56%;
+    --info-foreground:      0 0% 100%;
+
+    /* ── Chart ───────────────────────────────────────────────
+       Forest Green, Teal, Blue, Amber, Purple
+    ──────────────────────────────────────────────────────── */
+    --chart-1:              120 22% 28%;
+    --chart-2:              162 55% 38%;
+    --chart-3:              200 75% 46%;
+    --chart-4:              43 96% 56%;
+    --chart-5:              262 83% 58%;
+
+    /* ── Sidebar ─────────────────────────────────────────────
+       Slightly off-white surface, forest green highlights
+    ──────────────────────────────────────────────────────── */
+    --sidebar-background:           37 12% 97%;
+    --sidebar-foreground:           30 5% 10%;
+    --sidebar-primary:              142 52% 28%;
+    --sidebar-primary-foreground:   0 0% 100%;
+    --sidebar-accent:               37 16% 92%;
+    --sidebar-accent-foreground:    30 8% 16%;
+    --sidebar-border:               37 14% 84%;
+    --sidebar-ring:                 142 52% 28%;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     DARK MODE
+     Background:  Near-pure black   — deep neutral, no blue tint
+     Card:        Elevated dark     — subtle lift above background
+     Primary:     Muted sage green  — readable on dark, not harsh
+     Muted:       Neutral gray      — no blue/navy tint
+  ───────────────────────────────────────────────────────────── */
+  .dark {
+    /* Surfaces */
+    --background:           0 0% 6%;            /* #0f0f0f near-black */
+    --foreground:           0 0% 96%;            /* near-white */
+
+    /* Card — slightly elevated above background */
+    --card:                 0 0% 10%;            /* #1a1a1a */
+    --card-foreground:      0 0% 96%;
+
+    /* Popover */
+    --popover:              0 0% 12%;
+    --popover-foreground:   0 0% 96%;
+
+    /* Primary — rich forest green for dark surfaces */
+    --primary:              142 44% 46%;
+    --primary-foreground:   0 0% 100%;
+
+    /* Secondary */
+    --secondary:            0 0% 14%;
+    --secondary-foreground: 0 0% 90%;
+
+    /* Muted — neutral gray, no blue tint */
+    --muted:                0 0% 12%;
+    --muted-foreground:     0 0% 52%;
+
+    /* Accent */
+    --accent:               0 0% 16%;
+    --accent-foreground:    0 0% 82%;
+
+    /* Destructive */
+    --destructive:          0 62% 40%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Form chrome — very subtle dark borders */
+    --border:               0 0% 16%;
+    --input:                0 0% 16%;
+    --ring:                 142 44% 46%;
+
+    /* ── Brand Gradient (dark — rich deep green) ─────────── */
+    --brand-start:          142 44% 26%;           /* dark rich green      */
+    --brand-mid:            140 48% 19%;           /* deeper forest green  */
+    --brand-end:            138 52% 13%;           /* very dark green      */
+    --brand-hover-start:    142 44% 21%;
+    --brand-hover-end:      138 52% 10%;
+
+    /* ── Status ─────────────────────────────────────────── */
+    --success:              120 18% 52%;
+    --success-foreground:   0 0% 100%;
+    --warning:              38 92% 55%;
+    --warning-foreground:   0 0% 100%;
+    --info:                 214 84% 60%;
+    --info-foreground:      0 0% 100%;
+
+    /* ── Chart ──────────────────────────────────────────── */
+    --chart-1:              120 18% 52%;
+    --chart-2:              162 50% 46%;
+    --chart-3:              200 70% 54%;
+    --chart-4:              43 90% 58%;
+    --chart-5:              262 80% 68%;
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    --sidebar-background:           0 0% 5%;
+    --sidebar-foreground:           0 0% 96%;
+    --sidebar-primary:              120 18% 52%;
+    --sidebar-primary-foreground:   0 0% 100%;
+    --sidebar-accent:               0 0% 12%;
+    --sidebar-accent-foreground:    0 0% 90%;
+    --sidebar-border:               0 0% 14%;
+    --sidebar-ring:                 120 18% 52%;
+  }
+
+  /* ── Global resets ─────────────────────────────────────────── */
+  * {
+    @apply border-border;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(37 14% 72%) transparent;
+  }
+
+  .dark * {
+    scrollbar-color: hsl(0 0% 32%) transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* ── Scrollbar (WebKit) ─────────────────────────────────────── */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(37 14% 72%);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(37 10% 58%);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(0 0% 32%);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(0 0% 50%);
+  }
+
+  /* ── Number input — hide spin buttons ───────────────────────── */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
