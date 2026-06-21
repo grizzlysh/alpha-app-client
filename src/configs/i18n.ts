@@ -1160,6 +1160,17 @@ export interface Translations {
   posChangeLabel: string;
   posPrintReceipt: string;
   posPrintInvoice: string;
+  saleDocPayment: string;
+  saleDocThankYouVisit: string;
+  saleDocInvoiceTitle: string;
+  saleDocBilledTo: string;
+  saleDocPaymentMethod: string;
+  saleDocItemDescription: string;
+  saleDocItemQty: string;
+  saleDocItemPrice: string;
+  saleDocItemAmount: string;
+  saleDocThankYouTrust: string;
+  saleDocQuestions: string;
 
   // Stock Returns page
   navStockReturns: string;
@@ -2751,6 +2762,17 @@ export const translations: Record<Language, Translations> = {
     posChangeLabel: "change",
     posPrintReceipt: "Print receipt",
     posPrintInvoice: "Invoice",
+    saleDocPayment: "Payment",
+    saleDocThankYouVisit: "Thank you for your visit",
+    saleDocInvoiceTitle: "Invoice",
+    saleDocBilledTo: "Billed to",
+    saleDocPaymentMethod: "Payment Method",
+    saleDocItemDescription: "Description",
+    saleDocItemQty: "Qty",
+    saleDocItemPrice: "Price",
+    saleDocItemAmount: "Amount",
+    saleDocThankYouTrust: "Thank you for your trust in",
+    saleDocQuestions: "Questions?",
 
     navStockReturns: "Stock Returns",
     srSubtitle: "Record and manage medicine stock returns to distributors",
@@ -3328,9 +3350,9 @@ export const translations: Record<Language, Translations> = {
     description: "Deskripsi",
 
     navMedicineClassification: "Klasifikasi Obat",
-    medicineClassificationSubtitle: "Kelola bentuk, jenis, dan kelas terapi obat",
+    medicineClassificationSubtitle: "Kelola bentuk, golongan, dan kelas terapi obat",
     navMedicineShapes: "Bentuk Obat",
-    navMedicineTypes: "Jenis Obat",
+    navMedicineTypes: "Golongan Obat",
     navMedicineClasses: "Kelas Terapi Obat",
     navBusinessParameters: "Parameter Bisnis",
     navSystemParameters: "Parameter Sistem",
@@ -3365,34 +3387,34 @@ export const translations: Record<Language, Translations> = {
     medicineShapeUpdateSuccess: "Bentuk berhasil diperbarui",
     medicineShapeDeleteSuccess: "Bentuk berhasil dihapus",
 
-    medicineTypesSubtitle: "Kelola jenis obat",
+    medicineTypesSubtitle: "Kelola golongan obat",
     medicineTypeAdd: "Tambah",
     medicineTypeEdit: "Edit",
     medicineTypeDelete: "Hapus",
-    medicineTypeName: "Nama Jenis",
+    medicineTypeName: "Nama Golongan",
     medicineTypeNamePlaceholder: "cth. Generik, Bermerek",
     medicineTypeDescription: "Deskripsi",
     medicineTypeDescriptionPlaceholder: "Deskripsi opsional...",
-    medicineTypeNameRequired: "Nama jenis wajib diisi",
-    medicineTypeTotal: "Total Jenis",
-    medicineTypeSingular: "jenis",
-    medicineTypePlural: "jenis",
-    medicineTypeSearchPlaceholder: "Cari jenis...",
-    medicineTypeNoResults: "Tidak ada jenis yang cocok",
-    medicineTypeEmptyTitle: "Belum ada jenis",
-    medicineTypeEmptyDesc: "Tambahkan jenis obat pertama Anda",
-    medicineTypeDetailsTitle: "Detail Jenis",
+    medicineTypeNameRequired: "Nama golongan wajib diisi",
+    medicineTypeTotal: "Total Golongan",
+    medicineTypeSingular: "golongan",
+    medicineTypePlural: "golongan",
+    medicineTypeSearchPlaceholder: "Cari golongan...",
+    medicineTypeNoResults: "Tidak ada golongan yang cocok",
+    medicineTypeEmptyTitle: "Belum ada golongan",
+    medicineTypeEmptyDesc: "Tambahkan golongan obat pertama Anda",
+    medicineTypeDetailsTitle: "Detail Golongan",
     medicineTypeDetails: "Detail",
-    medicineTypeDeleteConfirmTitle: "Hapus Jenis",
-    medicineTypeDeleteConfirmDesc: "Ini akan menghapus jenis ini secara permanen. Tindakan ini tidak dapat dibatalkan.",
+    medicineTypeDeleteConfirmTitle: "Hapus Golongan",
+    medicineTypeDeleteConfirmDesc: "Ini akan menghapus golongan ini secara permanen. Tindakan ini tidak dapat dibatalkan.",
     medicineTypeSave: "Simpan",
     medicineTypeSaving: "Menyimpan...",
     medicineTypeDeleting: "Menghapus...",
     medicineTypeRegistered: "Terdaftar",
     medicineTypeUpdated: "Terakhir Diperbarui",
-    medicineTypeCreateSuccess: "Jenis berhasil ditambahkan",
-    medicineTypeUpdateSuccess: "Jenis berhasil diperbarui",
-    medicineTypeDeleteSuccess: "Jenis berhasil dihapus",
+    medicineTypeCreateSuccess: "Golongan berhasil ditambahkan",
+    medicineTypeUpdateSuccess: "Golongan berhasil diperbarui",
+    medicineTypeDeleteSuccess: "Golongan berhasil dihapus",
     medicineTypeRequiredPrescription: "Perlu Resep",
     medicineTypeRequiredPrescriptionYes: "Ya",
     medicineTypeRequiredPrescriptionNo: "Tidak",
@@ -3437,10 +3459,10 @@ export const translations: Record<Language, Translations> = {
     medicineBarcode: "Barcode",
     medicineBarcodePlaceholder: "Scan atau masukkan barcode",
     medicineShapeLabel: "Bentuk",
-    medicineTypeLabel: "Jenis",
+    medicineTypeLabel: "Golongan",
     medicineClassLabel: "Kelas Terapi",
     medicineSelectShape: "Pilih bentuk",
-    medicineSelectType: "Pilih jenis",
+    medicineSelectType: "Pilih golongan",
     medicineSelectClass: "Pilih kelas terapi",
     medicineUnit: "Satuan",
     medicineUnitPlaceholder: "cth. Tablet, Strip, Box",
@@ -3454,7 +3476,7 @@ export const translations: Record<Language, Translations> = {
     medicineNotesPlaceholder: "Catatan tambahan...",
     medicineNameRequired: "Nama obat wajib diisi",
     medicineShapeRequired: "Pilih bentuk obat",
-    medicineTypeRequired: "Pilih jenis obat",
+    medicineTypeRequired: "Pilih golongan obat",
     medicineClassRequired: "Pilih kelas terapi obat",
     medicineUnitRequired: "Satuan wajib diisi",
     medicineSellingPriceRequired: "Harga jual wajib diisi",
@@ -4229,6 +4251,17 @@ export const translations: Record<Language, Translations> = {
     posChangeLabel: "kembalian",
     posPrintReceipt: "Cetak struk",
     posPrintInvoice: "Faktur",
+    saleDocPayment: "Bayar",
+    saleDocThankYouVisit: "Terima kasih atas kunjungan Anda",
+    saleDocInvoiceTitle: "Faktur",
+    saleDocBilledTo: "Ditagihkan kepada",
+    saleDocPaymentMethod: "Metode Pembayaran",
+    saleDocItemDescription: "Deskripsi",
+    saleDocItemQty: "Qty",
+    saleDocItemPrice: "Harga",
+    saleDocItemAmount: "Jumlah",
+    saleDocThankYouTrust: "Terima kasih atas kepercayaan Anda kepada",
+    saleDocQuestions: "Pertanyaan?",
 
     navStockReturns: "Retur Stok",
     srSubtitle: "Catat dan kelola pengembalian stok obat ke distributor",

@@ -18,6 +18,7 @@ import {
   submitPurchaseOrder,
   getPurchaseOrderPrint,
 } from "@/service/purchaseOrderService";
+import { openPrintTab } from "@/utils/printTab";
 import { PurchaseOrderReceipt } from "./PurchaseOrderReceipt";
 
 export interface PurchaseOrderPrintModalProps {
@@ -49,28 +50,7 @@ export function PurchaseOrderPrintModal({
   });
 
   function triggerBrowserPrint(): void {
-    if (!receiptRef.current) return;
-
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @media print {
-        body > *:not(#po-print-portal) { display: none !important; }
-        #po-print-portal { display: block !important; }
-        #po-print-portal > * { display: block !important; }
-      }
-    `;
-    const portal = document.createElement("div");
-    portal.id = "po-print-portal";
-    portal.style.cssText =
-      "position:fixed;inset:0;z-index:99999;background:#fff;display:none;";
-    portal.innerHTML = receiptRef.current.outerHTML;
-
-    document.head.appendChild(style);
-    document.body.appendChild(portal);
-    portal.style.display = "block";
-    window.print();
-    document.head.removeChild(style);
-    document.body.removeChild(portal);
+    if (receiptRef.current) openPrintTab(order.orderNumber, receiptRef.current);
   }
 
   async function handlePrint(): Promise<void> {

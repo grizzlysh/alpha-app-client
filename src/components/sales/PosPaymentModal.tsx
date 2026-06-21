@@ -245,12 +245,14 @@ export function PosPaymentModal({
               <span className="text-muted-foreground">{t.posSubtotal}</span>
               <span className="text-foreground">{formatCurrency(subtotal)}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
-                {t.saleTaxAmount} {ppnPercentage}%
-              </span>
-              <span className="text-foreground">{formatCurrency(ppnAmount)}</span>
-            </div>
+            {ppnPercentage > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">
+                  {t.saleTaxAmount} {ppnPercentage}%
+                </span>
+                <span className="text-foreground">{formatCurrency(ppnAmount)}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
                 {t.posDiscountLabel} ({discountPercent}%)
