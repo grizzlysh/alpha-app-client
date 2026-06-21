@@ -55,7 +55,7 @@ export default function SalesPage(): JSX.Element {
 
   const customerFilterOptions = [
     { value: "all", label: `${t.saleFilterCustomer}: ${t.filterAll}` },
-    ...(customersData?.data ?? []).map((c) => ({ value: c.uuid, label: c.name })),
+    ...(customersData?.data ?? []).map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
   ];
 
   const { data, isLoading, isFetching } = useQuery({

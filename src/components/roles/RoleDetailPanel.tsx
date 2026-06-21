@@ -57,7 +57,7 @@ export function RoleDetailPanel({
           {getRoleInitials(role.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold text-foreground">{role.name}</p>
+          <p className="text-lg font-bold uppercase text-foreground">{role.name}</p>
           <StatusBadge
             status={role.status}
             label={getRoleStatusLabel(role.status, t)}

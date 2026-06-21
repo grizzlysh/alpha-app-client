@@ -61,7 +61,7 @@ export function PurchaseReportTab(): JSX.Element {
 
   const distributorOptions = [
     { value: "all", label: `${t.reportPurchaseFilterDistributor}: ${t.filterAll}` },
-    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name })),
+    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name.toUpperCase() })),
   ];
 
   function handleFilterChange(): void {

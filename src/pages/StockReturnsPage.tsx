@@ -116,7 +116,7 @@ export default function StockReturnsPage(): JSX.Element {
 
   const distributorFilterOptions = [
     { value: "all", label: `${t.srFilterDistributor}: ${t.filterAll}` },
-    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name })),
+    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name.toUpperCase() })),
   ];
 
   return (

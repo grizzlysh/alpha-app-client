@@ -48,7 +48,7 @@ export function RoleRow({
             {getRoleInitials(role.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium text-foreground">{role.name}</p>
+            <p className="truncate font-medium uppercase text-foreground">{role.name}</p>
             <p className="truncate text-xs text-muted-foreground">
               {getRoleTypeLabel(role.type, t)}
             </p>

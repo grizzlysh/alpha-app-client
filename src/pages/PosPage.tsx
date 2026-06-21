@@ -63,7 +63,7 @@ export default function PosPage(): JSX.Element {
       { value: "", label: t.posWalkInCustomer },
       ...(customersData?.data ?? [])
         .filter((c) => !c.isWalkIn)
-        .map((c) => ({ value: c.uuid, label: c.name })),
+        .map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
     ],
     [customersData?.data, t.posWalkInCustomer]
   );

@@ -21,6 +21,7 @@ export default defineConfig({
         icons: [],
       },
       workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
         // SPA fallback — all navigation requests get index.html
         navigateFallback: "/index.html",
         // Don't intercept API calls or files with extensions with the fallback
@@ -78,13 +79,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // if (!id.includes("node_modules")) return;
+          // if (id.includes("recharts") || id.includes("d3-")) return "charts";
+          // if (id.includes("@radix-ui")) return "radix";
+          // if (id.includes("@tanstack")) return "tanstack";
+          // if (id.includes("react-router") || id.includes("react-dom") || id.includes("/react/") || id.includes("@radix-ui")) return "react-vendor";
+          // if (id.includes("react-hook-form") || id.includes("@hookform") || id.includes("zod")) return "forms";
+          // if (id.includes("@reduxjs") || id.includes("react-redux") || id.includes("redux")) return "redux";
+          // return "vendor";
           if (!id.includes("node_modules")) return;
           if (id.includes("recharts") || id.includes("d3-")) return "charts";
-          if (id.includes("@radix-ui")) return "radix";
-          if (id.includes("@tanstack")) return "tanstack";
-          if (id.includes("react-router") || id.includes("react-dom") || id.includes("/react/")) return "react-vendor";
-          if (id.includes("react-hook-form") || id.includes("@hookform") || id.includes("zod")) return "forms";
-          if (id.includes("@reduxjs") || id.includes("react-redux") || id.includes("redux")) return "redux";
           return "vendor";
         },
       },

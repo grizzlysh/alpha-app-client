@@ -53,7 +53,7 @@ export default function InvoicesPage(): JSX.Element {
     { value: "all", label: `${t.invoiceFilterDistributor}: ${t.filterAll}` },
     ...(distributorsData?.data ?? []).map((d) => ({
       value: d.uuid,
-      label: d.name,
+      label: d.name.toUpperCase(),
     })),
   ];
 

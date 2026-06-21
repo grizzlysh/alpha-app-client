@@ -176,7 +176,7 @@ function Step1Form({ t, defaultValues, pharmacies, roles, onCancel, onNext }: St
                 <Combobox
                   value={field.value ?? ""}
                   onValueChange={field.onChange}
-                  options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name} (${p.code})` }))}
+                  options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name.toUpperCase()} (${p.code})` }))}
                   placeholder={t.placementSelectPharmacy}
                   className={cn(err("pharmacyUuid") && "border-destructive")}
                 />
@@ -579,7 +579,7 @@ function PlacementEditForm({ userUuid, placement, onClose, onSuccess }: Placemen
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <Label>{t.placementPharmacy}</Label>
-                <p className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+                <p className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm uppercase text-muted-foreground">
                   {placement.pharmacy.name} ({placement.pharmacy.code})
                 </p>
               </div>

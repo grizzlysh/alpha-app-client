@@ -59,7 +59,7 @@ export function RoleDeleteModal({
           <DialogDescription className="text-sm text-muted-foreground">
             {t.roleDeleteConfirmDesc}
           </DialogDescription>
-          <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-sm font-medium text-foreground">
+          <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-sm font-medium uppercase text-foreground">
             {role.name}
           </p>
         </div>

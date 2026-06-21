@@ -50,7 +50,7 @@ export function UserRow({
             {getUserInitials(user.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium text-foreground">{user.name}</p>
+            <p className="truncate font-medium uppercase text-foreground">{user.name}</p>
             <p className="truncate text-xs text-muted-foreground">
               {user.email}
             </p>

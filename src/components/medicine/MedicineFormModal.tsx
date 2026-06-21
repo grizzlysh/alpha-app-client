@@ -243,7 +243,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={shapes.map((s) => ({ value: s.uuid, label: s.name }))}
+                      options={shapes.map((s) => ({ value: s.uuid, label: s.name.toUpperCase() }))}
                       placeholder={t.medicineSelectShape}
                       className={cn(
                         fieldError("medicineShapeUuid") &&
@@ -273,7 +273,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={types.map((tp) => ({ value: tp.uuid, label: tp.name }))}
+                      options={types.map((tp) => ({ value: tp.uuid, label: tp.name.toUpperCase() }))}
                       placeholder={t.medicineSelectType}
                       className={cn(
                         fieldError("medicineTypeUuid") &&
@@ -303,7 +303,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={classes.map((cl) => ({ value: cl.uuid, label: cl.name }))}
+                      options={classes.map((cl) => ({ value: cl.uuid, label: cl.name.toUpperCase() }))}
                       placeholder={t.medicineSelectClass}
                       className={cn(
                         fieldError("medicineClassUuid") &&

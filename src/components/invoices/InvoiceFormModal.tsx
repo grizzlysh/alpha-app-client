@@ -650,7 +650,7 @@ export function InvoiceFormModal({
   });
 
   const distributorOptions = useMemo(
-    () => (distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name })),
+    () => (distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name?.toUpperCase() ?? d.name })),
     [distributorsData?.data]
   );
 
@@ -660,7 +660,7 @@ export function InvoiceFormModal({
   );
 
   const medicineOptions = useMemo(
-    () => medicines.map((m) => ({ value: m.uuid, label: m.name })),
+    () => medicines.map((m) => ({ value: m.uuid, label: m.name?.toUpperCase() ?? m.name })),
     [medicines]
   );
 

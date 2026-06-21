@@ -87,7 +87,7 @@ export function SaleSuccessModal({ sale, amountReceived, t, onNewSale }: SaleSuc
             {user?.name && (
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">{t.posReceiptCashierLabel}</span>
-                <span className="text-foreground">{user.name}</span>
+                <span className="uppercase text-foreground">{user.name}</span>
               </div>
             )}
           </div>

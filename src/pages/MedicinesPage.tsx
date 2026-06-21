@@ -162,7 +162,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterShape}
               options={[
                 { value: "all", label: `${t.medicineShapeLabel}: ${t.filterAll}` },
-                ...shapes.map((s) => ({ value: s.uuid, label: s.name })),
+                ...shapes.map((s) => ({ value: s.uuid, label: s.name.toUpperCase() })),
               ]}
               placeholder={t.medicineShapeLabel}
               className="h-10 w-[11rem] shrink-0 rounded-xl text-sm"
@@ -174,7 +174,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterType}
               options={[
                 { value: "all", label: `${t.medicineTypeLabel}: ${t.filterAll}` },
-                ...types.map((tp) => ({ value: tp.uuid, label: tp.name })),
+                ...types.map((tp) => ({ value: tp.uuid, label: tp.name.toUpperCase() })),
               ]}
               placeholder={t.medicineTypeLabel}
               className="h-10 w-[10rem] shrink-0 rounded-xl text-sm"
@@ -186,7 +186,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterClass}
               options={[
                 { value: "all", label: `${t.medicineClassLabel}: ${t.filterAll}` },
-                ...classes.map((cl) => ({ value: cl.uuid, label: cl.name })),
+                ...classes.map((cl) => ({ value: cl.uuid, label: cl.name.toUpperCase() })),
               ]}
               placeholder={t.medicineClassLabel}
               className="h-10 w-[13rem] shrink-0 rounded-xl text-sm"

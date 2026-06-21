@@ -438,12 +438,12 @@ export function RoleFormModal({
       }}
     >
       <DialogContent
-        className="max-w-xl p-0"
+        className="flex max-h-[90vh] max-w-xl flex-col overflow-hidden p-0"
         onInteractOutside={(e) => {
           if (isPending) e.preventDefault();
         }}
       >
-        <DialogHeader className="flex flex-row items-center gap-3 space-y-0 border-b border-border px-6 py-4">
+        <DialogHeader className="flex shrink-0 flex-row items-center gap-3 space-y-0 border-b border-border px-6 py-4">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
             <ShieldCheck className="h-4 w-4 text-primary" />
           </div>
@@ -452,8 +452,8 @@ export function RoleFormModal({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="max-h-[65vh] overflow-y-auto px-6 py-5">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
             <div className="space-y-4">
               {/* Name */}
               <div className="space-y-1.5">

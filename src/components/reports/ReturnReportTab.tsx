@@ -61,7 +61,7 @@ export function ReturnReportTab(): JSX.Element {
 
   const distributorOptions = [
     { value: "all", label: `${t.reportReturnFilterDistributor}: ${t.filterAll}` },
-    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name })),
+    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name.toUpperCase() })),
   ];
 
   function handleFilterChange(): void {

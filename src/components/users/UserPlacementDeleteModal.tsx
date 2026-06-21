@@ -61,7 +61,7 @@ export function UserPlacementDeleteModal({
         <div className="px-6 py-5">
           <p className="text-sm text-muted-foreground">
             {t.placementDeleteConfirmDesc}{" "}
-            <span className="font-semibold text-foreground">{placement.pharmacy.name}</span>?
+            <span className="font-semibold uppercase text-foreground">{placement.pharmacy.name}</span>?
           </p>
         </div>
 

@@ -48,7 +48,7 @@ export function PharmacyDeleteModal({
         <div className="px-6 py-5">
           <p className="text-sm text-muted-foreground">
             {t.pharmaDeleteConfirmDesc}{" "}
-            <span className="font-semibold text-foreground">{pharmacy.name}</span>?
+            <span className="font-semibold uppercase text-foreground">{pharmacy.name}</span>?
           </p>
         </div>
 

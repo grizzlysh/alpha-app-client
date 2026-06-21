@@ -48,7 +48,7 @@ export function PharmacyRow({
             {getPharmacyInitials(pharmacy.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium text-foreground">
+            <p className="truncate font-medium uppercase text-foreground">
               {pharmacy.name}
             </p>
             <p className="truncate text-xs text-muted-foreground">

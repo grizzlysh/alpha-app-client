@@ -70,7 +70,7 @@ export function PharmacyCard({
         <PharmacyAvatar name={name} size="md" />
 
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-foreground">{name}</p>
+          <p className="truncate font-semibold uppercase text-foreground">{name}</p>
           <p className="mt-0.5 truncate text-sm text-muted-foreground">
             {address}
           </p>

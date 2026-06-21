@@ -58,7 +58,7 @@ export function UserResetPasswordModal({
         <div className="px-6 py-5">
           <p className="text-sm text-muted-foreground">
             {t.userResetPasswordConfirmDesc}{" "}
-            <span className="font-semibold text-foreground">{user.name}</span>?
+            <span className="font-semibold uppercase text-foreground">{user.name}</span>?
           </p>
         </div>
 

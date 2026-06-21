@@ -299,7 +299,7 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
                 <Combobox
                   value={field.value ?? ""}
                   onValueChange={field.onChange}
-                  options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name} (${p.code})` }))}
+                  options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name.toUpperCase()} (${p.code})` }))}
                   placeholder={t.placementSelectPharmacy}
                   className={cn(err("pharmacyUuid") && "border-destructive")}
                 />

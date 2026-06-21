@@ -81,7 +81,7 @@ function TenureRow({
     <div className="px-3.5 py-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-foreground">{tenure.role.name}</p>
+          <p className="text-sm font-medium uppercase text-foreground">{tenure.role.name}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {formatDate(tenure.joinedAt)}
             {tenure.leftAt
@@ -206,7 +206,7 @@ function PharmacyGroupCard({
       <div className="flex items-center gap-2 bg-muted/30 px-3.5 py-2.5">
         <Hospital className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-foreground">
+          <p className="truncate text-sm font-semibold uppercase text-foreground">
             {group.pharmacy.name}
           </p>
           <p className="text-xs text-muted-foreground">{group.pharmacy.code}</p>
@@ -281,7 +281,7 @@ export function UserDetailPanel({
             {getUserInitials(user.name)}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-bold text-foreground">{user.name}</p>
+            <p className="text-lg font-bold uppercase text-foreground">{user.name}</p>
             <StatusBadge
               status={user.status}
               label={getUserStatusLabel(user.status, t)}

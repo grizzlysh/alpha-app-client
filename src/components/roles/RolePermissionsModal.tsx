@@ -163,7 +163,7 @@ export function RolePermissionsModal({
             <DialogTitle className="text-base">
               {t.rolePermissionsTitle}
             </DialogTitle>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            <p className="mt-0.5 truncate text-xs uppercase text-muted-foreground">
               {role.name} · {selectedCountInAll} {t.rolePermissionCount}
             </p>
           </div>

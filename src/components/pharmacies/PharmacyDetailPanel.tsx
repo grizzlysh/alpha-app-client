@@ -159,7 +159,7 @@ export function PharmacyDetailPanel({
             {getPharmacyInitials(pharmacy.name)}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-bold text-foreground">{pharmacy.name}</p>
+            <p className="text-lg font-bold uppercase text-foreground">{pharmacy.name}</p>
             <StatusBadge
               status={pharmacy.status}
               label={getPharmacyStatusLabel(pharmacy.status, t)}

@@ -44,7 +44,7 @@ export function UserLicenseHistoryModal({
           </div>
           <div className="min-w-0 flex-1">
             <DialogTitle className="text-base">{t.licenseHistory}</DialogTitle>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            <p className="mt-0.5 truncate text-xs uppercase text-muted-foreground">
               {placement.role.name}
             </p>
           </div>

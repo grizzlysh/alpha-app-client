@@ -83,7 +83,7 @@ export function Sidebar(): JSX.Element {
           </div>
 
           <div className={cn("min-w-0 flex-1", collapsed && "md:hidden")}>
-            <p className="truncate text-sm font-semibold text-foreground">
+            <p className="truncate text-sm font-semibold uppercase text-foreground">
               {currentPharmacy?.name ?? t.appName}
             </p>
             <p className="truncate text-xs text-muted-foreground">
