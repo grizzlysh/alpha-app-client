@@ -1,7 +1,9 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
+import type { RootState } from "@/store";
 
 import { BriefcaseBusiness } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -31,6 +33,7 @@ type ModalState =
 export default function BusinessParametersPage(): JSX.Element {
   const { t } = useLanguage();
   const pageTitleRef = useScrollAwareTitle();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const {
     searchInput,
@@ -45,12 +48,13 @@ export default function BusinessParametersPage(): JSX.Element {
   const [modal, setModal] = useState<ModalState>(null);
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["business-parameters", page, limit, debouncedSearch],
+    queryKey: ["business-parameters", page, limit, debouncedSearch, pharmacyUuid],
     queryFn: () =>
       getBusinessParameters({
         page,
         limit,
         search: debouncedSearch || undefined,
+        pharmacyUuid,
       }),
     placeholderData: keepPreviousData,
   });

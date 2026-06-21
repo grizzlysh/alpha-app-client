@@ -1,6 +1,8 @@
 import type { JSX } from "react";
 import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { RootState } from "@/store";
 import { toast } from "sonner";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 
@@ -31,6 +33,7 @@ export default function PosPage(): JSX.Element {
   const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const pageTitleRef = useScrollAwareTitle();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customerUuid, setCustomerUuid] = useState("");
@@ -53,8 +56,8 @@ export default function PosPage(): JSX.Element {
   });
 
   const { data: ppnParametersData } = useQuery({
-    queryKey: ["business-parameters", PPN_PARAMETER_KEY],
-    queryFn: () => getBusinessParameters({ search: PPN_PARAMETER_KEY }),
+    queryKey: ["business-parameters", PPN_PARAMETER_KEY, pharmacyUuid],
+    queryFn: () => getBusinessParameters({ search: PPN_PARAMETER_KEY, pharmacyUuid }),
     staleTime: 5 * 60 * 1000,
   });
 

@@ -9,6 +9,7 @@ export interface Parameter {
 
 export interface ParameterListParams {
   search?: string;
+  pharmacyUuid?: string;
   sortBy?: "key" | "createdAt";
   sortOrder?: "asc" | "desc";
   page?: number;

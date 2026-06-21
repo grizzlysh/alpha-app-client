@@ -1,11 +1,13 @@
 import type { JSX } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   useForm,
   useFieldArray,
   Controller,
   type SubmitHandler,
 } from "react-hook-form";
+import type { RootState } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -520,6 +522,7 @@ export function InvoiceFormModal({
 }: InvoiceFormModalProps): JSX.Element {
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
@@ -563,8 +566,8 @@ export function InvoiceFormModal({
 
   // PPN rate from business parameters
   const { data: ppnParametersData } = useQuery({
-    queryKey: ["business-parameters", "PPN_PERCENTAGE_BUY"],
-    queryFn: () => getBusinessParameters({ search: "PPN_PERCENTAGE_BUY" }),
+    queryKey: ["business-parameters", "PPN_PERCENTAGE_BUY", pharmacyUuid],
+    queryFn: () => getBusinessParameters({ search: "PPN_PERCENTAGE_BUY", pharmacyUuid }),
     staleTime: 5 * 60 * 1000,
   });
 
