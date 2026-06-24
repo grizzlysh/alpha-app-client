@@ -44,6 +44,7 @@ import { getMedicinesDropdown } from "@/service/medicineService";
 import { getUsers } from "@/service/userService";
 import { getPurchaseOrder, getPurchaseOrdersDropdown } from "@/service/purchaseOrderService";
 import { getBusinessParameters } from "@/service/businessParameterService";
+import { getCabinetsDropdown, getShelvesDropdown, getBinsDropdown } from "@/service/storageService";
 import { formatCurrency, formatCurrencyDecimal } from "./invoiceUtils";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -84,6 +85,10 @@ function makeSchema(t: Translations) {
             price: z.number(),
             discountPercentage: z.number(),
             fromPo: z.boolean().optional(),
+            binUuid: z.string().optional(),
+            binLabel: z.string().optional(),
+            cabinetUuid: z.string().optional(),
+            shelfUuid: z.string().optional(),
           })
         )
         .min(1, t.invoiceItemsRequired),
@@ -119,6 +124,10 @@ interface FormValues {
     price: number;
     discountPercentage: number;
     fromPo?: boolean;
+    binUuid?: string;
+    binLabel?: string;
+    cabinetUuid?: string;
+    shelfUuid?: string;
   }[];
 }
 
@@ -133,6 +142,10 @@ interface ItemFormState {
   quantityPieces: string;
   price: string;
   discountPercentage: string;
+  cabinetUuid: string;
+  shelfUuid: string;
+  binUuid: string;
+  binLabel: string;
 }
 
 interface ItemFormErrors {
@@ -153,6 +166,10 @@ const EMPTY_ITEM: ItemFormState = {
   quantityPieces: "1",
   price: "",
   discountPercentage: "0",
+  cabinetUuid: "",
+  shelfUuid: "",
+  binUuid: "",
+  binLabel: "",
 };
 
 // ── Item sub-form ─────────────────────────────────────────────────────────────
@@ -161,6 +178,7 @@ interface ItemFormProps {
   value: ItemFormState;
   errors: ItemFormErrors;
   medicineOptions: { value: string; label: string }[];
+  cabinetOptions: { value: string; label: string }[];
   loadingMedicines: boolean;
   isPending: boolean;
   t: Translations;
@@ -173,6 +191,7 @@ function ItemForm({
   value,
   errors,
   medicineOptions,
+  cabinetOptions,
   loadingMedicines,
   isPending,
   t,
@@ -180,6 +199,30 @@ function ItemForm({
   onClearError,
   onAdd,
 }: ItemFormProps): JSX.Element {
+  const { data: shelvesData, isLoading: loadingShelves } = useQuery({
+    queryKey: ["shelves-dropdown", value.cabinetUuid],
+    queryFn: () => getShelvesDropdown(value.cabinetUuid),
+    enabled: !!value.cabinetUuid,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: binsData, isLoading: loadingBins } = useQuery({
+    queryKey: ["bins-dropdown", value.cabinetUuid, value.shelfUuid],
+    queryFn: () => getBinsDropdown(value.cabinetUuid, value.shelfUuid),
+    enabled: !!value.cabinetUuid && !!value.shelfUuid,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const shelfOptions = useMemo(
+    () => (shelvesData?.data ?? []).map((s) => ({ value: s.uuid, label: `${s.name} (${s.code})` })),
+    [shelvesData?.data]
+  );
+
+  const binOptions = useMemo(
+    () => (binsData?.data ?? []).map((b) => ({ value: b.uuid, label: `${b.name} (${b.code})` })),
+    [binsData?.data]
+  );
+
   function handleQtyChange(field: "quantityBox" | "quantityPerBox", raw: string): void {
     const trimmed = raw.replace(/^0+(?=\d)/, "");
     const next = { ...value, [field]: trimmed };
@@ -363,7 +406,44 @@ function ItemForm({
           </div>
         </div>
 
-        {/* Row 4 — Add button + Item Total */}
+        {/* Row 4 — Storage Location (optional) */}
+        <div className="col-span-3 grid grid-cols-3 gap-3">
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{t.invoiceItemCabinet}</Label>
+            <Combobox
+              value={value.cabinetUuid}
+              onValueChange={(uuid) => onChange({ ...value, cabinetUuid: uuid, shelfUuid: "", binUuid: "", binLabel: "" })}
+              options={cabinetOptions}
+              placeholder={t.invoiceItemCabinet}
+              disabled={isPending}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{t.invoiceItemShelf}</Label>
+            <Combobox
+              value={value.shelfUuid}
+              onValueChange={(uuid) => onChange({ ...value, shelfUuid: uuid, binUuid: "", binLabel: "" })}
+              options={shelfOptions}
+              placeholder={loadingShelves ? "..." : t.invoiceItemShelf}
+              disabled={isPending || !value.cabinetUuid || loadingShelves}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{t.invoiceItemBin}</Label>
+            <Combobox
+              value={value.binUuid}
+              onValueChange={(uuid) => {
+                const label = binOptions.find((b) => b.value === uuid)?.label ?? "";
+                onChange({ ...value, binUuid: uuid, binLabel: label });
+              }}
+              options={binOptions}
+              placeholder={loadingBins ? "..." : t.invoiceItemSelectBin}
+              disabled={isPending || !value.shelfUuid || loadingBins}
+            />
+          </div>
+        </div>
+
+        {/* Row 5 — Add button + Item Total */}
         <div className="col-span-3 flex items-center gap-3">
           <Button
             type="button"
@@ -398,6 +478,10 @@ interface CommittedItem {
   quantityPieces: number;
   price: number;
   discountPercentage: number;
+  binUuid?: string;
+  binLabel?: string;
+  cabinetUuid?: string;
+  shelfUuid?: string;
 }
 
 interface ItemsTableProps {
@@ -468,6 +552,9 @@ function ItemsTable({
                         </span>
                       )}
                     </div>
+                    {item.binLabel && (
+                      <p className="mt-0.5 text-xs text-muted-foreground/70">{item.binLabel}</p>
+                    )}
                   </td>
                   <td className="px-3 py-2.5 text-right text-foreground">{item.quantityBox}</td>
                   <td className="px-3 py-2.5 text-right text-foreground">{item.quantityPerBox}</td>
@@ -629,6 +716,12 @@ export function InvoiceFormModal({
   }, [watchedPOUuid, replace, getValues]);
 
   // ── Remote data ─────────────────────────────────────────────────────────────
+  const { data: cabinetsData } = useQuery({
+    queryKey: ["cabinets-dropdown"],
+    queryFn: () => getCabinetsDropdown(),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const { data: distributorsData, isLoading: loadingDistributors } = useQuery({
     queryKey: ["distributors-dropdown"],
     queryFn: () => getDistributorsDropdown(),
@@ -652,6 +745,11 @@ export function InvoiceFormModal({
     queryFn: () => getPurchaseOrdersDropdown(),
     staleTime: 5 * 60 * 1000,
   });
+
+  const cabinetOptions = useMemo(
+    () => (cabinetsData?.data ?? []).map((c) => ({ value: c.uuid, label: `${c.name} (${c.code})` })),
+    [cabinetsData?.data]
+  );
 
   const distributorOptions = useMemo(
     () => (distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name?.toUpperCase() ?? d.name })),
@@ -723,6 +821,7 @@ export function InvoiceFormModal({
       price: Number(itemForm.price),
       discountPercentage: Number(itemForm.discountPercentage) || 0,
       fromPo: editingFromPoRef.current,
+      ...(itemForm.binUuid ? { binUuid: itemForm.binUuid, binLabel: itemForm.binLabel, cabinetUuid: itemForm.cabinetUuid, shelfUuid: itemForm.shelfUuid } : {}),
     });
     editingFromPoRef.current = false;
 
@@ -742,6 +841,10 @@ export function InvoiceFormModal({
       quantityPieces: String(item.quantityPieces),
       price: String(item.price),
       discountPercentage: String(item.discountPercentage),
+      cabinetUuid: item.cabinetUuid ?? "",
+      shelfUuid: item.shelfUuid ?? "",
+      binUuid: item.binUuid ?? "",
+      binLabel: item.binLabel ?? "",
     });
     remove(index);
     setItemErrors({});
@@ -773,6 +876,7 @@ export function InvoiceFormModal({
           quantityPieces: d.quantityPieces,
           price: d.price,
           ...(d.discountPercentage > 0 ? { discountPercentage: d.discountPercentage } : {}),
+          ...(d.binUuid ? { binUuid: d.binUuid } : {}),
         })),
       };
       return createInvoice(payload);
@@ -970,7 +1074,7 @@ export function InvoiceFormModal({
             <div className="space-y-1.5">
               <Label>
                 {t.invoiceSignedBy}
-                <span className="ml-0.5 text-destructive">*</span>
+                {/* <span className="ml-0.5 text-destructive">*</span> */}
               </Label>
               <Controller
                 name="signedByUuid"
@@ -1024,6 +1128,7 @@ export function InvoiceFormModal({
               value={itemForm}
               errors={itemErrors}
               medicineOptions={medicineOptions}
+              cabinetOptions={cabinetOptions}
               loadingMedicines={loadingMedicines}
               isPending={isPending}
               t={t}

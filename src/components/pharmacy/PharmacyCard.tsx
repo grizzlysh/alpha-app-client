@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { ArrowRight, Loader2, AlertTriangle } from "lucide-react";
+import { ArrowRight, Loader2, AlertTriangle, ShieldAlert } from "lucide-react";
 
 import { cn } from "@/utils/cn";
 import { PharmacyAvatar } from "@/components/pharmacy/PharmacyAvatar";
@@ -23,12 +23,15 @@ interface PharmacyCardLabels {
   statusOpen: string;
   statusClosed: string;
   lowStockWarning: string;
+  noHeadPharmacist: string;
+  noHeadPharmacistHint: string;
 }
 
 interface PharmacyCardProps {
   uuid: string;
   name: string;
   address: string;
+  hasHeadPharmacist?: boolean;
   stats?: PharmacyStatRow;
   status?: PharmacyStatusRow;
   labels: PharmacyCardLabels;
@@ -41,6 +44,7 @@ export function PharmacyCard({
   uuid,
   name,
   address,
+  hasHeadPharmacist,
   stats,
   status,
   labels,
@@ -48,23 +52,39 @@ export function PharmacyCard({
   isSelecting,
   disabled,
 }: PharmacyCardProps): JSX.Element {
+  const blocked = hasHeadPharmacist === false;
+
   return (
     <div
       className={cn(
-        "group rounded-2xl border border-border bg-card shadow-sm",
+        "group rounded-2xl border bg-card shadow-sm",
         "transition-all duration-200",
-        // Hover — border turns primary + diffuse glow (light: subtle, dark: vivid)
-        "hover:border-primary",
-        "hover:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.2),_0_0_18px_hsl(var(--primary)_/_0.1)]",
-        "dark:hover:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.55),_0_0_28px_hsl(var(--primary)_/_0.3)]",
-        // Selecting state — always glowing
-        isSelecting && [
-          "border-primary",
-          "shadow-[0_0_0_1px_hsl(var(--primary)_/_0.3),_0_0_18px_hsl(var(--primary)_/_0.12)]",
-          "dark:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.6),_0_0_30px_hsl(var(--primary)_/_0.35)]",
-        ]
+        blocked
+          ? "border-warning/60 opacity-80"
+          : [
+              "border-border",
+              "hover:border-primary",
+              "hover:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.2),_0_0_18px_hsl(var(--primary)_/_0.1)]",
+              "dark:hover:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.55),_0_0_28px_hsl(var(--primary)_/_0.3)]",
+              isSelecting && [
+                "border-primary",
+                "shadow-[0_0_0_1px_hsl(var(--primary)_/_0.3),_0_0_18px_hsl(var(--primary)_/_0.12)]",
+                "dark:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.6),_0_0_30px_hsl(var(--primary)_/_0.35)]",
+              ],
+            ]
       )}
     >
+      {/* No-head-pharmacist warning banner */}
+      {blocked && (
+        <div className="flex items-center gap-2 rounded-t-2xl border-b border-warning/40 bg-warning/10 px-4 py-2.5">
+          <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-warning" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-warning">{labels.noHeadPharmacist}</p>
+            <p className="text-xs text-warning/80">{labels.noHeadPharmacistHint}</p>
+          </div>
+        </div>
+      )}
+
       {/* Top row: avatar + name/address + arrow */}
       <div className="flex items-center gap-3 p-5">
         <PharmacyAvatar name={name} size="md" />
@@ -79,15 +99,16 @@ export function PharmacyCard({
         <button
           type="button"
           onClick={() => onSelect(uuid)}
-          disabled={disabled}
+          disabled={disabled || blocked}
           aria-label={`Select ${name}`}
           className={cn(
             "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl",
             "border border-border bg-background text-muted-foreground",
             "transition-all duration-200",
-            // Card hover → solid green fill + white arrow
-            "group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
-            "hover:border-primary hover:bg-primary hover:text-primary-foreground",
+            !blocked && [
+              "group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
+              "hover:border-primary hover:bg-primary hover:text-primary-foreground",
+            ],
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
             "disabled:cursor-not-allowed disabled:opacity-50"
           )}

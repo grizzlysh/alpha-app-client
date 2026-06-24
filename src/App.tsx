@@ -10,6 +10,7 @@ import { GuestGuard } from "@/components/shared/GuestGuard";
 import { HomeGuard } from "@/components/shared/HomeGuard";
 import { AuthGuard } from "@/components/shared/AuthGuard";
 import { ProtectedGuard } from "@/components/shared/ProtectedGuard";
+import { SharedAccessGuard } from "@/components/shared/SharedAccessGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useBootstrapAuth } from "@/hooks/useBootstrapAuth";
 import LoginPage from "@/pages/LoginPage";
@@ -34,6 +35,8 @@ import PosPage from "@/pages/PosPage";
 import SalesPage from "@/pages/SalesPage";
 import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import ReportsPage from "@/pages/ReportsPage";
+import StoragePage from "@/pages/StoragePage";
+import InventoryPage from "@/pages/InventoryPage";
 import ComingSoonPage from "@/pages/ComingSoonPage";
 
 function AppRoutes(): JSX.Element {
@@ -61,12 +64,18 @@ function AppRoutes(): JSX.Element {
           <Route path="/" element={<HomePage />} />
         </Route>
 
-        {/* Global admin routes — auth only, no pharmacy required */}
-        <Route element={<AuthGuard />}>
+        {/* Shared routes — platform users OR pharmacy-selected staff (e.g. OWNER) */}
+        <Route element={<SharedAccessGuard />}>
           <Route element={<DashboardLayout />}>
             <Route path="/users" element={<UsersPage />} />
-            <Route path="/pharmacies" element={<PharmaciesPage />} />
             <Route path="/roles" element={<RolesPage />} />
+          </Route>
+        </Route>
+
+        {/* Global admin routes — platform users only, no pharmacy required */}
+        <Route element={<AuthGuard />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/pharmacies" element={<PharmaciesPage />} />
             <Route path="/system-parameters" element={<SystemParametersPage />} />
           </Route>
         </Route>
@@ -82,6 +91,8 @@ function AppRoutes(): JSX.Element {
             <Route path="/stock-disposals" element={<StockDisposalsPage />} />
             <Route path="/stock-returns" element={<StockReturnsPage />} />
             <Route path="/stock-movements" element={<StockMovementsPage />} />
+            <Route path="/storage" element={<StoragePage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/medicines" element={<MedicinesPage />} />
             <Route path="/medicine-classification" element={<MedicineClassificationPage />} />
             <Route path="/prescriptions" element={<ComingSoonPage titleKey="navPrescriptions" />} />

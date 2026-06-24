@@ -19,6 +19,8 @@ import {
   Undo2,
   ArrowLeftRight,
   History,
+  Warehouse,
+  Boxes,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Translations } from "@/configs/i18n";
@@ -88,6 +90,8 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
       { key: "stock-disposals", labelKey: "navStockDisposals", icon: ArchiveX, path: "/stock-disposals" },
       { key: "stock-returns", labelKey: "navStockReturns", icon: Undo2, path: "/stock-returns" },
       { key: "stock-movements", labelKey: "navStockMovements", icon: ArrowLeftRight, path: "/stock-movements" },
+      { key: "storage", labelKey: "navStorage", icon: Warehouse, path: "/storage" },
+      { key: "inventory", labelKey: "navInventory", icon: Boxes, path: "/inventory" },
     ],
   },
   {
@@ -95,6 +99,12 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
       { key: "purchase-orders", labelKey: "navPurchaseOrders", icon: ClipboardList, path: "/purchase-orders" },
       { key: "distributors", labelKey: "navDistributors", icon: Truck, path: "/distributors" },
       { key: "invoices", labelKey: "navInvoices", icon: Receipt, path: "/invoices" },
+    ],
+  },
+  {
+    items: [
+      { key: "users", labelKey: "navUsers", icon: Users, path: "/users" },
+      { key: "roles", labelKey: "navRoles", icon: UserRoundKey, path: "/roles" },
     ],
   },
   {

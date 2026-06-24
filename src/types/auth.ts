@@ -13,6 +13,7 @@ export interface PharmacyItem {
   name: string;
   address: string;
   role: PharmacyItemRole | null;
+  hasHeadPharmacist?: boolean;
 }
 
 export interface LoginUserData {

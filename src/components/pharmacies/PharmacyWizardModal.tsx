@@ -1,7 +1,7 @@
 import type { JSX } from "react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -23,31 +23,39 @@ import type { Translations } from "@/configs/i18n";
 import { getApiErrorMessage } from "@/utils/apiError";
 import type { PharmacyCategory, CreatePharmacyPayload } from "@/types/pharmacy";
 import type { CreateBusinessLicensePayload } from "@/types/businessLicense";
+import type { CreatePlacementPayload } from "@/types/user";
 import { createPharmacy } from "@/service/pharmacyService";
 import { createBusinessLicense } from "@/service/businessLicenseService";
+import { createPlacement } from "@/service/userService";
+import { getUsersDropdown } from "@/service/userService";
+import { getRolesDdl } from "@/service/roleService";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+function toISOString(dateStr: string): string {
+  return new Date(dateStr).toISOString();
+}
+
 // ── StepIndicator ─────────────────────────────────────────────────────────────
 
-const STEP_COUNT = 2;
+const STEP_COUNT = 3;
 
 interface StepIndicatorProps {
-  current: 1 | 2;
-  labels: [string, string];
+  current: 1 | 2 | 3;
+  labels: [string, string, string];
 }
 
 function StepIndicator({ current, labels }: StepIndicatorProps): JSX.Element {
   return (
     <div className="px-6 pb-5 pt-3">
-      {/* Circles + connector */}
       <div className="relative mb-2.5">
-        <div className="pointer-events-none absolute inset-x-[25%] top-3.5 flex">
+        <div className="pointer-events-none absolute inset-x-[16.67%] top-3.5 flex">
           <div className={cn("h-px flex-1 transition-colors duration-300", current >= 2 ? "bg-primary" : "bg-border")} />
+          <div className={cn("h-px flex-1 transition-colors duration-300", current >= 3 ? "bg-primary" : "bg-border")} />
         </div>
         <div className="flex">
           {Array.from({ length: STEP_COUNT }, (_, i) => {
-            const n = (i + 1) as 1 | 2;
+            const n = (i + 1) as 1 | 2 | 3;
             const done = n < current;
             const active = n === current;
             return (
@@ -69,10 +77,9 @@ function StepIndicator({ current, labels }: StepIndicatorProps): JSX.Element {
           })}
         </div>
       </div>
-      {/* Labels */}
       <div className="flex">
         {labels.map((label, i) => {
-          const n = (i + 1) as 1 | 2;
+          const n = (i + 1) as 1 | 2 | 3;
           const done = n < current;
           const active = n === current;
           return (
@@ -300,18 +307,17 @@ function makeStep2Schema(t: Translations) {
 interface Step2FormProps {
   t: Translations;
   defaultValues: Step2Values;
-  isSubmitting: boolean;
   onBack: () => void;
-  onSubmit: (values: Step2Values) => void;
+  onNext: (values: Step2Values) => void;
 }
 
-function Step2Form({ t, defaultValues, isSubmitting, onBack, onSubmit }: Step2FormProps): JSX.Element {
+function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.Element {
   const schema = useMemo(() => makeStep2Schema(t), [t]);
   const form = useForm<Step2Values>({ resolver: zodResolver(schema), defaultValues });
   const err = (k: keyof Step2Values) => form.formState.errors[k]?.message;
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
+    <form onSubmit={form.handleSubmit(onNext)} className="flex flex-col">
       <div className="px-6 pb-1 pt-0">
         <p className="text-xs text-muted-foreground">{t.pharmaWizardStep2Hint}</p>
       </div>
@@ -364,8 +370,187 @@ function Step2Form({ t, defaultValues, isSubmitting, onBack, onSubmit }: Step2Fo
       </div>
 
       <div className="flex justify-end gap-2 border-t border-border px-6 py-4">
-        <Button type="button" variant="outline" onClick={onBack} disabled={isSubmitting} className="rounded-xl">
+        <Button type="button" variant="outline" onClick={onBack} className="rounded-xl">
           {t.wizardBack}
+        </Button>
+        <Button type="submit" className="min-w-[7rem] rounded-xl">
+          {t.wizardNext}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// ── Step 3: User Role ──────────────────────────────────────────────────────────
+
+interface Step3Values {
+  userUuid: string;
+  roleUuid: string;
+  joinedAt: string;
+  licenseNumber: string;
+  validFrom: string;
+  validUntil: string;
+}
+
+function makeStep3Schema(t: Translations, requiresLicense: boolean) {
+  return z
+    .object({
+      userUuid: z.string().min(1, t.placementUserRequired),
+      roleUuid: z.string().min(1, t.placementRoleRequired),
+      joinedAt: z.string().min(1, t.placementJoinedAtRequired),
+      licenseNumber: requiresLicense
+        ? z.string().trim().min(1, t.licenseNumberRequired).max(100)
+        : z.string().trim().max(100).optional().or(z.literal("")),
+      validFrom: requiresLicense
+        ? z.string().min(1, t.licenseValidFromRequired)
+        : z.string().optional().or(z.literal("")),
+      validUntil: requiresLicense
+        ? z.string().min(1, t.licenseValidUntilRequired)
+        : z.string().optional().or(z.literal("")),
+    })
+    .refine(
+      (d) => !d.validFrom || !d.validUntil || new Date(d.validUntil) > new Date(d.validFrom),
+      { message: t.licenseValidUntilAfterFrom, path: ["validUntil"] }
+    );
+}
+
+interface Step3FormProps {
+  t: Translations;
+  pharmacyUuid: string;
+  isSubmitting: boolean;
+  onSubmit: (values: Step3Values) => void;
+  onSkip: () => void;
+}
+
+function Step3Form({ t, pharmacyUuid, isSubmitting, onSubmit, onSkip }: Step3FormProps): JSX.Element {
+  const [requiresLicense, setRequiresLicense] = useState(false);
+  const schema = useMemo(() => makeStep3Schema(t, requiresLicense), [t, requiresLicense]);
+
+  const form = useForm<Step3Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { userUuid: "", roleUuid: "", joinedAt: "", licenseNumber: "", validFrom: "", validUntil: "" },
+  });
+  const err = (k: keyof Step3Values) => form.formState.errors[k]?.message;
+
+  const { data: usersData } = useQuery({
+    queryKey: ["users-dropdown", pharmacyUuid],
+    queryFn: () => getUsersDropdown({ pharmacyUuid }),
+    staleTime: 60_000,
+  });
+  const { data: rolesData } = useQuery({
+    queryKey: ["roles-ddl", pharmacyUuid],
+    queryFn: () => getRolesDdl(pharmacyUuid),
+    staleTime: 60_000,
+  });
+
+  const users = usersData?.data ?? [];
+  const roles = rolesData?.data ?? [];
+
+  const selectedRoleUuid = form.watch("roleUuid");
+  useEffect(() => {
+    const role = roles.find((r) => r.uuid === selectedRoleUuid);
+    setRequiresLicense(role?.requiresLicense ?? false);
+  }, [selectedRoleUuid, roles]);
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
+      <div className="px-6 pb-1 pt-0">
+        <p className="text-xs text-muted-foreground">{t.pharmaWizardStep3Hint}</p>
+      </div>
+
+      <div className="max-h-[45vh] overflow-y-auto px-6 py-4">
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label>
+              {t.placementUser}<span className="ml-0.5 text-destructive">*</span>
+            </Label>
+            <Controller name="userUuid" control={form.control} render={({ field }) => (
+              <Combobox
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                options={users.map((u) => ({ value: u.uuid, label: `${u.name} — ${u.email}` }))}
+                placeholder={t.placementSelectUser}
+                className={cn(err("userUuid") && "border-destructive")}
+              />
+            )} />
+            <FieldError message={err("userUuid")} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>
+              {t.placementRole}<span className="ml-0.5 text-destructive">*</span>
+            </Label>
+            <Controller name="roleUuid" control={form.control} render={({ field }) => (
+              <Combobox
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                options={roles.map((r) => ({ value: r.uuid, label: r.name }))}
+                placeholder={t.placementSelectRole}
+                className={cn(err("roleUuid") && "border-destructive")}
+              />
+            )} />
+            <FieldError message={err("roleUuid")} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>
+              {t.placementJoinedAt}<span className="ml-0.5 text-destructive">*</span>
+            </Label>
+            <Controller name="joinedAt" control={form.control} render={({ field }) => (
+              <DateInput
+                {...field}
+                className={cn(err("joinedAt") && "border-destructive")}
+              />
+            )} />
+            <FieldError message={err("joinedAt")} />
+          </div>
+
+          {requiresLicense && (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="w3-license-num">
+                  {t.licenseNumber}<span className="ml-0.5 text-destructive">*</span>
+                </Label>
+                <Controller name="licenseNumber" control={form.control} render={({ field }) => (
+                  <Input id="w3-license-num" placeholder={t.licenseNumberPlaceholder} {...field}
+                    className={cn(err("licenseNumber") && "border-destructive focus-visible:ring-destructive/30")} />
+                )} />
+                <FieldError message={err("licenseNumber")} />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>
+                  {t.licenseValidFrom}<span className="ml-0.5 text-destructive">*</span>
+                </Label>
+                <Controller name="validFrom" control={form.control} render={({ field }) => (
+                  <DateInput
+                    {...field}
+                    className={cn(err("validFrom") && "border-destructive")}
+                  />
+                )} />
+                <FieldError message={err("validFrom")} />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>
+                  {t.licenseValidUntil}<span className="ml-0.5 text-destructive">*</span>
+                </Label>
+                <Controller name="validUntil" control={form.control} render={({ field }) => (
+                  <DateInput
+                    {...field}
+                    className={cn(err("validUntil") && "border-destructive")}
+                  />
+                )} />
+                <FieldError message={err("validUntil")} />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2 border-t border-border px-6 py-4">
+        <Button type="button" variant="outline" onClick={onSkip} disabled={isSubmitting} className="rounded-xl">
+          {t.wizardSkip}
         </Button>
         <Button type="submit" disabled={isSubmitting} className="min-w-[7.5rem] rounded-xl">
           {isSubmitting
@@ -390,15 +575,20 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [step1Data, setStep1Data] = useState<Step1Values>({
     name: "", code: "", category: undefined as unknown as PharmacyCategory,
     phone: "", address: "", location: "", email: "",
   });
   const [step2Defaults] = useState<Step2Values>({ licenseNumber: "", validFrom: "", validUntil: "" });
+  const [pharmacyUuid, setPharmacyUuid] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const stepLabels: [string, string] = [t.pharmaWizardStep1, t.pharmaWizardStep2];
+  const stepLabels: [string, string, string] = [
+    t.pharmaWizardStep1,
+    t.pharmaWizardStep2,
+    t.pharmaWizardStep3,
+  ];
 
   function handleStep1(values: Step1Values): void {
     setStep1Data(values);
@@ -418,11 +608,11 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
         email: step1Data.email?.trim() || undefined,
       };
       const pharmaRes = await createPharmacy(pharmaPayload);
-      const pharmacyUuid = pharmaRes.data?.uuid;
-      if (!pharmacyUuid) throw new Error("Failed to create pharmacy");
+      const uuid = pharmaRes.data?.uuid;
+      if (!uuid) throw new Error("Failed to create pharmacy");
 
       const licensePayload: CreateBusinessLicensePayload = {
-        pharmacyUuid,
+        pharmacyUuid: uuid,
         licenseNumber: licenseValues.licenseNumber,
         validFrom: licenseValues.validFrom,
         validUntil: licenseValues.validUntil,
@@ -430,12 +620,48 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
       await createBusinessLicense(licensePayload);
 
       queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
+      setPharmacyUuid(uuid);
+      setStep(3);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, language, t.unexpectedError));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleStep3(values: Step3Values): Promise<void> {
+    setIsSubmitting(true);
+    try {
+      const license =
+        values.licenseNumber.trim()
+          ? {
+              licenseNumber: values.licenseNumber.trim(),
+              validFrom: toISOString(values.validFrom),
+              validUntil: toISOString(values.validUntil),
+            }
+          : undefined;
+
+      const payload: CreatePlacementPayload = {
+        pharmacyUuid,
+        roleUuid: values.roleUuid,
+        joinedAt: toISOString(values.joinedAt),
+        license,
+      };
+      await createPlacement(values.userUuid, payload);
+
+      queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       onSuccessRef.current();
     } catch (err) {
       toast.error(getApiErrorMessage(err, language, t.unexpectedError));
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function handleSkipStep3(): void {
+    queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
+    onSuccessRef.current();
   }
 
   return (
@@ -470,9 +696,17 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
           <Step2Form
             t={t}
             defaultValues={step2Defaults}
-            isSubmitting={isSubmitting}
             onBack={() => setStep(1)}
-            onSubmit={handleStep2}
+            onNext={handleStep2}
+          />
+        )}
+        {step === 3 && (
+          <Step3Form
+            t={t}
+            pharmacyUuid={pharmacyUuid}
+            isSubmitting={isSubmitting}
+            onSubmit={handleStep3}
+            onSkip={handleSkipStep3}
           />
         )}
       </DialogContent>

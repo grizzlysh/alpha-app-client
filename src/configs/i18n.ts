@@ -718,8 +718,15 @@ export interface Translations {
   pharmaDeleteSuccess: string;
   pharmaWizardStep1: string;
   pharmaWizardStep2: string;
+  pharmaWizardStep3: string;
   pharmaWizardStep1Hint: string;
   pharmaWizardStep2Hint: string;
+  pharmaWizardStep3Hint: string;
+  placementUser: string;
+  placementSelectUser: string;
+  placementUserRequired: string;
+  pharmaNoHeadPharmacist: string;
+  pharmaNoHeadPharmacistHint: string;
 
   // Business license (SIA)
   bizLicenseTitle: string;
@@ -1512,6 +1519,10 @@ export interface Translations {
   invoiceDueDateRequired: string;
   invoiceReceiveDateRequired: string;
   invoiceItemsIncompleteWarning: string;
+  invoiceItemCabinet: string;
+  invoiceItemShelf: string;
+  invoiceItemBin: string;
+  invoiceItemSelectBin: string;
   // ── Invoice Payment ──────────────────────────────────
   invoicePaymentSectionTitle: string;
   invoicePaymentAdd: string;
@@ -1537,6 +1548,123 @@ export interface Translations {
   invoicePaymentDeleteDesc: string;
   invoicePaymentDeleteSuccess: string;
   invoicePaymentAlreadyPaid: string;
+
+  // Storage page
+  navStorage: string;
+  storageSubtitle: string;
+  storageFilterStatus: string;
+  storageStatusActive: string;
+  storageStatusInactive: string;
+
+  // Storage — Cabinet
+  cabinetAdd: string;
+  cabinetEdit: string;
+  cabinetDelete: string;
+  cabinetDetails: string;
+  cabinetName: string;
+  cabinetNamePlaceholder: string;
+  cabinetNameRequired: string;
+  cabinetCode: string;
+  cabinetCodePlaceholder: string;
+  cabinetCodeRequired: string;
+  cabinetDescription: string;
+  cabinetDescriptionPlaceholder: string;
+  cabinetStatus: string;
+  cabinetSearchPlaceholder: string;
+  cabinetNoResults: string;
+  cabinetEmptyTitle: string;
+  cabinetEmptyDesc: string;
+  cabinetDeleteConfirmTitle: string;
+  cabinetDeleteConfirmDesc: string;
+  cabinetSave: string;
+  cabinetSaving: string;
+  cabinetDeleting: string;
+  cabinetCreateSuccess: string;
+  cabinetUpdateSuccess: string;
+  cabinetDeleteSuccess: string;
+  cabinetViewShelves: string;
+
+  // Storage — Shelf
+  shelfAdd: string;
+  shelfEdit: string;
+  shelfDelete: string;
+  shelfDetails: string;
+  shelfName: string;
+  shelfNamePlaceholder: string;
+  shelfNameRequired: string;
+  shelfCode: string;
+  shelfCodePlaceholder: string;
+  shelfCodeRequired: string;
+  shelfLevel: string;
+  shelfLevelPlaceholder: string;
+  shelfDescription: string;
+  shelfDescriptionPlaceholder: string;
+  shelfStatus: string;
+  shelfSearchPlaceholder: string;
+  shelfNoResults: string;
+  shelfEmptyTitle: string;
+  shelfEmptyDesc: string;
+  shelfDeleteConfirmTitle: string;
+  shelfDeleteConfirmDesc: string;
+  shelfSave: string;
+  shelfSaving: string;
+  shelfDeleting: string;
+  shelfCreateSuccess: string;
+  shelfUpdateSuccess: string;
+  shelfDeleteSuccess: string;
+  shelfViewBins: string;
+
+  // Storage — Bin
+  binAdd: string;
+  binEdit: string;
+  binDelete: string;
+  binDetails: string;
+  binName: string;
+  binNamePlaceholder: string;
+  binNameRequired: string;
+  binCode: string;
+  binCodePlaceholder: string;
+  binCodeRequired: string;
+  binDescription: string;
+  binDescriptionPlaceholder: string;
+  binStatus: string;
+  binSearchPlaceholder: string;
+  binNoResults: string;
+  binEmptyTitle: string;
+  binEmptyDesc: string;
+  binDeleteConfirmTitle: string;
+  binDeleteConfirmDesc: string;
+  binSave: string;
+  binSaving: string;
+  binDeleting: string;
+  binCreateSuccess: string;
+  binUpdateSuccess: string;
+  binDeleteSuccess: string;
+
+  // Inventory page
+  navInventory: string;
+  inventorySubtitle: string;
+  inventoryCanvasTitle: string;
+  inventorySelectBinPrompt: string;
+  inventoryNoCabinets: string;
+  inventoryBinEmpty: string;
+  inventoryBinItemsTitle: string;
+  inventoryExpiryOk: string;
+  inventoryExpirySoon: string;
+  inventoryExpired: string;
+  inventoryBatchLabel: string;
+  inventoryBarcodeLabel: string;
+  inventoryExpiryLabel: string;
+  inventoryRemainingLabel: string;
+  inventoryDistributorLabel: string;
+  inventoryItemCount: string;
+  inventoryWarehouseLabel: string;
+  inventoryCanvasSaveSuccess: string;
+  inventoryRotate: string;
+  inventoryShelvesLabel: string;
+  inventoryBinsLabel: string;
+  inventoryNoShelves: string;
+  inventoryNoBins: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -2223,8 +2351,15 @@ export const translations: Record<Language, Translations> = {
     pharmaDeleteSuccess: "Pharmacy deleted successfully",
     pharmaWizardStep1: "Pharmacy Info",
     pharmaWizardStep2: "Business License",
+    pharmaWizardStep3: "User Role",
     pharmaWizardStep1Hint: "Enter the pharmacy's basic information",
     pharmaWizardStep2Hint: "Register the pharmacy's operating license (SIA)",
+    pharmaWizardStep3Hint: "Assign an existing user to this pharmacy with a role",
+    placementUser: "User",
+    placementSelectUser: "Select a user",
+    placementUserRequired: "User is required",
+    pharmaNoHeadPharmacist: "No Head Pharmacist",
+    pharmaNoHeadPharmacistHint: "This pharmacy has no assigned head pharmacist and cannot be selected",
     bizLicenseTitle: "Business License (SIA)",
     bizLicenseDesc: "Register the pharmacy's operating license",
     bizLicenseNumber: "License Number",
@@ -2461,6 +2596,10 @@ export const translations: Record<Language, Translations> = {
     invoiceDueDateRequired: "Due date is required",
     invoiceReceiveDateRequired: "Receive date is required",
     invoiceItemsIncompleteWarning: "Complete all item data (batch no., expiry date, price) before saving",
+    invoiceItemCabinet: "Cabinet",
+    invoiceItemShelf: "Shelf",
+    invoiceItemBin: "Bin",
+    invoiceItemSelectBin: "Select bin (optional)",
     invoicePaymentSectionTitle: "Payment History",
     invoicePaymentAdd: "Add Payment",
     invoicePaymentAddBtn: "Add",
@@ -3033,6 +3172,123 @@ export const translations: Record<Language, Translations> = {
     reportExport: "Export",
     reportExportCsv: "Export CSV",
     reportExportExcel: "Export Excel",
+
+    // Storage page
+    navStorage: "Storage",
+    storageSubtitle: "Manage cabinets, shelves, and bins for physical stock locations",
+    storageFilterStatus: "Status",
+    storageStatusActive: "Active",
+    storageStatusInactive: "Inactive",
+
+    // Storage — Cabinet
+    cabinetAdd: "Add",
+    cabinetEdit: "Edit",
+    cabinetDelete: "Delete",
+    cabinetDetails: "Details",
+    cabinetName: "Cabinet Name",
+    cabinetNamePlaceholder: "e.g. Cabinet A",
+    cabinetNameRequired: "Cabinet name is required",
+    cabinetCode: "Code",
+    cabinetCodePlaceholder: "e.g. CAB-A",
+    cabinetCodeRequired: "Cabinet code is required",
+    cabinetDescription: "Description",
+    cabinetDescriptionPlaceholder: "Optional notes about this cabinet",
+    cabinetStatus: "Status",
+    cabinetSearchPlaceholder: "Search by name or code...",
+    cabinetNoResults: "No cabinets match your search",
+    cabinetEmptyTitle: "No cabinets yet",
+    cabinetEmptyDesc: "Add your first storage cabinet to start organizing stock locations",
+    cabinetDeleteConfirmTitle: "Delete Cabinet",
+    cabinetDeleteConfirmDesc: "This cabinet will be permanently deleted. All shelves must be removed first.",
+    cabinetSave: "Save Cabinet",
+    cabinetSaving: "Saving...",
+    cabinetDeleting: "Deleting...",
+    cabinetCreateSuccess: "Cabinet created successfully",
+    cabinetUpdateSuccess: "Cabinet updated successfully",
+    cabinetDeleteSuccess: "Cabinet deleted successfully",
+    cabinetViewShelves: "View Shelves",
+
+    // Storage — Shelf
+    shelfAdd: "Add",
+    shelfEdit: "Edit",
+    shelfDelete: "Delete",
+    shelfDetails: "Details",
+    shelfName: "Shelf Name",
+    shelfNamePlaceholder: "e.g. Shelf 1",
+    shelfNameRequired: "Shelf name is required",
+    shelfCode: "Code",
+    shelfCodePlaceholder: "e.g. S1",
+    shelfCodeRequired: "Shelf code is required",
+    shelfLevel: "Level",
+    shelfLevelPlaceholder: "e.g. 1",
+    shelfDescription: "Description",
+    shelfDescriptionPlaceholder: "Optional notes about this shelf",
+    shelfStatus: "Status",
+    shelfSearchPlaceholder: "Search by name or code...",
+    shelfNoResults: "No shelves match your search",
+    shelfEmptyTitle: "No shelves yet",
+    shelfEmptyDesc: "Add shelves to this cabinet to organize your bins",
+    shelfDeleteConfirmTitle: "Delete Shelf",
+    shelfDeleteConfirmDesc: "This shelf will be permanently deleted. All bins must be removed first.",
+    shelfSave: "Save Shelf",
+    shelfSaving: "Saving...",
+    shelfDeleting: "Deleting...",
+    shelfCreateSuccess: "Shelf created successfully",
+    shelfUpdateSuccess: "Shelf updated successfully",
+    shelfDeleteSuccess: "Shelf deleted successfully",
+    shelfViewBins: "View Bins",
+
+    // Storage — Bin
+    binAdd: "Add",
+    binEdit: "Edit",
+    binDelete: "Delete",
+    binDetails: "Details",
+    binName: "Bin Name",
+    binNamePlaceholder: "e.g. Bin 01",
+    binNameRequired: "Bin name is required",
+    binCode: "Code",
+    binCodePlaceholder: "e.g. B01",
+    binCodeRequired: "Bin code is required",
+    binDescription: "Description",
+    binDescriptionPlaceholder: "Optional notes about this bin",
+    binStatus: "Status",
+    binSearchPlaceholder: "Search by name or code...",
+    binNoResults: "No bins match your search",
+    binEmptyTitle: "No bins yet",
+    binEmptyDesc: "Add bins to this shelf to assign stock locations",
+    binDeleteConfirmTitle: "Delete Bin",
+    binDeleteConfirmDesc: "This bin will be permanently deleted. It must not be assigned to any medicines or stock batches.",
+    binSave: "Save Bin",
+    binSaving: "Saving...",
+    binDeleting: "Deleting...",
+    binCreateSuccess: "Bin created successfully",
+    binUpdateSuccess: "Bin updated successfully",
+    binDeleteSuccess: "Bin deleted successfully",
+
+    // Inventory page
+    navInventory: "Inventory",
+    inventorySubtitle: "Visualize and browse your pharmacy's physical storage layout",
+    inventoryCanvasTitle: "Warehouse Floor Plan",
+    inventorySelectBinPrompt: "Select a bin from the left panel to view its contents",
+    inventoryNoCabinets: "No cabinets found. Add cabinets in the Storage module first.",
+    inventoryBinEmpty: "This bin has no items",
+    inventoryBinItemsTitle: "Bin Contents",
+    inventoryExpiryOk: "OK",
+    inventoryExpirySoon: "Expiring Soon",
+    inventoryExpired: "Expired",
+    inventoryBatchLabel: "Batch",
+    inventoryBarcodeLabel: "Barcode",
+    inventoryExpiryLabel: "Expiry",
+    inventoryRemainingLabel: "Remaining",
+    inventoryDistributorLabel: "Distributor",
+    inventoryItemCount: "item",
+    inventoryWarehouseLabel: "Warehouse",
+    inventoryCanvasSaveSuccess: "Cabinet position saved",
+    inventoryRotate: "Rotate",
+    inventoryShelvesLabel: "shelves",
+    inventoryBinsLabel: "bins",
+    inventoryNoShelves: "No shelves in this cabinet",
+    inventoryNoBins: "No bins in this shelf",
   },
   id: {
     appName: "PharmaCare",
@@ -3715,8 +3971,15 @@ export const translations: Record<Language, Translations> = {
     pharmaDeleteSuccess: "Apotek berhasil dihapus",
     pharmaWizardStep1: "Info Apotek",
     pharmaWizardStep2: "Izin Usaha",
+    pharmaWizardStep3: "Pengguna & Peran",
     pharmaWizardStep1Hint: "Masukkan informasi dasar apotek",
     pharmaWizardStep2Hint: "Daftarkan izin operasional apotek (SIA)",
+    pharmaWizardStep3Hint: "Tambahkan pengguna ke apotek ini dengan peran yang sesuai",
+    placementUser: "Pengguna",
+    placementSelectUser: "Pilih pengguna",
+    placementUserRequired: "Pengguna wajib diisi",
+    pharmaNoHeadPharmacist: "Tanpa Apoteker Penanggung Jawab",
+    pharmaNoHeadPharmacistHint: "Apotek ini belum memiliki apoteker penanggung jawab dan tidak dapat dipilih",
     bizLicenseTitle: "Izin Usaha (SIA)",
     bizLicenseDesc: "Daftarkan izin operasional apotek",
     bizLicenseNumber: "Nomor Izin",
@@ -3953,6 +4216,10 @@ export const translations: Record<Language, Translations> = {
     invoiceDueDateRequired: "Jatuh tempo wajib diisi",
     invoiceReceiveDateRequired: "Tanggal terima wajib diisi",
     invoiceItemsIncompleteWarning: "Lengkapi semua data item (no. batch, tanggal kadaluarsa, harga) sebelum menyimpan",
+    invoiceItemCabinet: "Lemari",
+    invoiceItemShelf: "Rak",
+    invoiceItemBin: "Laci",
+    invoiceItemSelectBin: "Pilih laci (opsional)",
     invoicePaymentSectionTitle: "Riwayat Pembayaran",
     invoicePaymentAdd: "Tambah Pembayaran",
     invoicePaymentAddBtn: "Tambah",
@@ -4525,6 +4792,123 @@ export const translations: Record<Language, Translations> = {
     reportExport: "Ekspor",
     reportExportCsv: "Ekspor CSV",
     reportExportExcel: "Ekspor Excel",
+
+    // Storage page
+    navStorage: "Penyimpanan",
+    storageSubtitle: "Kelola lemari, rak, dan tempat penyimpanan stok fisik",
+    storageFilterStatus: "Status",
+    storageStatusActive: "Aktif",
+    storageStatusInactive: "Tidak Aktif",
+
+    // Storage — Cabinet
+    cabinetAdd: "Tambah",
+    cabinetEdit: "Edit",
+    cabinetDelete: "Hapus",
+    cabinetDetails: "Detail",
+    cabinetName: "Nama Lemari",
+    cabinetNamePlaceholder: "mis. Lemari A",
+    cabinetNameRequired: "Nama lemari wajib diisi",
+    cabinetCode: "Kode",
+    cabinetCodePlaceholder: "mis. LMR-A",
+    cabinetCodeRequired: "Kode lemari wajib diisi",
+    cabinetDescription: "Deskripsi",
+    cabinetDescriptionPlaceholder: "Catatan opsional tentang lemari ini",
+    cabinetStatus: "Status",
+    cabinetSearchPlaceholder: "Cari berdasarkan nama atau kode...",
+    cabinetNoResults: "Tidak ada lemari yang sesuai pencarian",
+    cabinetEmptyTitle: "Belum ada lemari",
+    cabinetEmptyDesc: "Tambahkan lemari penyimpanan pertama untuk mulai mengatur lokasi stok",
+    cabinetDeleteConfirmTitle: "Hapus Lemari",
+    cabinetDeleteConfirmDesc: "Lemari ini akan dihapus secara permanen. Semua rak harus dihapus terlebih dahulu.",
+    cabinetSave: "Simpan Lemari",
+    cabinetSaving: "Menyimpan...",
+    cabinetDeleting: "Menghapus...",
+    cabinetCreateSuccess: "Lemari berhasil ditambahkan",
+    cabinetUpdateSuccess: "Lemari berhasil diperbarui",
+    cabinetDeleteSuccess: "Lemari berhasil dihapus",
+    cabinetViewShelves: "Lihat Rak",
+
+    // Storage — Shelf
+    shelfAdd: "Tambah",
+    shelfEdit: "Edit",
+    shelfDelete: "Hapus",
+    shelfDetails: "Detail",
+    shelfName: "Nama Rak",
+    shelfNamePlaceholder: "mis. Rak 1",
+    shelfNameRequired: "Nama rak wajib diisi",
+    shelfCode: "Kode",
+    shelfCodePlaceholder: "mis. R1",
+    shelfCodeRequired: "Kode rak wajib diisi",
+    shelfLevel: "Level",
+    shelfLevelPlaceholder: "mis. 1",
+    shelfDescription: "Deskripsi",
+    shelfDescriptionPlaceholder: "Catatan opsional tentang rak ini",
+    shelfStatus: "Status",
+    shelfSearchPlaceholder: "Cari berdasarkan nama atau kode...",
+    shelfNoResults: "Tidak ada rak yang sesuai pencarian",
+    shelfEmptyTitle: "Belum ada rak",
+    shelfEmptyDesc: "Tambahkan rak ke lemari ini untuk mengatur tempat penyimpanan",
+    shelfDeleteConfirmTitle: "Hapus Rak",
+    shelfDeleteConfirmDesc: "Rak ini akan dihapus secara permanen. Semua tempat penyimpanan harus dihapus terlebih dahulu.",
+    shelfSave: "Simpan Rak",
+    shelfSaving: "Menyimpan...",
+    shelfDeleting: "Menghapus...",
+    shelfCreateSuccess: "Rak berhasil ditambahkan",
+    shelfUpdateSuccess: "Rak berhasil diperbarui",
+    shelfDeleteSuccess: "Rak berhasil dihapus",
+    shelfViewBins: "Lihat Tempat",
+
+    // Storage — Bin
+    binAdd: "Tambah",
+    binEdit: "Edit",
+    binDelete: "Hapus",
+    binDetails: "Detail",
+    binName: "Nama Tempat",
+    binNamePlaceholder: "mis. Tempat 01",
+    binNameRequired: "Nama tempat penyimpanan wajib diisi",
+    binCode: "Kode",
+    binCodePlaceholder: "mis. T01",
+    binCodeRequired: "Kode tempat penyimpanan wajib diisi",
+    binDescription: "Deskripsi",
+    binDescriptionPlaceholder: "Catatan opsional tentang tempat penyimpanan ini",
+    binStatus: "Status",
+    binSearchPlaceholder: "Cari berdasarkan nama atau kode...",
+    binNoResults: "Tidak ada tempat penyimpanan yang sesuai pencarian",
+    binEmptyTitle: "Belum ada tempat penyimpanan",
+    binEmptyDesc: "Tambahkan tempat penyimpanan ke rak ini untuk menetapkan lokasi stok",
+    binDeleteConfirmTitle: "Hapus Tempat Penyimpanan",
+    binDeleteConfirmDesc: "Tempat penyimpanan ini akan dihapus secara permanen. Pastikan tidak ada obat atau batch stok yang terhubung.",
+    binSave: "Simpan Tempat",
+    binSaving: "Menyimpan...",
+    binDeleting: "Menghapus...",
+    binCreateSuccess: "Tempat penyimpanan berhasil ditambahkan",
+    binUpdateSuccess: "Tempat penyimpanan berhasil diperbarui",
+    binDeleteSuccess: "Tempat penyimpanan berhasil dihapus",
+
+    // Inventory page
+    navInventory: "Inventori",
+    inventorySubtitle: "Visualisasikan dan telusuri tata letak penyimpanan fisik apotek Anda",
+    inventoryCanvasTitle: "Denah Gudang",
+    inventorySelectBinPrompt: "Pilih tempat penyimpanan dari panel kiri untuk melihat isinya",
+    inventoryNoCabinets: "Tidak ada lemari ditemukan. Tambahkan lemari di modul Penyimpanan terlebih dahulu.",
+    inventoryBinEmpty: "Tempat penyimpanan ini tidak memiliki item",
+    inventoryBinItemsTitle: "Isi Tempat Penyimpanan",
+    inventoryExpiryOk: "Baik",
+    inventoryExpirySoon: "Segera Kadaluarsa",
+    inventoryExpired: "Kadaluarsa",
+    inventoryBatchLabel: "Batch",
+    inventoryBarcodeLabel: "Barcode",
+    inventoryExpiryLabel: "Kadaluarsa",
+    inventoryRemainingLabel: "Tersisa",
+    inventoryDistributorLabel: "Distributor",
+    inventoryItemCount: "item",
+    inventoryWarehouseLabel: "Gudang",
+    inventoryCanvasSaveSuccess: "Posisi lemari berhasil disimpan",
+    inventoryRotate: "Putar",
+    inventoryShelvesLabel: "rak",
+    inventoryBinsLabel: "tempat",
+    inventoryNoShelves: "Tidak ada rak di lemari ini",
+    inventoryNoBins: "Tidak ada tempat penyimpanan di rak ini",
   },
 };
 

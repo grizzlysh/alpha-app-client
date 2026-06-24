@@ -37,6 +37,7 @@ export interface RoleListParams {
   isGlobal?: "true" | "false";
   sortBy?: "name" | "createdAt";
   sortOrder?: "asc" | "desc";
+  pharmacyUuid?: string;
 }
 
 export interface CreateRolePayload {

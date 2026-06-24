@@ -75,9 +75,12 @@ export async function deleteRole(uuid: string): Promise<ApiResponse<null>> {
   return response.data;
 }
 
-export async function getRolesDdl(): Promise<ApiResponse<RoleDdlItem[]>> {
+export async function getRolesDdl(
+  pharmacyUuid?: string
+): Promise<ApiResponse<RoleDdlItem[]>> {
   const response = await axiosInstance.get<ApiResponse<RoleDdlItem[]>>(
-    "/roles/dropdown"
+    "/roles/dropdown",
+    { params: pharmacyUuid ? { pharmacyUuid } : undefined }
   );
   return response.data;
 }

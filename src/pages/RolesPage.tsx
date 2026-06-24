@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
@@ -18,6 +19,7 @@ import { RoleDetailPanel } from "@/components/roles/RoleDetailPanel";
 import { RoleFormModal } from "@/components/roles/RoleFormModal";
 import { RoleDeleteModal } from "@/components/roles/RoleDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
+import type { RootState } from "@/store";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -36,6 +38,7 @@ export default function RolesPage(): JSX.Element {
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   // ── Filter state ─────────────────────────────────────────────────────────────
   const [filterStatus, setFilterStatus] = useState<"ACTIVE" | "INACTIVE" | "DELETED" | "all">("all");
@@ -52,6 +55,7 @@ export default function RolesPage(): JSX.Element {
       filterStatus,
       filterType,
       filterScope,
+      pharmacyUuid,
     ],
     queryFn: () =>
       getRoles({
@@ -60,6 +64,7 @@ export default function RolesPage(): JSX.Element {
         search: debouncedSearch || undefined,
         status: filterStatus !== "all" ? filterStatus : undefined,
         isGlobal: filterScope !== "all" ? filterScope : undefined,
+        pharmacyUuid,
       }),
     placeholderData: keepPreviousData,
   });

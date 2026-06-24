@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
@@ -18,6 +19,7 @@ import { UserResetPasswordModal } from "@/components/users/UserResetPasswordModa
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { UserListItem } from "@/types/user";
 import { getUsers } from "@/service/userService";
+import type { RootState } from "@/store";
 
 type ModalState =
   | { mode: "create" }
@@ -32,10 +34,11 @@ export default function UsersPage(): JSX.Element {
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["users", page, limit, debouncedSearch],
-    queryFn: () => getUsers({ page, limit, search: debouncedSearch || undefined }),
+    queryKey: ["users", page, limit, debouncedSearch, pharmacyUuid],
+    queryFn: () => getUsers({ page, limit, search: debouncedSearch || undefined, pharmacyUuid }),
     placeholderData: keepPreviousData,
   });
 

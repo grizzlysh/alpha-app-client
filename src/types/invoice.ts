@@ -112,6 +112,7 @@ export interface CreateInvoiceDetailPayload {
   quantityPieces: number;
   price: number;
   discountPercentage?: number;
+  binUuid?: string;
 }
 
 export interface CreateInvoicePayload {

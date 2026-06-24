@@ -107,6 +107,8 @@ export default function SelectPharmacyPage(): JSX.Element {
       statusOpen: t.statusOpen,
       statusClosed: t.statusClosed,
       lowStockWarning: t.lowStockWarning,
+      noHeadPharmacist: t.pharmaNoHeadPharmacist,
+      noHeadPharmacistHint: t.pharmaNoHeadPharmacistHint,
     }),
     [t]
   );
@@ -323,6 +325,7 @@ export default function SelectPharmacyPage(): JSX.Element {
                     uuid={pharmacy.uuid}
                     name={pharmacy.name}
                     address={pharmacy.address}
+                    hasHeadPharmacist={pharmacy.hasHeadPharmacist}
                     labels={cardLabels}
                     onSelect={select}
                     isSelecting={isSelecting && selectingUuid === pharmacy.uuid}

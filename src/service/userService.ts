@@ -27,12 +27,13 @@ const EMPTY_204: ApiResponse<null> = {
   meta: null,
 };
 
-export async function getUsersDropdown(
-  search?: string
-): Promise<ApiResponse<UserDropdownItem[]>> {
+export async function getUsersDropdown(params?: {
+  search?: string;
+  pharmacyUuid?: string;
+}): Promise<ApiResponse<UserDropdownItem[]>> {
   const response = await axiosInstance.get<ApiResponse<UserDropdownItem[]>>(
     "/users/dropdown",
-    { params: search ? { search } : undefined }
+    { params: params ?? undefined }
   );
   return response.data;
 }
