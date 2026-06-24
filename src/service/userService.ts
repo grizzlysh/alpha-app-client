@@ -2,6 +2,7 @@ import { axiosInstance } from "@/configs/axiosInstance";
 import type { ApiResponse } from "@/types/api";
 import type {
   UserListItem,
+  UserDropdownItem,
   UserDetail,
   UserListParams,
   PlacementItem,
@@ -25,6 +26,16 @@ const EMPTY_204: ApiResponse<null> = {
   errors: null,
   meta: null,
 };
+
+export async function getUsersDropdown(
+  search?: string
+): Promise<ApiResponse<UserDropdownItem[]>> {
+  const response = await axiosInstance.get<ApiResponse<UserDropdownItem[]>>(
+    "/users/dropdown",
+    { params: search ? { search } : undefined }
+  );
+  return response.data;
+}
 
 export async function getUsers(
   params?: UserListParams

@@ -23,6 +23,7 @@ export interface Pharmacy {
   category: PharmacyCategory;
   phone: string;
   address: string;
+  location: string;
   email: string | null;
   status: RecordStatus;
   activeLicense: ActiveBusinessLicense | null;
@@ -47,6 +48,7 @@ export interface CreatePharmacyPayload {
   category: PharmacyCategory;
   phone: string;
   address: string;
+  location: string;
   email?: string;
 }
 
@@ -56,6 +58,7 @@ export interface UpdatePharmacyPayload {
   category?: PharmacyCategory;
   phone?: string;
   address?: string;
+  location?: string;
   email?: string;
   status?: RecordStatus;
 }

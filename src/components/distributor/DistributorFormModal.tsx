@@ -95,6 +95,7 @@ export function DistributorFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["distributors"] });
+        queryClient.invalidateQueries({ queryKey: ["distributors-dropdown"] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -117,6 +118,7 @@ export function DistributorFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["distributors"] });
+        queryClient.invalidateQueries({ queryKey: ["distributors-dropdown"] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);

@@ -680,6 +680,9 @@ export interface Translations {
   pharmaPhonePlaceholder: string;
   pharmaAddress: string;
   pharmaAddressPlaceholder: string;
+  pharmaLocation: string;
+  pharmaLocationPlaceholder: string;
+  pharmaLocationRequired: string;
   pharmaEmail: string;
   pharmaEmailPlaceholder: string;
   pharmaStatus: string;
@@ -1316,7 +1319,6 @@ export interface Translations {
   reportSummaryTitle: string;
   reportNoData: string;
   reportDays: string;
-  reportPeriodAll: string;
   reportPeriodMonthly: string;
   reportPeriodCustom: string;
   reportDateFrom: string;
@@ -1445,6 +1447,7 @@ export interface Translations {
   invoiceSelectPurchaseOrder: string;
   invoiceSignedBy: string;
   invoiceSelectSignedBy: string;
+  invoiceSignedByRequired: string;
   invoiceDescription: string;
   invoiceDescriptionPlaceholder: string;
   invoicePaymentStatus: string;
@@ -2182,6 +2185,9 @@ export const translations: Record<Language, Translations> = {
     pharmaPhonePlaceholder: "+62 xxx xxxx xxxx",
     pharmaAddress: "Address",
     pharmaAddressPlaceholder: "Full address",
+    pharmaLocation: "Location",
+    pharmaLocationPlaceholder: "e.g. Jakarta Selatan",
+    pharmaLocationRequired: "Location is required",
     pharmaEmail: "Email",
     pharmaEmailPlaceholder: "pharmacy@example.com",
     pharmaStatus: "Status",
@@ -2389,7 +2395,8 @@ export const translations: Record<Language, Translations> = {
     invoicePurchaseOrder: "Purchase Order",
     invoiceSelectPurchaseOrder: "Link to a purchase order (optional)",
     invoiceSignedBy: "Signed By",
-    invoiceSelectSignedBy: "Select a signer (optional)",
+    invoiceSelectSignedBy: "Select a signer",
+    invoiceSignedByRequired: "Signer is required",
     invoiceDescription: "Notes",
     invoiceDescriptionPlaceholder: "Additional notes about this invoice...",
     invoicePaymentStatus: "Payment Status",
@@ -2917,8 +2924,7 @@ export const translations: Record<Language, Translations> = {
     reportSummaryTitle: "Summary",
     reportNoData: "No data available",
     reportDays: "days",
-    reportPeriodAll: "All Time",
-    reportPeriodMonthly: "This Month",
+    reportPeriodMonthly: "Current Month",
     reportPeriodCustom: "Custom",
     reportDateFrom: "From date",
     reportDateTo: "To date",
@@ -3671,6 +3677,9 @@ export const translations: Record<Language, Translations> = {
     pharmaPhonePlaceholder: "08 xxx xxxx xxxx",
     pharmaAddress: "Alamat",
     pharmaAddressPlaceholder: "Alamat lengkap",
+    pharmaLocation: "Lokasi",
+    pharmaLocationPlaceholder: "mis. Jakarta Selatan",
+    pharmaLocationRequired: "Lokasi wajib diisi",
     pharmaEmail: "Email",
     pharmaEmailPlaceholder: "apotek@contoh.com",
     pharmaStatus: "Status",
@@ -3878,7 +3887,8 @@ export const translations: Record<Language, Translations> = {
     invoicePurchaseOrder: "Pesanan Pembelian",
     invoiceSelectPurchaseOrder: "Tautkan ke pesanan pembelian (opsional)",
     invoiceSignedBy: "Ditandatangani Oleh",
-    invoiceSelectSignedBy: "Pilih penandatangan (opsional)",
+    invoiceSelectSignedBy: "Pilih penandatangan",
+    invoiceSignedByRequired: "Penandatangan wajib dipilih",
     invoiceDescription: "Catatan",
     invoiceDescriptionPlaceholder: "Catatan tambahan tentang faktur ini...",
     invoicePaymentStatus: "Status Pembayaran",
@@ -4406,7 +4416,6 @@ export const translations: Record<Language, Translations> = {
     reportSummaryTitle: "Ringkasan",
     reportNoData: "Tidak ada data tersedia",
     reportDays: "hari",
-    reportPeriodAll: "Semua",
     reportPeriodMonthly: "Bulan Ini",
     reportPeriodCustom: "Kustom",
     reportDateFrom: "Dari tanggal",

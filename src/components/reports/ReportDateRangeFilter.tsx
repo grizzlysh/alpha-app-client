@@ -17,7 +17,6 @@ interface ReportDateRangeFilterProps {
 type ModeOption = { value: ReportFilterMode; label: (t: Translations) => string };
 
 const MODE_OPTIONS: ModeOption[] = [
-  { value: "all", label: (t) => t.reportPeriodAll },
   { value: "monthly", label: (t) => t.reportPeriodMonthly },
   { value: "custom", label: (t) => t.reportPeriodCustom },
 ];

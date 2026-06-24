@@ -8,6 +8,7 @@ export interface PurchaseOrderPrintData {
   pharmacy: {
     name: string;
     address: string;
+    location: string;
     businessLicenseNumber: string;
   };
   headPharmacist: {

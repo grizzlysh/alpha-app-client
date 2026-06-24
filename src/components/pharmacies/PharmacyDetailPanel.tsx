@@ -176,6 +176,7 @@ export function PharmacyDetailPanel({
           <InfoPair label={t.pharmaPhone} value={pharmacy.phone} />
           <InfoPair label={t.pharmaEmail} value={pharmacy.email} />
           <InfoPair label={t.pharmaAddress} value={pharmacy.address} />
+          <InfoPair label={t.pharmaLocation} value={pharmacy.location} />
           <InfoPair label={t.pharmaCode} value={pharmacy.code} />
         </div>
 

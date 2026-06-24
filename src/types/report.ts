@@ -1,7 +1,7 @@
 // ── Shared ────────────────────────────────────────────────────
 
 export type ReportPeriod = "monthly";
-export type ReportFilterMode = "all" | "monthly" | "custom";
+export type ReportFilterMode = "monthly" | "custom";
 
 export interface ReportDateRangeParams {
   period?: ReportPeriod;

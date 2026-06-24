@@ -565,6 +565,7 @@ function UserCreateWizard({ onClose, onSuccess }: UserCreateWizardProps): JSX.El
       await createUser(payload);
 
       queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["users-dropdown"] });
       toast.success(t.userCreateSuccess);
       onSuccessRef.current();
     } catch (err) {
@@ -690,6 +691,7 @@ function UserEditDialog({ user, onClose, onSuccess }: UserEditDialogProps): JSX.
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["user", user.uuid] });
+      queryClient.invalidateQueries({ queryKey: ["users-dropdown"] });
       onSuccessRef.current();
     },
     onError: (err) => toast.error(getApiErrorMessage(err, language, t.unexpectedError)),

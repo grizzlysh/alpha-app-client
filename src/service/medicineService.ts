@@ -8,6 +8,15 @@ import type {
   UpdateMedicinePayload,
 } from "@/types/medicine";
 
+export async function getMedicine(
+  uuid: string
+): Promise<ApiResponse<Medicine>> {
+  const response = await axiosInstance.get<ApiResponse<Medicine>>(
+    `/medicines/${uuid}`
+  );
+  return response.data;
+}
+
 export async function getMedicines(
   params?: MedicineListParams
 ): Promise<ApiResponse<Medicine[]>> {

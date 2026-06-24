@@ -137,7 +137,7 @@ export interface InventoryAssetResponse {
   prevQuarterEndAsset: number;
   prevQuarterEndDate: string;
   delta: number;
-  deltaPercent: number | null;
+  deltaPercent: number;
 }
 
 // ── Section 8: Slow Movers ────────────────────────

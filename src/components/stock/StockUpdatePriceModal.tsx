@@ -87,6 +87,8 @@ export function StockUpdatePriceModal({
     mutation.mutate(values);
   }
 
+  const sellingPriceField = form.register("sellingPrice");
+
   return (
     <Dialog
       open
@@ -129,7 +131,11 @@ export function StockUpdatePriceModal({
                 min={0}
                 step={1}
                 placeholder={t.stockSellingPricePlaceholder}
-                {...form.register("sellingPrice")}
+                {...sellingPriceField}
+                onChange={(e) => {
+                  e.target.value = e.target.value.replace(/^0+(?=\d)/, "");
+                  sellingPriceField.onChange(e);
+                }}
                 className={cn(
                   form.formState.errors.sellingPrice &&
                     "border-destructive focus-visible:ring-destructive/30"

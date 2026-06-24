@@ -176,7 +176,7 @@ export function PosCartPanel({
                           type="text"
                           inputMode="numeric"
                           value={priceInput}
-                          onChange={(e) => setPriceInput(e.target.value.replace(/[^0-9]/g, ""))}
+                          onChange={(e) => setPriceInput(e.target.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""))}
                           onBlur={() => commitPriceEdit(index)}
                           onKeyDown={(e) => handlePriceKeyDown(e, index)}
                           className="w-24 rounded border border-primary bg-background px-1.5 py-0.5 text-xs text-foreground outline-none"

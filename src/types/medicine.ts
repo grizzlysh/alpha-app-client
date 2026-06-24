@@ -66,9 +66,9 @@ export interface Medicine {
   name: string;
   unit: string;
   status: "ACTIVE" | "INACTIVE";
-  medicineShape: { uuid: string; name: string } | null;
-  medicineType: { uuid: string; name: string } | null;
-  medicineClass: { uuid: string; name: string } | null;
+  medicineShape: { uuid: string; name: string };
+  medicineType: { uuid: string; name: string };
+  medicineClass: { uuid: string; name: string };
   ingredients: MedicineIngredient[];
   createdAt: string;
   updatedAt: string;
@@ -93,7 +93,6 @@ export interface CreateMedicinePayload {
   medicineClassUuid: string;
   unit: string;
   ingredients: string[];
-  status: "ACTIVE" | "INACTIVE";
 }
 
 export interface UpdateMedicinePayload {

@@ -45,6 +45,7 @@ function makeSchema(t: Translations, isEdit: boolean) {
     ),
     phone: z.string().trim().min(1, t.pharmaPhoneRequired).max(20),
     address: z.string().trim().min(1, t.pharmaAddressRequired).max(500),
+    location: z.string().trim().min(1, t.pharmaLocationRequired).max(200),
     email: z.string().trim().max(200).optional().or(z.literal("")),
   });
   if (!isEdit) return base;
@@ -59,6 +60,7 @@ interface FormValues {
   category: PharmacyCategory;
   phone: string;
   address: string;
+  location: string;
   email?: string;
   status?: RecordStatus;
 }
@@ -91,6 +93,7 @@ export function PharmacyFormModal({
       category: pharmacy?.category ?? undefined,
       phone: pharmacy?.phone ?? "",
       address: pharmacy?.address ?? "",
+      location: pharmacy?.location ?? "",
       email: pharmacy?.email ?? "",
       status: (pharmacy?.status === "ACTIVE" || pharmacy?.status === "INACTIVE")
         ? pharmacy.status
@@ -135,6 +138,7 @@ export function PharmacyFormModal({
         category: values.category,
         phone: values.phone,
         address: values.address,
+        location: values.location,
         email,
       });
     } else if (pharmacy) {
@@ -144,6 +148,7 @@ export function PharmacyFormModal({
       if (values.category !== pharmacy.category) payload.category = values.category;
       if (values.phone !== pharmacy.phone) payload.phone = values.phone;
       if (values.address !== pharmacy.address) payload.address = values.address;
+      if (values.location !== pharmacy.location) payload.location = values.location;
       if (email !== (pharmacy.email ?? undefined)) payload.email = email;
       if (values.status && values.status !== pharmacy.status) payload.status = values.status;
       updateMutation.mutate({ uuid: pharmacy.uuid, payload });
@@ -302,6 +307,29 @@ export function PharmacyFormModal({
                 />
                 {fieldError("address") && (
                   <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("address")}</p>
+                )}
+              </div>
+
+              {/* Location */}
+              <div className="space-y-1.5">
+                <Label htmlFor="pharma-location">
+                  {t.pharmaLocation}
+                  <span className="ml-0.5 text-destructive">*</span>
+                </Label>
+                <Controller
+                  name="location"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Input
+                      id="pharma-location"
+                      placeholder={t.pharmaLocationPlaceholder}
+                      {...field}
+                      className={cn(fieldError("location") && "border-destructive focus-visible:ring-destructive/30")}
+                    />
+                  )}
+                />
+                {fieldError("location") && (
+                  <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("location")}</p>
                 )}
               </div>
 

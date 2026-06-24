@@ -114,6 +114,7 @@ export function CustomerFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["customers-dropdown"] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -134,6 +135,7 @@ export function CustomerFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["customers-dropdown"] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);

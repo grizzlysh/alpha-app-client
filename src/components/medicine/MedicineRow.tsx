@@ -59,20 +59,12 @@ export function MedicineRow({
 
       {/* Shape — md+ */}
       <td className="hidden min-w-[120px] px-5 py-4 md:table-cell">
-        {medicine.medicineShape ? (
-          <span className="text-sm text-foreground">{medicine.medicineShape.name}</span>
-        ) : (
-          <span className="text-muted-foreground/40">—</span>
-        )}
+        <span className="text-sm text-foreground">{medicine.medicineShape.name}</span>
       </td>
 
       {/* Type — lg+ */}
       <td className="hidden min-w-[120px] px-5 py-4 lg:table-cell">
-        {medicine.medicineType ? (
-          <span className="text-sm text-foreground">{medicine.medicineType.name}</span>
-        ) : (
-          <span className="text-muted-foreground/40">—</span>
-        )}
+        <span className="text-sm text-foreground">{medicine.medicineType.name}</span>
       </td>
 
       {/* Unit — sm+ */}

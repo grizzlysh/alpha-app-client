@@ -160,7 +160,7 @@ function EditItemForm({
             type="number"
             min={1}
             value={value.quantityPieces}
-            onChange={(e) => onChange({ ...value, quantityPieces: e.target.value })}
+            onChange={(e) => onChange({ ...value, quantityPieces: e.target.value.replace(/^0+(?=\d)/, "") })}
             disabled={isPending}
             className={cn("rounded-xl", errors.quantityPieces && "border-destructive")}
           />

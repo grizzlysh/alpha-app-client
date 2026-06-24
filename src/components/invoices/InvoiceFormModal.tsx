@@ -65,7 +65,7 @@ function makeSchema(t: Translations) {
     .object({
       distributorUuid: z.string().min(1, t.invoiceDistributorRequired),
       purchaseOrderUuid: z.string().optional(),
-      signedByUuid: z.string().optional(),
+      signedByUuid: z.string().min(1, t.invoiceSignedByRequired),
       invoiceNumber: z.string().min(1, t.invoiceNumberRequired),
       invoiceDate: z.string().min(1, t.invoiceDateRequired),
       dueDate: z.string().min(1, t.invoiceDueDateRequired),
@@ -181,9 +181,10 @@ function ItemForm({
   onAdd,
 }: ItemFormProps): JSX.Element {
   function handleQtyChange(field: "quantityBox" | "quantityPerBox", raw: string): void {
-    const next = { ...value, [field]: raw };
-    const box = Number(field === "quantityBox" ? raw : value.quantityBox);
-    const perBox = Number(field === "quantityPerBox" ? raw : value.quantityPerBox);
+    const trimmed = raw.replace(/^0+(?=\d)/, "");
+    const next = { ...value, [field]: trimmed };
+    const box = Number(field === "quantityBox" ? trimmed : value.quantityBox);
+    const perBox = Number(field === "quantityPerBox" ? trimmed : value.quantityPerBox);
     if (!isNaN(box) && !isNaN(perBox) && box > 0 && perBox > 0) {
       next.quantityPieces = String(box * perBox);
     }
@@ -292,7 +293,7 @@ function ItemForm({
             min={0}
             step="any"
             value={value.price}
-            onChange={(e) => { onChange({ ...value, price: e.target.value }); onClearError("price"); }}
+            onChange={(e) => { onChange({ ...value, price: e.target.value.replace(/^0+(?=\d)/, "") }); onClearError("price"); }}
             placeholder="0"
             disabled={isPending}
             className={cn("rounded-xl", errors.price && "border-destructive")}
@@ -330,7 +331,7 @@ function ItemForm({
             inputMode="decimal"
             value={value.discountPercentage}
             onChange={(e) => {
-              const raw = e.target.value;
+              const raw = e.target.value.replace(/^0+(?=\d)/, "");
               if (raw !== "" && !/^\d*\.?\d{0,2}$/.test(raw)) return;
               if (raw !== "" && !isNaN(parseFloat(raw)) && parseFloat(raw) > 100) {
                 onChange({ ...value, discountPercentage: "100" });
@@ -458,7 +459,7 @@ function ItemsTable({
                 <tr key={index} className={cn("transition-colors hover:bg-accent/40", isIncomplete && "bg-amber-50/60 dark:bg-amber-950/20")}>
                   <td className="px-3 py-2.5 text-xs text-muted-foreground">{index + 1}</td>
                   <td className="px-3 py-2.5">
-                    <p className="font-medium text-foreground">{med?.name ?? item.medicineUuid}</p>
+                    <p className="font-medium uppercase text-foreground">{med?.name ?? item.medicineUuid}</p>
                     <div className="flex items-center gap-1.5">
                       <p className="text-xs uppercase text-muted-foreground">{item.batchNumber || "—"}</p>
                       {isIncomplete && (
@@ -805,9 +806,7 @@ export function InvoiceFormModal({
     >
       <DialogContent
         className="flex max-h-[90vh] max-w-6xl flex-col gap-0 p-0"
-        onInteractOutside={(e) => {
-          if (isPending) e.preventDefault();
-        }}
+        onInteractOutside={(e) => e.preventDefault()}
       >
         {/* Header */}
         <DialogHeader className="flex flex-row items-center gap-3 space-y-0 border-b border-border px-6 py-4">
@@ -969,7 +968,10 @@ export function InvoiceFormModal({
 
             {/* Signed by */}
             <div className="space-y-1.5">
-              <Label>{t.invoiceSignedBy}</Label>
+              <Label>
+                {t.invoiceSignedBy}
+                <span className="ml-0.5 text-destructive">*</span>
+              </Label>
               <Controller
                 name="signedByUuid"
                 control={control}
@@ -983,6 +985,12 @@ export function InvoiceFormModal({
                   />
                 )}
               />
+              {errors.signedByUuid && (
+                <p className="flex items-center gap-1 text-xs text-destructive">
+                  <AlertCircle className="h-3 w-3 shrink-0" />
+                  {errors.signedByUuid.message}
+                </p>
+              )}
             </div>
 
             {/* Notes */}

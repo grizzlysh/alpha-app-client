@@ -51,15 +51,21 @@ export async function hydrateQueryCache(queryClient: QueryClient): Promise<void>
 export function subscribeQueryCache(queryClient: QueryClient): () => void {
   return queryClient.getQueryCache().subscribe((event) => {
     if (event.type !== "updated") return;
-    if (event.action.type !== "success") return;
 
-    const { queryKey, state } = event.query;
-    if (!shouldPersist(queryKey) || state.data === undefined) return;
+    const { queryKey } = event.query;
+    if (!shouldPersist(queryKey)) return;
 
-    void db.queryCache.put({
-      key: JSON.stringify(queryKey),
-      data: state.data,
-      updatedAt: Date.now(),
-    });
+    if (event.action.type === "success") {
+      const { state } = event.query;
+      if (state.data === undefined) return;
+      void db.queryCache.put({
+        key: JSON.stringify(queryKey),
+        data: state.data,
+        updatedAt: Date.now(),
+      });
+    } else if (event.action.type === "invalidate") {
+      // Remove stale entry from IndexedDB so the next page load fetches fresh data
+      void db.queryCache.delete(JSON.stringify(queryKey));
+    }
   });
 }

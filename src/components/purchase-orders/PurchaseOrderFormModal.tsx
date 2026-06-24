@@ -181,7 +181,7 @@ function ItemForm({
             type="number"
             min={1}
             value={value.quantity}
-            onChange={(e) => onChange({ ...value, quantity: e.target.value })}
+            onChange={(e) => onChange({ ...value, quantity: e.target.value.replace(/^0+(?=\d)/, "") })}
             disabled={isPending}
             className={cn(
               "rounded-xl",

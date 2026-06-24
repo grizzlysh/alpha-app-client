@@ -43,12 +43,19 @@ export interface UserDetail extends UserListItem {
   placements: PlacementItem[];
 }
 
+export interface UserDropdownItem {
+  uuid: string;
+  name: string;
+  email: string;
+}
+
 export interface UserListParams {
   page?: number;
   limit?: number;
   search?: string;
   status?: RecordStatus;
   platformRole?: PlatformRole;
+  pharmacyUuid?: string;
 }
 
 export interface PlacementGroup {

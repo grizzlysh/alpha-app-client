@@ -47,23 +47,37 @@ export function PurchaseOrderReceipt({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          marginBottom: "6px",
+          marginBottom: "8px",
         }}
       >
         {/* Pharmacist block */}
-        <div>
-          <div style={{ fontWeight: "bold" }}>{t.poReceiptPraktikApoteker}</div>
+        <div style={{ lineHeight: "1.5" }}>
+          <div
+            style={{
+              fontSize: "12px",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              color: "#222",
+            }}
+          >
+            {t.poReceiptPraktikApoteker}
+          </div>
           {headPharmacist && (
             <>
-              <div style={{ fontWeight: "bold" }}>{headPharmacist.name}</div>
-              <div>{headPharmacist.practiceLicenseNumber}</div>
+              <div style={{ fontSize: "18px", fontWeight: "bold", lineHeight: "1.3" }}>
+                {headPharmacist.name}
+              </div>
+              <div style={{ fontSize: "10px", color: "#444", marginTop: "1px" }}>
+                SIP: {headPharmacist.practiceLicenseNumber}
+              </div>
             </>
           )}
         </div>
 
         {/* Order reference */}
-        <div style={{ textAlign: "right", fontSize: "10px", color: "#333" }}>
-          <div>No. {order.orderNumber}</div>
+        <div style={{ textAlign: "right", fontSize: "10px", color: "#444", lineHeight: "1.6" }}>
+          <div style={{ fontWeight: "bold" }}>No. {order.orderNumber}</div>
           <div>{orderDate}</div>
         </div>
       </div>
@@ -71,28 +85,31 @@ export function PurchaseOrderReceipt({
       {/* Pharmacy block */}
       <div
         style={{
+          borderTop: "1px solid #000",
           borderBottom: "2px solid #000",
+          paddingTop: "7px",
           paddingBottom: "8px",
-          marginBottom: "10px",
+          marginBottom: "12px",
         }}
       >
         <div
           style={{
-            fontSize: "15px",
+            fontSize: "20px",
             fontWeight: "bold",
             letterSpacing: "1px",
-            marginBottom: "1px",
+            textTransform: "uppercase",
+            marginBottom: "2px",
           }}
         >
           {pharmacy?.name ?? ""}
         </div>
         {pharmacy?.businessLicenseNumber && (
-          <div style={{ fontSize: "10px" }}>
-            {pharmacy.businessLicenseNumber}
+          <div style={{ fontSize: "10px", color: "#333" }}>
+            SIA: {pharmacy.businessLicenseNumber}
           </div>
         )}
         {pharmacy?.address && (
-          <div style={{ fontSize: "10px", color: "#333" }}>
+          <div style={{ fontSize: "10px", color: "#555", marginTop: "1px" }}>
             {pharmacy.address}
           </div>
         )}
@@ -225,7 +242,7 @@ export function PurchaseOrderReceipt({
           style={{ textAlign: "center", fontSize: "11px", minWidth: "180px" }}
         >
           <div style={{ marginBottom: "2px" }}>
-            {".................."}, {sysdate}
+            {pharmacy?.location ?? ".................."}, {sysdate}
           </div>
           <div style={{ marginBottom: "48px" }}>
             {t.poReceiptPenanggungJawab}
@@ -233,7 +250,7 @@ export function PurchaseOrderReceipt({
           {headPharmacist && (
             <>
               <div style={{ fontWeight: "bold" }}>{headPharmacist.name}</div>
-              <div>{headPharmacist.practiceLicenseNumber}</div>
+              <div style={{ fontSize: "10px", color: "#444" }}>SIP: {headPharmacist.practiceLicenseNumber}</div>
             </>
           )}
         </div>

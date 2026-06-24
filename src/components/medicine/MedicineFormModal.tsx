@@ -123,6 +123,7 @@ export function MedicineFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["medicines"] });
+        queryClient.invalidateQueries({ queryKey: ["medicines-dropdown"] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -137,6 +138,7 @@ export function MedicineFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["medicines"] });
+        queryClient.invalidateQueries({ queryKey: ["medicines-dropdown"] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -157,7 +159,6 @@ export function MedicineFormModal({
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
         unit: values.unit,
-        status: values.status,
         ingredients,
       };
       createMutation.mutate(payload);
@@ -340,24 +341,26 @@ export function MedicineFormModal({
                 )}
               </div>
 
-              {/* Status */}
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="med-status">{t.medicineStatusLabel}</Label>
-                <Controller
-                  name="status"
-                  control={form.control}
-                  render={({ field }) => (
-                    <Combobox
-                      value={field.value ?? ""}
-                      onValueChange={field.onChange}
-                      options={[
-                        { value: "ACTIVE", label: t.medicineStatusActive },
-                        { value: "INACTIVE", label: t.medicineStatusInactive },
-                      ]}
-                    />
-                  )}
-                />
-              </div>
+              {/* Status — edit only */}
+              {mode === "edit" && (
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="med-status">{t.medicineStatusLabel}</Label>
+                  <Controller
+                    name="status"
+                    control={form.control}
+                    render={({ field }) => (
+                      <Combobox
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                        options={[
+                          { value: "ACTIVE", label: t.medicineStatusActive },
+                          { value: "INACTIVE", label: t.medicineStatusInactive },
+                        ]}
+                      />
+                    )}
+                  />
+                </div>
+              )}
 
               {/* Ingredients */}
               <div className="space-y-2 sm:col-span-2">

@@ -483,7 +483,7 @@ export function StockDisposalFormModal({
                         type="number"
                         min={1}
                         value={qty}
-                        onChange={(e) => setQty(e.target.value)}
+                        onChange={(e) => setQty(e.target.value.replace(/^0+(?=\d)/, ""))}
                         disabled={isPending || !isAddFormVisible}
                         className={cn(
                           "rounded-xl",
