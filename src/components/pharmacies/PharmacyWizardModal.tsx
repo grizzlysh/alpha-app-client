@@ -117,6 +117,7 @@ interface Step1Values {
   category: PharmacyCategory;
   phone: string;
   address: string;
+  location: string;
   email: string;
 }
 
@@ -135,6 +136,7 @@ function makeStep1Schema(t: Translations) {
     }),
     phone: z.string().trim().min(1, t.pharmaPhoneRequired).max(20),
     address: z.string().trim().min(1, t.pharmaAddressRequired).max(500),
+    location: z.string().trim().min(1, t.pharmaLocationRequired).max(200),
     email: z.string().trim().max(200).optional().or(z.literal("")),
   });
 }
@@ -240,6 +242,17 @@ function Step1Form({ t, defaultValues, onCancel, onNext }: Step1FormProps): JSX.
                 className={cn(err("address") && "border-destructive focus-visible:ring-destructive/30")} />
             )} />
             <FieldError message={err("address")} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="w-location">
+              {t.pharmaLocation}<span className="ml-0.5 text-destructive">*</span>
+            </Label>
+            <Controller name="location" control={form.control} render={({ field }) => (
+              <Input id="w-location" placeholder={t.pharmaLocationPlaceholder} {...field}
+                className={cn(err("location") && "border-destructive focus-visible:ring-destructive/30")} />
+            )} />
+            <FieldError message={err("location")} />
           </div>
 
           <div className="space-y-1.5">
@@ -380,7 +393,7 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
   const [step, setStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1Values>({
     name: "", code: "", category: undefined as unknown as PharmacyCategory,
-    phone: "", address: "", email: "",
+    phone: "", address: "", location: "", email: "",
   });
   const [step2Defaults] = useState<Step2Values>({ licenseNumber: "", validFrom: "", validUntil: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -401,6 +414,7 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
         category: step1Data.category,
         phone: step1Data.phone,
         address: step1Data.address,
+        location: step1Data.location,
         email: step1Data.email?.trim() || undefined,
       };
       const pharmaRes = await createPharmacy(pharmaPayload);
