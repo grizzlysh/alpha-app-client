@@ -116,7 +116,7 @@ interface DraggableCabinetProps {
   cabinet: InventoryCabinetNode;
   position: CanvasPosition;
   isSelected: boolean;
-  canvasRef: RefObject<HTMLDivElement>;
+  canvasRef: RefObject<HTMLDivElement | null>;
   onCabinetClick: (cabinet: InventoryCabinetNode) => void;
   onRotateRequest: (
     uuid: string,

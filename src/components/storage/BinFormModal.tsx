@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { useMemo, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -74,7 +75,7 @@ export function BinFormModal({
       name: bin?.name ?? "",
       code: bin?.code ?? "",
       description: bin?.description ?? "",
-      status: bin?.status ?? "ACTIVE",
+      status: (bin?.status === "INACTIVE" ? "INACTIVE" : "ACTIVE"),
     },
   });
 
@@ -151,7 +152,7 @@ export function BinFormModal({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit as SubmitHandler<FormValues>)}>
           <div className="px-6 py-5">
             <div className="grid gap-4 sm:grid-cols-2">
 

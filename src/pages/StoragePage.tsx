@@ -11,7 +11,6 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
-import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { StorageBreadcrumb } from "@/components/storage/StorageBreadcrumb";
 import { CabinetTable } from "@/components/storage/CabinetTable";
 import { CabinetFormModal } from "@/components/storage/CabinetFormModal";
@@ -25,7 +24,6 @@ import { BinDeleteModal } from "@/components/storage/BinDeleteModal";
 import { getCabinets, getShelves, getBins } from "@/service/storageService";
 import type { StorageCabinet, StorageShelf, StorageBin, StorageCrumb } from "@/types/storage";
 import type { RootState } from "@/store";
-import { toast } from "sonner";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

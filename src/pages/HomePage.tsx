@@ -110,6 +110,8 @@ export default function HomePage(): JSX.Element {
       statusOpen: t.statusOpen,
       statusClosed: t.statusClosed,
       lowStockWarning: t.lowStockWarning,
+      noHeadPharmacist: t.pharmaNoHeadPharmacist,
+      noHeadPharmacistHint: t.pharmaNoHeadPharmacistHint,
     }),
     [t]
   );
