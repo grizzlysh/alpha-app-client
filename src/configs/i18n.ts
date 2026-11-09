@@ -1961,6 +1961,11 @@ export interface Translations {
   inventoryBinsLabel: string;
   inventoryNoShelves: string;
   inventoryNoBins: string;
+  userTempPasswordTitle: string;
+  userTempPasswordDesc: string;
+  copy: string;
+  copied: string;
+  done: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -2793,7 +2798,7 @@ export const translations: Record<Language, Translations> = {
     userCreateSuccess: "User created successfully",
     userUpdateSuccess: "User updated successfully",
     userDeleteSuccess: "User deleted successfully",
-    userResetPasswordSuccess: "Password reset email sent",
+    userResetPasswordSuccess: "Password has been reset",
 
     userCreate: "Create User",
     userCreating: "Creating...",
@@ -3879,6 +3884,11 @@ export const translations: Record<Language, Translations> = {
     inventoryBinsLabel: "bins",
     inventoryNoShelves: "No shelves in this cabinet",
     inventoryNoBins: "No bins in this shelf",
+    userTempPasswordTitle: "Temporary password",
+    userTempPasswordDesc: "Give this password to the user. It is shown only once — they must change it on next login.",
+    copy: "Copy",
+    copied: "Copied",
+    done: "Done",
   },
   id: {
     appName: "PharmaCare",
@@ -4707,7 +4717,7 @@ export const translations: Record<Language, Translations> = {
     userCreateSuccess: "Pengguna berhasil dibuat",
     userUpdateSuccess: "Pengguna berhasil diperbarui",
     userDeleteSuccess: "Pengguna berhasil dihapus",
-    userResetPasswordSuccess: "Email reset kata sandi telah dikirim",
+    userResetPasswordSuccess: "Kata sandi berhasil direset",
 
     userCreate: "Buat Pengguna",
     userCreating: "Membuat...",
@@ -5793,6 +5803,11 @@ export const translations: Record<Language, Translations> = {
     inventoryBinsLabel: "tempat",
     inventoryNoShelves: "Tidak ada rak di lemari ini",
     inventoryNoBins: "Tidak ada tempat penyimpanan di rak ini",
+    userTempPasswordTitle: "Kata sandi sementara",
+    userTempPasswordDesc: "Berikan kata sandi ini ke pengguna. Hanya ditampilkan sekali — pengguna wajib menggantinya saat login berikutnya.",
+    copy: "Salin",
+    copied: "Tersalin",
+    done: "Selesai",
   },
 };
 
