@@ -7,7 +7,7 @@ export interface PrescriptionListItem {
   prescribedAt: string;
   status: PrescriptionStatus;
   createdAt: string;
-  patient: { uuid: string; name: string };
+  customer: { uuid: string; name: string };
   doctor: { uuid: string; name: string; licenseNumber: string | null } | null;
 }
 
@@ -16,7 +16,7 @@ export interface AvailablePrescriptionItem {
   prescriptionNumber: string | null;
   prescribedAt: string;
   status: PrescriptionStatus;
-  patient: { uuid: string; name: string };
+  customer: { uuid: string; name: string };
   doctor: { uuid: string; name: string } | null;
 }
 
@@ -40,7 +40,7 @@ export interface Prescription {
   status: PrescriptionStatus;
   createdAt: string;
   updatedAt: string;
-  patient: { uuid: string; name: string };
+  customer: { uuid: string; name: string };
   doctor: {
     uuid: string;
     name: string;
@@ -48,6 +48,8 @@ export interface Prescription {
     clinicName: string | null;
   } | null;
   sale: { uuid: string; saleNumber: string } | null;
+  /** The examination this prescription was written in, if any. */
+  medicalVisit: { uuid: string; visitDate: string; diagnosis: string | null } | null;
   details: PrescriptionDetail[];
 }
 
@@ -57,7 +59,7 @@ export interface PrescriptionListParams {
   search?: string;
   status?: PrescriptionStatus;
   doctorUuid?: string;
-  patientUuid?: string;
+  customerUuid?: string;
   dateFrom?: string;
   dateTo?: string;
   sortBy?: "prescribedAt" | "createdAt" | "updatedAt";
@@ -75,8 +77,9 @@ export interface PrescriptionItemPayload {
 }
 
 export interface CreatePrescriptionPayload {
-  patientUuid: string;
+  customerUuid: string;
   doctorUuid?: string;
+  medicalVisitUuid?: string;
   prescriptionNumber?: string;
   prescribedAt: string;
   notes?: string;

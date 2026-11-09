@@ -157,7 +157,7 @@ export default function PosPage(): JSX.Element {
         label: [
           p.prescriptionNumber ?? "No #",
           "·",
-          p.patient.name.toUpperCase(),
+          p.customer.name.toUpperCase(),
           p.doctor ? `(${toDoctorName(p.doctor.name)})` : "",
         ]
           .filter(Boolean)

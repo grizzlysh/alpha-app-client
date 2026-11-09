@@ -30,7 +30,7 @@ export async function getPrescriptionsQueue(): Promise<
 }
 
 export async function getAvailablePrescriptions(params?: {
-  patientUuid?: string;
+  customerUuid?: string;
 }): Promise<ApiResponse<AvailablePrescriptionItem[]>> {
   const response = await axiosInstance.get<ApiResponse<AvailablePrescriptionItem[]>>(
     "/prescriptions/available",

@@ -136,7 +136,7 @@ export function PosPrescriptionModal({
 
   function onSubmit(values: FormValues): void {
     createMutation.mutate({
-      patientUuid: patientUuid,
+      customerUuid: patientUuid,
       doctorUuid: values.doctorUuid || undefined,
       prescriptionNumber: values.prescriptionNumber || undefined,
       prescribedAt: values.prescribedAt,

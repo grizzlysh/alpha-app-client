@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/ui/combobox";
 import { DateInput } from "@/components/ui/date-input";
+import { FormSectionLabel } from "./FormSection";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { useLanguage } from "@/hooks/useLanguage";
 import { createVisit, updateVisit } from "@/service/medicalRecordService";
@@ -178,23 +179,21 @@ export function VisitFormModal({
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+    <Dialog open onOpenChange={(open) => !open && !isPending && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? t.medicalRecordVisitEdit : t.medicalRecordVisitAdd}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? t.medicalRecordVisitEdit : t.medicalRecordVisitAdd}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Visit date + doctor */}
-            <div className="grid gap-4 sm:grid-cols-2">
+          {/* One 4-column grid for every section so field edges line up. */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-4">
               <FormField
                 control={form.control}
                 name="visitDate"
                 render={({ field, fieldState }) => (
-                  <FormItem>
+                  <FormItem className="sm:col-span-2">
                     <FormLabel>{t.medicalRecordVisitDate}</FormLabel>
                     <FormControl>
                       <DateInput
@@ -213,7 +212,7 @@ export function VisitFormModal({
                 control={form.control}
                 name="doctorUuid"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="sm:col-span-2">
                     <FormLabel>{t.medicalRecordVisitDoctor}</FormLabel>
                     <FormControl>
                       <Combobox
@@ -228,133 +227,40 @@ export function VisitFormModal({
                   </FormItem>
                 )}
               />
+                <FormField
+                  control={form.control}
+                  name="chiefComplaint"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-4">
+                      <FormLabel>{t.medicalRecordVisitChiefComplaint}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder={t.medicalRecordVisitChiefComplaintPlaceholder} rows={2} className="resize-none rounded-xl" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
             </div>
 
-            {/* Chief Complaint */}
-            <FormField
-              control={form.control}
-              name="chiefComplaint"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.medicalRecordVisitChiefComplaint}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t.medicalRecordVisitChiefComplaintPlaceholder}
-                      rows={2}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Diagnosis */}
-            <FormField
-              control={form.control}
-              name="diagnosis"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.medicalRecordVisitDiagnosis}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t.medicalRecordVisitDiagnosisPlaceholder}
-                      rows={2}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Notes */}
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.medicalRecordVisitNotes}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t.medicalRecordVisitNotesPlaceholder}
-                      rows={2}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Vital Signs */}
-            <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-4">
-              <p className="text-sm font-semibold text-foreground">
-                {t.medicalRecordVisitVitals}
-              </p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <FormField
-                  control={form.control}
-                  name="weightKg"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t.medicalRecordVisitWeight}</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                        <Input
-                          className="rounded-xl pr-14"
-                          {...field}
-                          type="number"
-                          step="0.1"
-                          placeholder={t.medicalRecordVisitWeightPlaceholder}
-                        />
-                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">kg</span>
-                      </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="heightCm"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t.medicalRecordVisitHeight}</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                        <Input
-                          className="rounded-xl pr-14"
-                          {...field}
-                          type="number"
-                          step="0.1"
-                          placeholder={t.medicalRecordVisitHeightPlaceholder}
-                        />
-                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">cm</span>
-                      </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <div className="space-y-4">
+              <FormSectionLabel>{t.medicalRecordVisitSectionExam}</FormSectionLabel>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <FormField
                   control={form.control}
                   name="bloodPressure"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">{t.medicalRecordVisitBloodPressure}</FormLabel>
+                      <FormLabel>{t.medicalRecordVisitBloodPressure}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                        <Input
-                          className="rounded-xl pr-14"
-                          {...field}
-                          placeholder={t.medicalRecordVisitBloodPressurePlaceholder}
-                        />
-                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">mmHg</span>
-                      </div>
+                          <Input
+                            {...field}
+                            inputMode="text"
+                            className="h-10 rounded-xl pr-14"
+                            placeholder={t.medicalRecordVisitBloodPressurePlaceholder}
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">mmHg</span>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -365,18 +271,19 @@ export function VisitFormModal({
                   name="temperatureCelsius"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">{t.medicalRecordVisitTemperature}</FormLabel>
+                      <FormLabel>{t.medicalRecordVisitTemperature}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                        <Input
-                          className="rounded-xl pr-14"
-                          {...field}
-                          type="number"
-                          step="0.1"
-                          placeholder={t.medicalRecordVisitTemperaturePlaceholder}
-                        />
-                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">°C</span>
-                      </div>
+                          <Input
+                            {...field}
+                            type="number"
+                            step="0.1"
+                            inputMode="decimal"
+                            className="h-10 rounded-xl pr-14"
+                            placeholder={t.medicalRecordVisitTemperaturePlaceholder}
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">°C</span>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -387,17 +294,96 @@ export function VisitFormModal({
                   name="pulsePerMinute"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">{t.medicalRecordVisitPulse}</FormLabel>
+                      <FormLabel>{t.medicalRecordVisitPulse}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                        <Input
-                          className="rounded-xl pr-14"
-                          {...field}
-                          type="number"
-                          placeholder={t.medicalRecordVisitPulsePlaceholder}
-                        />
-                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">bpm</span>
-                      </div>
+                          <Input
+                            {...field}
+                            type="number"
+                            inputMode="decimal"
+                            className="h-10 rounded-xl pr-14"
+                            placeholder={t.medicalRecordVisitPulsePlaceholder}
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">bpm</span>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weightKg"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.medicalRecordVisitWeight}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type="number"
+                            step="0.1"
+                            inputMode="decimal"
+                            className="h-10 rounded-xl pr-14"
+                            placeholder={t.medicalRecordVisitWeightPlaceholder}
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">kg</span>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="heightCm"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.medicalRecordVisitHeight}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type="number"
+                            step="0.1"
+                            inputMode="decimal"
+                            className="h-10 rounded-xl pr-14"
+                            placeholder={t.medicalRecordVisitHeightPlaceholder}
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">cm</span>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <FormSectionLabel>{t.medicalRecordVisitSectionAssessment}</FormSectionLabel>
+              <div className="grid gap-4 sm:grid-cols-4">
+                <FormField
+                  control={form.control}
+                  name="diagnosis"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-4">
+                      <FormLabel>{t.medicalRecordVisitDiagnosis}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder={t.medicalRecordVisitDiagnosisPlaceholder} rows={2} className="resize-none rounded-xl" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-4">
+                      <FormLabel>{t.medicalRecordVisitNotesLabel}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder={t.medicalRecordVisitNotesPlaceholder} rows={2} className="resize-none rounded-xl" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -407,15 +393,10 @@ export function VisitFormModal({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={isPending}
-              >
+              <Button type="button" variant="outline" onClick={onClose} disabled={isPending} className="rounded-xl">
                 {t.cancel}
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending} className="rounded-xl">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

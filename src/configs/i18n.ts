@@ -2015,6 +2015,21 @@ export interface Translations {
   placementHeadPharmacist: string;
   placementHeadPharmacistDesc: string;
   placementHeadPharmacistForced: string;
+  medicalRecordAllergyEdit: string;
+  medicalRecordAllergyUpdateSuccess: string;
+  medicalRecordLastVisit: string;
+  medicalRecordNoKnownAllergies: string;
+  medicalRecordNotSet: string;
+  medicalRecordManage: string;
+  medicalRecordVisitSectionExam: string;
+  medicalRecordVisitSectionAssessment: string;
+  medicalRecordVisitNotesLabel: string;
+  medicalRecordVisitCreatePrescription: string;
+  medicalRecordVisitNoPrescription: string;
+  medicalRecordVisitOpenPrescription: string;
+  medicalRecordVisitPrescriptionNoNumber: string;
+  prescriptionFromVisit: string;
+  medicalRecordPatientInfo: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -3987,6 +4002,21 @@ export const translations: Record<Language, Translations> = {
     placementHeadPharmacist: "Head Pharmacist",
     placementHeadPharmacistDesc: "Responsible pharmacist for this pharmacy (one per pharmacy, needs an active license). The owner can be the Head Pharmacist too.",
     placementHeadPharmacistForced: "Always on for the Head Pharmacist role",
+    medicalRecordAllergyEdit: "Edit allergy",
+    medicalRecordAllergyUpdateSuccess: "Allergy updated",
+    medicalRecordLastVisit: "Last visit",
+    medicalRecordNoKnownAllergies: "No known allergies",
+    medicalRecordNotSet: "Not set",
+    medicalRecordManage: "Manage",
+    medicalRecordVisitSectionExam: "Examination",
+    medicalRecordVisitSectionAssessment: "Diagnosis & plan",
+    medicalRecordVisitNotesLabel: "Notes / treatment",
+    medicalRecordVisitCreatePrescription: "Write prescription",
+    medicalRecordVisitNoPrescription: "No prescription",
+    medicalRecordVisitOpenPrescription: "Open prescription",
+    medicalRecordVisitPrescriptionNoNumber: "Prescription",
+    prescriptionFromVisit: "From visit",
+    medicalRecordPatientInfo: "Patient data",
   },
   id: {
     appName: "PharmaCare",
@@ -5955,6 +5985,21 @@ export const translations: Record<Language, Translations> = {
     placementHeadPharmacist: "Head Pharmacist",
     placementHeadPharmacistDesc: "Apoteker yang bertanggung jawab atas apotek ini (satu per apotek, wajib izin praktik aktif). Owner juga boleh menjadi Head Pharmacist.",
     placementHeadPharmacistForced: "Selalu aktif untuk peran Head Pharmacist",
+    medicalRecordAllergyEdit: "Ubah alergi",
+    medicalRecordAllergyUpdateSuccess: "Data alergi berhasil diperbarui",
+    medicalRecordLastVisit: "Kunjungan terakhir",
+    medicalRecordNoKnownAllergies: "Tidak ada alergi tercatat",
+    medicalRecordNotSet: "Belum diisi",
+    medicalRecordManage: "Kelola",
+    medicalRecordVisitSectionExam: "Pemeriksaan",
+    medicalRecordVisitSectionAssessment: "Diagnosis & tindakan",
+    medicalRecordVisitNotesLabel: "Catatan / tindakan",
+    medicalRecordVisitCreatePrescription: "Buat resep",
+    medicalRecordVisitNoPrescription: "Tanpa resep",
+    medicalRecordVisitOpenPrescription: "Lihat resep",
+    medicalRecordVisitPrescriptionNoNumber: "Resep",
+    prescriptionFromVisit: "Dari kunjungan",
+    medicalRecordPatientInfo: "Data pasien",
   },
 };
 

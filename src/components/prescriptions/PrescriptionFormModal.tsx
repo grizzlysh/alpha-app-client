@@ -5,7 +5,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { FileText, Loader2, AlertCircle, Plus, Trash2 } from "lucide-react";
+import { FileText, Loader2, AlertCircle, Plus, Trash2, Stethoscope } from "lucide-react";
 
 import { cn } from "@/utils/cn";
 import { toDoctorName } from "@/utils/stringHelpers";
@@ -152,10 +152,21 @@ function ItemsTable({ items, isPending, t, onRemove }: ItemsTableProps): JSX.Ele
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+/** Writing a prescription out of a medical visit: patient is fixed, doctor pre-filled. */
+export interface PrescriptionVisitPrefill {
+  customerUuid: string;
+  customerName: string;
+  doctorUuid?: string;
+  medicalVisitUuid: string;
+  /** e.g. "5 Mar 2026 · Tension headache" */
+  visitLabel: string;
+}
+
 export interface PrescriptionFormModalProps {
   mode: "create" | "edit";
   prescription?: PrescriptionListItem & { fullData?: Prescription };
   initialData?: Prescription;
+  fromVisit?: PrescriptionVisitPrefill;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -163,6 +174,7 @@ export interface PrescriptionFormModalProps {
 export function PrescriptionFormModal({
   mode,
   initialData,
+  fromVisit,
   onClose,
   onSuccess,
 }: PrescriptionFormModalProps): JSX.Element {
@@ -220,8 +232,8 @@ export function PrescriptionFormModal({
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      patientUuid: initialData?.patient?.uuid ?? "",
-      doctorUuid: initialData?.doctor?.uuid ?? "",
+      patientUuid: initialData?.customer?.uuid ?? fromVisit?.customerUuid ?? "",
+      doctorUuid: initialData?.doctor?.uuid ?? fromVisit?.doctorUuid ?? "",
       prescribedAt: initialData?.prescribedAt
         ? initialData.prescribedAt.split("T")[0]
         : todayIso,
@@ -269,6 +281,7 @@ export function PrescriptionFormModal({
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["prescriptions"] });
+        if (fromVisit) queryClient.invalidateQueries({ queryKey: ["medical-visits", fromVisit.customerUuid] });
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -308,8 +321,9 @@ export function PrescriptionFormModal({
   function onSubmit(values: FormValues): void {
     if (mode === "create") {
       createMutation.mutate({
-        patientUuid: values.patientUuid,
+        customerUuid: values.patientUuid,
         doctorUuid: values.doctorUuid || undefined,
+        medicalVisitUuid: fromVisit?.medicalVisitUuid,
         prescribedAt: values.prescribedAt,
         notes: values.notes || undefined,
         items: values.items.map((item) => ({
@@ -349,6 +363,13 @@ export function PrescriptionFormModal({
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
+            {fromVisit && (
+              <div className="mb-4 flex items-center gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2 text-sm">
+                <Stethoscope className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                <span className="text-muted-foreground">{t.prescriptionFromVisit}:</span>
+                <span className="truncate font-medium text-foreground">{fromVisit.visitLabel}</span>
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Patient */}
               <div className="space-y-1.5 sm:col-span-2">
@@ -363,10 +384,14 @@ export function PrescriptionFormModal({
                     <Combobox
                       value={field.value}
                       onValueChange={field.onChange}
-                      options={patientOptions}
+                      options={
+                        fromVisit && !patientOptions.some((o) => o.value === fromVisit.customerUuid)
+                          ? [{ value: fromVisit.customerUuid, label: fromVisit.customerName }, ...patientOptions]
+                          : patientOptions
+                      }
                       placeholder={t.prescriptionPatientPlaceholder}
                       searchPlaceholder={t.prescriptionPatientPlaceholder}
-                      disabled={mode === "edit"}
+                      disabled={mode === "edit" || Boolean(fromVisit)}
                       className={cn(
                         "h-10 w-full rounded-xl",
                         form.formState.errors.patientUuid && "border-destructive"

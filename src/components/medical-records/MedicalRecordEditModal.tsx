@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { FormSectionLabel } from "./FormSection";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { useLanguage } from "@/hooks/useLanguage";
 import { updateMedicalRecord } from "@/service/medicalRecordService";
@@ -96,13 +97,14 @@ export function MedicalRecordEditModal({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{t.medicalRecordEdit}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="bloodType"
@@ -112,6 +114,7 @@ export function MedicalRecordEditModal({
                   <FormControl>
                     <Input
                       {...field}
+                      className="h-10 rounded-xl"
                       placeholder={t.medicalRecordBloodTypePlaceholder}
                     />
                   </FormControl>
@@ -119,23 +122,22 @@ export function MedicalRecordEditModal({
                 </FormItem>
               )}
             />
+            </div>
 
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-foreground">
-                {t.medicalRecordEmergencyContact}
-              </p>
-              <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-3">
+            {/* Emergency contact: a plain section label, fields on the same grid as above */}
+            <div className="space-y-3 pt-1">
+              <FormSectionLabel>{t.medicalRecordEmergencyContact}</FormSectionLabel>
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="emergencyContactName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs text-muted-foreground">
-                        {t.medicalRecordEmergencyContactName}
-                      </FormLabel>
+                      <FormLabel>{t.medicalRecordEmergencyContactName}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
+                          className="h-10 rounded-xl"
                           placeholder={t.medicalRecordEmergencyContactNamePlaceholder}
                         />
                       </FormControl>
@@ -148,12 +150,13 @@ export function MedicalRecordEditModal({
                   name="emergencyContactPhone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs text-muted-foreground">
-                        {t.medicalRecordEmergencyContactPhone}
-                      </FormLabel>
+                      <FormLabel>{t.medicalRecordEmergencyContactPhone}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
+                          type="tel"
+                          inputMode="tel"
+                          className="h-10 rounded-xl"
                           placeholder={t.medicalRecordEmergencyContactPhonePlaceholder}
                         />
                       </FormControl>
@@ -170,10 +173,11 @@ export function MedicalRecordEditModal({
                 variant="outline"
                 onClick={onClose}
                 disabled={isPending}
+                className="rounded-xl"
               >
                 {t.cancel}
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending} className="rounded-xl">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

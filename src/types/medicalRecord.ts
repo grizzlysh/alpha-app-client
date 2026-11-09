@@ -35,6 +35,7 @@ export interface MedicalVisitDoctor {
 export interface MedicalVisitPrescription {
   uuid: string;
   prescriptionNumber: string | null;
+  status: "PENDING" | "DISPENSED" | "PARTIAL" | "CANCELLED" | "EXPIRED";
 }
 
 export interface MedicalVisit {
@@ -67,6 +68,8 @@ export interface CreateAllergyPayload {
   severity: AllergySeverity;
   notes?: string;
 }
+
+export type UpdateAllergyPayload = Partial<CreateAllergyPayload>;
 
 export interface CreateVisitPayload {
   visitDate: string;

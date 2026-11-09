@@ -5,6 +5,7 @@ import type {
   MedicalVisit,
   UpdateMedicalRecordPayload,
   CreateAllergyPayload,
+  UpdateAllergyPayload,
   Allergy,
   CreateVisitPayload,
   UpdateVisitPayload,
@@ -37,6 +38,18 @@ export async function addAllergy(
 ): Promise<ApiResponse<Allergy>> {
   const response = await axiosInstance.post<ApiResponse<Allergy>>(
     `/medical-records/${customerUuid}/allergies`,
+    payload
+  );
+  return response.data;
+}
+
+export async function updateAllergy(
+  customerUuid: string,
+  allergyUuid: string,
+  payload: UpdateAllergyPayload
+): Promise<ApiResponse<Allergy>> {
+  const response = await axiosInstance.put<ApiResponse<Allergy>>(
+    `/medical-records/${customerUuid}/allergies/${allergyUuid}`,
     payload
   );
   return response.data;

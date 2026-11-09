@@ -167,7 +167,7 @@ export function PrescriptionDetailsPanel({
         <div className="px-5 py-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-lg font-bold uppercase text-foreground">{prescription.patient.name}</p>
+              <p className="text-lg font-bold uppercase text-foreground">{prescription.customer.name}</p>
               {prescription.prescriptionNumber && (
                 <p className="mt-0.5 text-sm text-muted-foreground">{prescription.prescriptionNumber}</p>
               )}
@@ -185,6 +185,12 @@ export function PrescriptionDetailsPanel({
             value={prescription.doctor != null ? toDoctorName(prescription.doctor.name) : undefined}
           />
           <InfoPair label={t.prescriptionPrescribedAt} value={formatDate(prescription.prescribedAt)} />
+          {full?.medicalVisit && (
+            <InfoPair
+              label={t.prescriptionFromVisit}
+              value={[formatDate(full.medicalVisit.visitDate), full.medicalVisit.diagnosis].filter(Boolean).join(" · ")}
+            />
+          )}
           {full?.notes && (
             <InfoPair label={t.prescriptionNotes} value={full.notes} />
           )}

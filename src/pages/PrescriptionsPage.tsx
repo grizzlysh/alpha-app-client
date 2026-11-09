@@ -1,5 +1,6 @@
 import type { JSX } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -53,6 +54,23 @@ export default function PrescriptionsPage(): JSX.Element {
   const [modal, setModal] = useState<ModalState>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [filterStatus, setFilterStatus] = useState<"all" | "PENDING" | "DISPENSED" | "PARTIAL" | "CANCELLED" | "EXPIRED">("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Deep link (e.g. from a medical visit): /prescriptions?open=<uuid>
+  const openUuid = searchParams.get("open");
+  useEffect(() => {
+    if (!openUuid) return;
+    let cancelled = false;
+    getPrescription(openUuid)
+      .then((res) => {
+        if (!cancelled && res.success && res.data) setModal({ mode: "detail", prescription: res.data });
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setSearchParams((prev) => { prev.delete("open"); return prev; }, { replace: true });
+      });
+    return () => { cancelled = true; };
+  }, [openUuid, setSearchParams]);
 
   // ── Data queries ────────────────────────────────────────────────────────────
 
@@ -331,7 +349,7 @@ function QueueView({ queue, isLoading, t, onOpenDetail }: QueueViewProps): JSX.E
 
           {/* Info */}
           <div className="min-w-0 flex-1">
-            <p className="truncate font-medium uppercase text-foreground">{p.patient.name}</p>
+            <p className="truncate font-medium uppercase text-foreground">{p.customer.name}</p>
             <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               {p.prescriptionNumber && <span>{p.prescriptionNumber}</span>}
               {p.doctor && <span>{toDoctorName(p.doctor.name)}</span>}

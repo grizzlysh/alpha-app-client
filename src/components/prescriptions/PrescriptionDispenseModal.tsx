@@ -436,7 +436,7 @@ export function PrescriptionDispenseModal({
           </div>
           <div className="flex-1">
             <DialogTitle className="text-base">{t.prescriptionDispenseTitle}</DialogTitle>
-            <p className="text-xs text-muted-foreground">{prescription.patient.name}</p>
+            <p className="text-xs text-muted-foreground">{prescription.customer.name}</p>
           </div>
           {/* Step indicator */}
           <div className="flex items-center gap-1.5">

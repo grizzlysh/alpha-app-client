@@ -24,77 +24,126 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Combobox } from "@/components/ui/combobox";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { useLanguage } from "@/hooks/useLanguage";
-import { addAllergy } from "@/service/medicalRecordService";
+import { addAllergy, updateAllergy } from "@/service/medicalRecordService";
 import { getApiErrorMessage } from "@/utils/apiError";
-import type { AllergyType, AllergySeverity, CreateAllergyPayload } from "@/types/medicalRecord";
+import { cn } from "@/utils/cn";
+import type { Allergy, AllergyType, AllergySeverity, CreateAllergyPayload } from "@/types/medicalRecord";
+import { SEVERITY_DOT } from "./severity";
 
-const schema = z.object({
-  allergenName: z.string().trim().min(1, "required"),
-  allergenType: z.enum(["MEDICINE", "FOOD", "ENVIRONMENT", "OTHER"]),
-  reaction: z.string().trim().optional(),
-  severity: z.enum(["MILD", "MODERATE", "SEVERE"]),
-  notes: z.string().trim().optional(),
-});
-
-type FormValues = z.infer<typeof schema>;
+const TYPES: AllergyType[] = ["MEDICINE", "FOOD", "ENVIRONMENT", "OTHER"];
+const SEVERITIES: AllergySeverity[] = ["MILD", "MODERATE", "SEVERE"];
 
 export interface AllergyFormModalProps {
   customerUuid: string;
+  /** Present when editing. */
+  allergy?: Allergy;
   onClose: () => void;
   onSuccess: () => void;
 }
 
+/** A row of equal-width toggle buttons: fits short enum choices better than a dropdown. */
+function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+  invalid,
+}: {
+  value: T | undefined;
+  options: { value: T; label: string; dot?: string }[];
+  onChange: (v: T) => void;
+  invalid?: boolean;
+}): JSX.Element {
+  return (
+    <div
+      role="radiogroup"
+      className={cn(
+        "grid h-10 gap-1 rounded-xl border bg-muted/40 p-1",
+        invalid ? "border-destructive" : "border-input"
+      )}
+      style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+    >
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(o.value)}
+            className={cn(
+              "flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-medium transition-colors",
+              active
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {o.dot && <span className={cn("h-2 w-2 shrink-0 rounded-full", o.dot)} aria-hidden />}
+            <span className="truncate">{o.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function AllergyFormModal({
   customerUuid,
+  allergy,
   onClose,
   onSuccess,
 }: AllergyFormModalProps): JSX.Element {
   const { t, language } = useLanguage();
-
-  const allergyTypeOptions = [
-    { value: "MEDICINE", label: t.medicalRecordAllergyTypeMedicine },
-    { value: "FOOD", label: t.medicalRecordAllergyTypeFood },
-    { value: "ENVIRONMENT", label: t.medicalRecordAllergyTypeEnvironment },
-    { value: "OTHER", label: t.medicalRecordAllergyTypeOther },
-  ];
-
-  const severityOptions = [
-    { value: "MILD", label: t.medicalRecordAllergySeverityMild },
-    { value: "MODERATE", label: t.medicalRecordAllergySeverityModerate },
-    { value: "SEVERE", label: t.medicalRecordAllergySeveritySevere },
-  ];
-
   const queryClient = useQueryClient();
+  const isEdit = Boolean(allergy);
+
+  const typeLabels: Record<AllergyType, string> = {
+    MEDICINE: t.medicalRecordAllergyTypeMedicine,
+    FOOD: t.medicalRecordAllergyTypeFood,
+    ENVIRONMENT: t.medicalRecordAllergyTypeEnvironment,
+    OTHER: t.medicalRecordAllergyTypeOther,
+  };
+  const severityLabels: Record<AllergySeverity, string> = {
+    MILD: t.medicalRecordAllergySeverityMild,
+    MODERATE: t.medicalRecordAllergySeverityModerate,
+    SEVERE: t.medicalRecordAllergySeveritySevere,
+  };
+
+  const schema = z.object({
+    allergenName: z.string().trim().min(1, t.medicalRecordAllergyNameRequired),
+    allergenType: z.enum(["MEDICINE", "FOOD", "ENVIRONMENT", "OTHER"], {
+      required_error: t.medicalRecordAllergyTypeRequired,
+    }),
+    severity: z.enum(["MILD", "MODERATE", "SEVERE"], {
+      required_error: t.medicalRecordAllergySeverityRequired,
+    }),
+    reaction: z.string().trim().optional(),
+    notes: z.string().trim().optional(),
+  });
+  type FormValues = z.infer<typeof schema>;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(
-      schema.extend({
-        allergenName: z.string().trim().min(1, t.medicalRecordAllergyNameRequired),
-        allergenType: z.enum(["MEDICINE", "FOOD", "ENVIRONMENT", "OTHER"], {
-          required_error: t.medicalRecordAllergyTypeRequired,
-        }),
-        severity: z.enum(["MILD", "MODERATE", "SEVERE"], {
-          required_error: t.medicalRecordAllergySeverityRequired,
-        }),
-      })
-    ),
+    resolver: zodResolver(schema),
     defaultValues: {
-      allergenName: "",
-      reaction: "",
-      notes: "",
+      allergenName: allergy?.allergenName ?? "",
+      allergenType: allergy?.allergenType ?? "MEDICINE",
+      severity: allergy?.severity,
+      reaction: allergy?.reaction ?? "",
+      notes: allergy?.notes ?? "",
     },
   });
 
   const { mutate, isPending } = useMutation({
     mutationFn: (payload: CreateAllergyPayload) =>
-      addAllergy(customerUuid, payload),
+      allergy ? updateAllergy(customerUuid, allergy.uuid, payload) : addAllergy(customerUuid, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["medical-record", customerUuid] });
       toast.success(
-        <LiveToastMessage getMessage={(t) => t.medicalRecordAllergyAddSuccess} />
+        <LiveToastMessage
+          getMessage={(t) => (isEdit ? t.medicalRecordAllergyUpdateSuccess : t.medicalRecordAllergyAddSuccess)}
+        />
       );
       onSuccess();
     },
@@ -106,18 +155,19 @@ export function AllergyFormModal({
   function onSubmit(values: FormValues): void {
     mutate({
       allergenName: values.allergenName,
-      allergenType: values.allergenType as AllergyType,
-      reaction: values.reaction || undefined,
-      severity: values.severity as AllergySeverity,
-      notes: values.notes || undefined,
+      allergenType: values.allergenType,
+      severity: values.severity,
+      // On edit an empty string clears the field; on create it's simply omitted.
+      reaction: isEdit ? values.reaction ?? "" : values.reaction || undefined,
+      notes: isEdit ? values.notes ?? "" : values.notes || undefined,
     });
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
+    <Dialog open onOpenChange={(open) => !open && !isPending && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{t.medicalRecordAllergyAdd}</DialogTitle>
+          <DialogTitle>{isEdit ? t.medicalRecordAllergyEdit : t.medicalRecordAllergyAdd}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -129,54 +179,50 @@ export function AllergyFormModal({
                 <FormItem>
                   <FormLabel>{t.medicalRecordAllergyName}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder={t.medicalRecordAllergyNamePlaceholder} />
+                    <Input {...field} autoFocus placeholder={t.medicalRecordAllergyNamePlaceholder} className="h-10 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="allergenType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.medicalRecordAllergyType}</FormLabel>
-                    <FormControl>
-                      <Combobox
-                        value={field.value ?? ""}
-                        onValueChange={field.onChange}
-                        options={allergyTypeOptions}
-                        placeholder={t.medicalRecordAllergyType}
-                        className="h-10 w-full rounded-xl text-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="allergenType"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>{t.medicalRecordAllergyType}</FormLabel>
+                  <FormControl>
+                    <Segmented
+                      value={field.value}
+                      onChange={field.onChange}
+                      invalid={!!fieldState.error}
+                      options={TYPES.map((v) => ({ value: v, label: typeLabels[v] }))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="severity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.medicalRecordAllergySeverity}</FormLabel>
-                    <FormControl>
-                      <Combobox
-                        value={field.value ?? ""}
-                        onValueChange={field.onChange}
-                        options={severityOptions}
-                        placeholder={t.medicalRecordAllergySeverity}
-                        className="h-10 w-full rounded-xl text-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="severity"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>{t.medicalRecordAllergySeverity}</FormLabel>
+                  <FormControl>
+                    <Segmented
+                      value={field.value}
+                      onChange={field.onChange}
+                      invalid={!!fieldState.error}
+                      options={SEVERITIES.map((v) => ({ value: v, label: severityLabels[v], dot: SEVERITY_DOT[v] }))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -185,12 +231,7 @@ export function AllergyFormModal({
                 <FormItem>
                   <FormLabel>{t.medicalRecordAllergyReaction}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t.medicalRecordAllergyReactionPlaceholder}
-                      rows={2}
-                      className="resize-none"
-                    />
+                    <Input {...field} placeholder={t.medicalRecordAllergyReactionPlaceholder} className="h-10 rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -208,7 +249,7 @@ export function AllergyFormModal({
                       {...field}
                       placeholder={t.medicalRecordAllergyNotesPlaceholder}
                       rows={2}
-                      className="resize-none"
+                      className="resize-none rounded-xl"
                     />
                   </FormControl>
                   <FormMessage />
@@ -217,15 +258,10 @@ export function AllergyFormModal({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={isPending}
-              >
+              <Button type="button" variant="outline" onClick={onClose} disabled={isPending} className="rounded-xl">
                 {t.cancel}
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending} className="rounded-xl">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -193,7 +193,7 @@ function PrescriptionRow({
       {/* Sticky left: Patient */}
       <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="min-w-0">
-          <p className="truncate font-medium uppercase text-foreground">{prescription.patient.name}</p>
+          <p className="truncate font-medium uppercase text-foreground">{prescription.customer.name}</p>
           {prescription.prescriptionNumber && (
             <p className="truncate text-xs text-muted-foreground">
               {prescription.prescriptionNumber}
@@ -278,7 +278,7 @@ export function PrescriptionTable({
 
   const columns = useMemo<ColumnDef<PrescriptionListItem>[]>(
     () => [
-      { accessorFn: (row) => row.patient.name.toUpperCase(), id: "patient", header: t.prescriptionPatient, enableSorting: true },
+      { accessorFn: (row) => row.customer.name.toUpperCase(), id: "patient", header: t.prescriptionPatient, enableSorting: true },
       { accessorFn: (row) => row.doctor != null ? toDoctorName(row.doctor.name) : "", id: "doctor", header: t.prescriptionDoctor, enableSorting: false },
       { id: "prescribedAt", header: t.prescriptionPrescribedAt, enableSorting: false },
       { id: "status", header: t.prescriptionStatusLabel, enableSorting: false },
