@@ -36,6 +36,8 @@ export interface PermissionSet {
   create?: boolean;
   update?: boolean;
   delete?: boolean;
+  // Module-specific actions, e.g. stock.adjust, invoices.verify, sales.override_price.
+  [action: string]: boolean | undefined;
 }
 
 export interface CurrentPharmacyData {

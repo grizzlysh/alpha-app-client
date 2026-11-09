@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -30,6 +31,7 @@ type ModalState =
 
 export default function CustomersPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
@@ -153,6 +155,7 @@ export default function CustomersPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            {can("customers.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -163,6 +166,7 @@ export default function CustomersPage(): JSX.Element {
                 {t.customerAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -177,10 +181,10 @@ export default function CustomersPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("customers.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(customer) => setModal({ mode: "detail", customer })}
-          onEdit={(customer) => setModal({ mode: "edit", customer })}
-          onDelete={(customer) => setModal({ mode: "delete", customer })}
+          onEdit={can("customers.update") ? (customer) => setModal({ mode: "edit", customer }) : undefined}
+          onDelete={can("customers.delete") ? (customer) => setModal({ mode: "delete", customer }) : undefined}
         />
       </Card>
 
@@ -189,8 +193,8 @@ export default function CustomersPage(): JSX.Element {
           customer={modal.customer}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", customer: modal.customer })}
-          onDelete={() => setModal({ mode: "delete", customer: modal.customer })}
+          onEdit={can("customers.update") ? () => setModal({ mode: "edit", customer: modal.customer }) : undefined}
+          onDelete={can("customers.delete") ? () => setModal({ mode: "delete", customer: modal.customer }) : undefined}
         />
       )}
 

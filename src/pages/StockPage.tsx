@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -39,6 +40,7 @@ type StockFilter = "all" | "lowStock" | "expiringSoon";
 
 export default function StockPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
@@ -183,8 +185,8 @@ export default function StockPage(): JSX.Element {
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
           onDetails={(s) => setModal({ mode: "detail", stock: s })}
-          onSetPrice={(s) => setModal({ mode: "price", stock: s })}
-          onSetReorder={(s) => setModal({ mode: "reorder", stock: s })}
+          onSetPrice={can("stock.adjust") ? (s) => setModal({ mode: "price", stock: s }) : undefined}
+          onSetReorder={can("stock.adjust") ? (s) => setModal({ mode: "reorder", stock: s }) : undefined}
         />
       </Card>
 
@@ -194,17 +196,14 @@ export default function StockPage(): JSX.Element {
           stock={modal.stock}
           t={t}
           onClose={closeModal}
-          onSetPrice={() => setModal({ mode: "price", stock: modal.stock })}
-          onSetReorder={() => setModal({ mode: "reorder", stock: modal.stock })}
-          onAdjust={(detail) =>
-            setModal({ mode: "adjust", stock: modal.stock, stockDetail: detail })
-          }
-          onDispose={(detail) =>
-            setModal({ mode: "dispose", stock: modal.stock, stockDetail: detail })
-          }
-          onReturn={(detail) =>
-            setModal({ mode: "return", stock: modal.stock, stockDetail: detail })
-          }
+          onSetPrice={can("stock.adjust") ? () => setModal({ mode: "price", stock: modal.stock }) : undefined}
+          onSetReorder={can("stock.adjust") ? () => setModal({ mode: "reorder", stock: modal.stock }) : undefined}
+          onAdjust={can("stock.adjust") ? (detail) =>
+            setModal({ mode: "adjust", stock: modal.stock, stockDetail: detail }) : undefined}
+          onDispose={can("stock_disposal.create") ? (detail) =>
+            setModal({ mode: "dispose", stock: modal.stock, stockDetail: detail }) : undefined}
+          onReturn={can("stock_return.create") ? (detail) =>
+            setModal({ mode: "return", stock: modal.stock, stockDetail: detail }) : undefined}
         />
       )}
 

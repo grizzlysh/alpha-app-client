@@ -23,8 +23,8 @@ export interface RoleRowProps {
   role: Role;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function RoleRow({
@@ -104,10 +104,14 @@ export function RoleRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.roleDetails}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.roleEdit}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -116,6 +120,8 @@ export function RoleRow({
               <Trash2 className="h-4 w-4" />
               {t.roleDelete}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

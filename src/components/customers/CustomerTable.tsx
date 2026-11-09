@@ -29,10 +29,10 @@ export interface CustomerTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (customer: Customer) => void;
-  onEdit: (customer: Customer) => void;
-  onDelete: (customer: Customer) => void;
+  onEdit?: (customer: Customer) => void;
+  onDelete?: (customer: Customer) => void;
 }
 
 export function CustomerTable({
@@ -169,8 +169,8 @@ export function CustomerTable({
                 customer={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

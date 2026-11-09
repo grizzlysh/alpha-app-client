@@ -29,10 +29,10 @@ export interface SaleRowProps {
   sale: Sale;
   t: Translations;
   onDetails: () => void;
-  onCancel: () => void;
-  onRefund: () => void;
-  onAddPayment: () => void;
-  onComplete: () => void;
+  onCancel?: () => void;
+  onRefund?: () => void;
+  onAddPayment?: () => void;
+  onComplete?: () => void;
 }
 
 export function SaleRow({
@@ -112,7 +112,7 @@ export function SaleRow({
               {t.saleDetails}
             </DropdownMenuItem>
 
-            {canCompleteSale(sale.status) && (
+            {canCompleteSale(sale.status) && onComplete && (
               <DropdownMenuItem
                 onClick={onComplete}
                 className="gap-2.5 rounded-lg text-success focus:bg-success/10 focus:text-success"
@@ -122,7 +122,7 @@ export function SaleRow({
               </DropdownMenuItem>
             )}
 
-            {canAddPayment(sale.status, sale.saleType, sale.payment?.paymentStatus) && (
+            {canAddPayment(sale.status, sale.saleType, sale.payment?.paymentStatus) && onAddPayment && (
               <DropdownMenuItem onClick={onAddPayment} className="gap-2.5 rounded-lg">
                 <Wallet className="h-4 w-4 text-muted-foreground" />
                 {t.salePaymentAdd}
@@ -131,7 +131,7 @@ export function SaleRow({
 
             {(canCancelSale(sale.status) || canRefundSale(sale.status)) && <DropdownMenuSeparator />}
 
-            {canRefundSale(sale.status) && (
+            {canRefundSale(sale.status) && onRefund && (
               <DropdownMenuItem
                 onClick={onRefund}
                 className="gap-2.5 rounded-lg text-amber-600 focus:bg-amber-100 focus:text-amber-700 dark:text-amber-400"
@@ -141,7 +141,7 @@ export function SaleRow({
               </DropdownMenuItem>
             )}
 
-            {canCancelSale(sale.status) && (
+            {canCancelSale(sale.status) && onCancel && (
               <DropdownMenuItem
                 onClick={onCancel}
                 className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"

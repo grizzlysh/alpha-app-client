@@ -1972,6 +1972,11 @@ export interface Translations {
   errServer: string;
   errForbidden: string;
   errOffline: string;
+  forbiddenTitle: string;
+  forbiddenDesc: string;
+  notFoundTitle: string;
+  notFoundDesc: string;
+  backToHome: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -3901,6 +3906,11 @@ export const translations: Record<Language, Translations> = {
     errServer: "A server error occurred (HTTP {status}). Please try again; contact support if it persists.",
     errForbidden: "You do not have permission for this action.",
     errOffline: "You are offline. Reconnect to the internet and try again.",
+    forbiddenTitle: "You don't have access to this page",
+    forbiddenDesc: "Ask the pharmacy owner to grant your role access if you need it.",
+    notFoundTitle: "Page not found",
+    notFoundDesc: "The page you opened doesn't exist or has moved.",
+    backToHome: "Back to home",
   },
   id: {
     appName: "PharmaCare",
@@ -5826,6 +5836,11 @@ export const translations: Record<Language, Translations> = {
     errServer: "Terjadi kesalahan pada server (HTTP {status}). Silakan coba lagi; hubungi admin jika terus terjadi.",
     errForbidden: "Anda tidak memiliki izin untuk tindakan ini.",
     errOffline: "Anda sedang offline. Sambungkan kembali internet lalu coba lagi.",
+    forbiddenTitle: "Anda tidak memiliki akses ke halaman ini",
+    forbiddenDesc: "Minta pemilik apotek untuk memberi akses pada peran Anda jika diperlukan.",
+    notFoundTitle: "Halaman tidak ditemukan",
+    notFoundDesc: "Halaman yang Anda buka tidak ada atau sudah dipindahkan.",
+    backToHome: "Kembali ke beranda",
   },
 };
 

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -51,6 +52,7 @@ type BinModal =
 
 export default function StoragePage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
@@ -276,6 +278,7 @@ export default function StoragePage(): JSX.Element {
             />
 
             {/* Add button */}
+            {can("storage.create") && (
             <Button
               onClick={handleAdd}
               variant="success"
@@ -286,6 +289,7 @@ export default function StoragePage(): JSX.Element {
                 {addLabel}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -302,9 +306,9 @@ export default function StoragePage(): JSX.Element {
             totalPages={cabTotalPages}
             onPageChange={cabState.setPage}
             onLimitChange={cabState.handleLimitChange}
-            onAdd={() => setCabinetModal({ mode: "create" })}
-            onEdit={(c) => setCabinetModal({ mode: "edit", cabinet: c })}
-            onDelete={(c) => setCabinetModal({ mode: "delete", cabinet: c })}
+            onAdd={can("storage.create") ? () => setCabinetModal({ mode: "create" }) : undefined}
+            onEdit={can("storage.update") ? (c) => setCabinetModal({ mode: "edit", cabinet: c }) : undefined}
+            onDelete={can("storage.delete") ? (c) => setCabinetModal({ mode: "delete", cabinet: c }) : undefined}
             onViewShelves={drillToShelves}
           />
         )}
@@ -321,9 +325,9 @@ export default function StoragePage(): JSX.Element {
             totalPages={shelfTotalPages}
             onPageChange={shelfState.setPage}
             onLimitChange={shelfState.handleLimitChange}
-            onAdd={() => setShelfModal({ mode: "create" })}
-            onEdit={(s) => setShelfModal({ mode: "edit", shelf: s })}
-            onDelete={(s) => setShelfModal({ mode: "delete", shelf: s })}
+            onAdd={can("storage.create") ? () => setShelfModal({ mode: "create" }) : undefined}
+            onEdit={can("storage.update") ? (s) => setShelfModal({ mode: "edit", shelf: s }) : undefined}
+            onDelete={can("storage.delete") ? (s) => setShelfModal({ mode: "delete", shelf: s }) : undefined}
             onViewBins={drillToBins}
           />
         )}
@@ -340,9 +344,9 @@ export default function StoragePage(): JSX.Element {
             totalPages={binTotalPages}
             onPageChange={binState.setPage}
             onLimitChange={binState.handleLimitChange}
-            onAdd={() => setBinModal({ mode: "create" })}
-            onEdit={(b) => setBinModal({ mode: "edit", bin: b })}
-            onDelete={(b) => setBinModal({ mode: "delete", bin: b })}
+            onAdd={can("storage.create") ? () => setBinModal({ mode: "create" }) : undefined}
+            onEdit={can("storage.update") ? (b) => setBinModal({ mode: "edit", bin: b }) : undefined}
+            onDelete={can("storage.delete") ? (b) => setBinModal({ mode: "delete", bin: b }) : undefined}
           />
         )}
       </Card>

@@ -15,8 +15,8 @@ import type { StorageBin } from "@/types/storage";
 export interface BinRowProps {
   bin: StorageBin;
   t: Translations;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function BinRow({ bin, t, onEdit, onDelete }: BinRowProps): JSX.Element {
@@ -49,6 +49,7 @@ export function BinRow({ bin, t, onEdit, onDelete }: BinRowProps): JSX.Element {
 
       {/* Sticky right: action menu */}
       <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+        {(onEdit || onDelete) && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -59,10 +60,14 @@ export function BinRow({ bin, t, onEdit, onDelete }: BinRowProps): JSX.Element {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40 rounded-xl">
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.binEdit}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -71,8 +76,11 @@ export function BinRow({ bin, t, onEdit, onDelete }: BinRowProps): JSX.Element {
               <Trash2 className="h-4 w-4" />
               {t.binDelete}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </td>
     </tr>
   );

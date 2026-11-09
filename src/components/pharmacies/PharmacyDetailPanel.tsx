@@ -50,8 +50,8 @@ type SubModal =
 interface BizLicenseCardProps {
   license: BusinessLicense;
   t: Translations;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 function BizLicenseCard({ license, t, onEdit, onDelete }: BizLicenseCardProps): JSX.Element {
@@ -77,11 +77,14 @@ function BizLicenseCard({ license, t, onEdit, onDelete }: BizLicenseCardProps): 
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 rounded-xl">
+              {onEdit && (
               <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
                 <Pencil className="h-4 w-4 text-muted-foreground" />
                 {t.licenseEdit}
               </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
+              {onDelete && (
               <DropdownMenuItem
                 onClick={onDelete}
                 className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
@@ -89,6 +92,7 @@ function BizLicenseCard({ license, t, onEdit, onDelete }: BizLicenseCardProps): 
                 <Trash2 className="h-4 w-4" />
                 {t.licenseDelete}
               </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -116,8 +120,8 @@ export interface PharmacyDetailPanelProps {
   pharmacy: Pharmacy;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function PharmacyDetailPanel({

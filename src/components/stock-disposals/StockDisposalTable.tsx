@@ -29,12 +29,12 @@ export interface StockDisposalTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (d: StockDisposal) => void;
-  onEdit: (d: StockDisposal) => void;
-  onComplete: (d: StockDisposal) => void;
-  onCancel: (d: StockDisposal) => void;
-  onDelete: (d: StockDisposal) => void;
+  onEdit?: (d: StockDisposal) => void;
+  onComplete?: (d: StockDisposal) => void;
+  onCancel?: (d: StockDisposal) => void;
+  onDelete?: (d: StockDisposal) => void;
 }
 
 export function StockDisposalTable({
@@ -178,10 +178,10 @@ export function StockDisposalTable({
                 disposal={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onComplete={() => onComplete(row.original)}
-                onCancel={() => onCancel(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onComplete={onComplete ? () => onComplete(row.original) : undefined}
+                onCancel={onCancel ? () => onCancel(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

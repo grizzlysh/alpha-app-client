@@ -40,7 +40,8 @@ import InventoryPage from "@/pages/InventoryPage";
 import DoctorsPage from "@/pages/DoctorsPage";
 import PrescriptionsPage from "@/pages/PrescriptionsPage";
 import MedicalRecordsPage from "@/pages/MedicalRecordsPage";
-import ComingSoonPage from "@/pages/ComingSoonPage";
+import StatusPage from "@/pages/StatusPage";
+import { PermissionGate } from "@/components/shared/PermissionGate";
 
 function AppRoutes(): JSX.Element {
   const { isBootstrapping } = useBootstrapAuth();
@@ -70,8 +71,12 @@ function AppRoutes(): JSX.Element {
         {/* Shared routes — platform users OR pharmacy-selected staff (e.g. OWNER) */}
         <Route element={<SharedAccessGuard />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/roles" element={<RolesPage />} />
+            <Route element={<PermissionGate perm="users.read" />}>
+              <Route path="/users" element={<UsersPage />} />
+            </Route>
+            <Route element={<PermissionGate perm="roles.read" />}>
+              <Route path="/roles" element={<RolesPage />} />
+            </Route>
           </Route>
         </Route>
 
@@ -86,6 +91,9 @@ function AppRoutes(): JSX.Element {
         {/* Pharmacy routes — auth + pharmacy selection required */}
         <Route element={<ProtectedGuard />}>
           <Route element={<DashboardLayout />}>
+            <Route path="/profile" element={<ProfileSettingsPage />} />
+            {/* Each page requires the permission registered for its path in configs/navigation.ts */}
+            <Route element={<PermissionGate />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/business-parameters" element={<BusinessParametersPage />} />
             <Route path="/pos" element={<PosPage />} />
@@ -106,8 +114,8 @@ function AppRoutes(): JSX.Element {
             <Route path="/medical-records" element={<MedicalRecordsPage />} />
             <Route path="/distributors" element={<DistributorsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/settings" element={<ComingSoonPage titleKey="navSettings" />} />
-            <Route path="/profile" element={<ProfileSettingsPage />} />
+            </Route>
+            <Route path="*" element={<StatusPage kind="not-found" />} />
           </Route>
         </Route>
 

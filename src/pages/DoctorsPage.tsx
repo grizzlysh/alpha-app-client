@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -30,6 +31,7 @@ type ModalState =
 
 export default function DoctorsPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const {
@@ -120,6 +122,7 @@ export default function DoctorsPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            {can("doctors.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -130,6 +133,7 @@ export default function DoctorsPage(): JSX.Element {
                 {t.doctorAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -144,10 +148,10 @@ export default function DoctorsPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("doctors.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(doctor) => setModal({ mode: "detail", doctor })}
-          onEdit={(doctor) => setModal({ mode: "edit", doctor })}
-          onDelete={(doctor) => setModal({ mode: "delete", doctor })}
+          onEdit={can("doctors.update") ? (doctor) => setModal({ mode: "edit", doctor }) : undefined}
+          onDelete={can("doctors.delete") ? (doctor) => setModal({ mode: "delete", doctor }) : undefined}
         />
       </Card>
 
@@ -156,8 +160,8 @@ export default function DoctorsPage(): JSX.Element {
           doctor={modal.doctor}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", doctor: modal.doctor })}
-          onDelete={() => setModal({ mode: "delete", doctor: modal.doctor })}
+          onEdit={can("doctors.update") ? () => setModal({ mode: "edit", doctor: modal.doctor }) : undefined}
+          onDelete={can("doctors.delete") ? () => setModal({ mode: "delete", doctor: modal.doctor }) : undefined}
         />
       )}
 

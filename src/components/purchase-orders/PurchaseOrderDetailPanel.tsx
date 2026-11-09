@@ -30,11 +30,11 @@ export interface PurchaseOrderDetailPanelProps {
   order: PurchaseOrder;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
   onPrint: () => void;
-  onRepurchase: () => void;
-  onCancel: () => void;
-  onDelete: () => void;
+  onRepurchase?: () => void;
+  onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export function PurchaseOrderDetailPanel({

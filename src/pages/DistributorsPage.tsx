@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -29,6 +30,7 @@ type ModalState =
 
 export default function DistributorsPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
@@ -85,6 +87,7 @@ export default function DistributorsPage(): JSX.Element {
               placeholder={t.distributorSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+            {can("distributors.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -95,6 +98,7 @@ export default function DistributorsPage(): JSX.Element {
                 {t.distributorAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -109,10 +113,10 @@ export default function DistributorsPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("distributors.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(dist) => setModal({ mode: "detail", distributor: dist })}
-          onEdit={(dist) => setModal({ mode: "edit", distributor: dist })}
-          onDelete={(dist) => setModal({ mode: "delete", distributor: dist })}
+          onEdit={can("distributors.update") ? (dist) => setModal({ mode: "edit", distributor: dist }) : undefined}
+          onDelete={can("distributors.delete") ? (dist) => setModal({ mode: "delete", distributor: dist }) : undefined}
         />
       </Card>
 
@@ -121,8 +125,8 @@ export default function DistributorsPage(): JSX.Element {
           distributor={modal.distributor}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", distributor: modal.distributor })}
-          onDelete={() => setModal({ mode: "delete", distributor: modal.distributor })}
+          onEdit={can("distributors.update") ? () => setModal({ mode: "edit", distributor: modal.distributor }) : undefined}
+          onDelete={can("distributors.delete") ? () => setModal({ mode: "delete", distributor: modal.distributor }) : undefined}
         />
       )}
 

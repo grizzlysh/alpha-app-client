@@ -33,8 +33,8 @@ export interface StockTableProps {
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   onDetails: (s: Stock) => void;
-  onSetPrice: (s: Stock) => void;
-  onSetReorder: (s: Stock) => void;
+  onSetPrice?: (s: Stock) => void;
+  onSetReorder?: (s: Stock) => void;
 }
 
 export function StockTable({
@@ -206,8 +206,8 @@ export function StockTable({
                 stock={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onSetPrice={() => onSetPrice(row.original)}
-                onSetReorder={() => onSetReorder(row.original)}
+                onSetPrice={onSetPrice ? () => onSetPrice(row.original) : undefined}
+                onSetReorder={onSetReorder ? () => onSetReorder(row.original) : undefined}
               />
             ))}
           </tbody>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/utils/apiError";
@@ -11,6 +11,9 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useLogout } from "@/hooks/useLogout";
 import type { AppDispatch } from "@/store";
 import type { BilingualMessage } from "@/types/api";
+import { clearQueryCache } from "@/utils/queryPersister";
+import { PHARMACY_NAV_GROUPS, filterNavGroups } from "@/configs/navigation";
+import { hasPermission } from "@/hooks/usePermission";
 
 const FALLBACK_ERROR: BilingualMessage = {
   en: "An unexpected error occurred. Please try again.",
@@ -29,12 +32,13 @@ export function useSelectPharmacy(): UseSelectPharmacyReturn {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
   const { signOut, isLoggingOut } = useLogout();
   const [selectingUuid, setSelectingUuid] = useState<string | null>(null);
 
   const selectMutation = useMutation({
     mutationFn: selectPharmacy,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (!response.success || !response.data) {
         const msg = response.message ?? FALLBACK_ERROR;
         toast.error(msg[language]);
@@ -42,8 +46,14 @@ export function useSelectPharmacy(): UseSelectPharmacyReturn {
         return;
       }
       sessionStorage.removeItem("switching_pharmacy");
+      // Never let the previous pharmacy's cached data (customers, stock, prescriptions…) bleed into this one.
+      await clearQueryCache(queryClient);
       dispatch(setPharmacy(response.data));
-      navigate("/dashboard");
+      // Land on the first page this role can open, rather than a dashboard it may not have access to.
+      const isPlatformAdmin = response.data.user?.platformRole === "PLATFORM_ADMIN";
+      const can = (check: Parameters<typeof hasPermission>[2]) =>
+        hasPermission(response.data!.currentPharmacy.permissions, isPlatformAdmin, check);
+      navigate(filterNavGroups(PHARMACY_NAV_GROUPS, can)[0]?.items[0]?.path ?? "/profile");
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, language, FALLBACK_ERROR[language]));

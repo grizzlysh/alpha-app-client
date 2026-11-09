@@ -61,7 +61,7 @@ export interface DetailModalAction {
   label: string;
   icon?: ReactNode;
   variant?: ButtonProps["variant"];
-  onClick: () => void;
+  onClick?: () => void;
   hidden?: boolean;
   disabled?: boolean;
 }
@@ -85,7 +85,8 @@ export function DetailModal({
   className,
   bodyClassName,
 }: DetailModalProps): JSX.Element {
-  const visibleActions = actions.filter((a) => !a.hidden);
+  // Actions without a handler are ones the user lacks permission for.
+  const visibleActions = actions.filter((a) => !a.hidden && a.onClick);
 
   return (
     <Sheet open onOpenChange={(open) => !open && onClose()}>

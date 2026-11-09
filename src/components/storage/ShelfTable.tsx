@@ -29,9 +29,9 @@ export interface ShelfTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
-  onEdit: (s: StorageShelf) => void;
-  onDelete: (s: StorageShelf) => void;
+  onAdd?: () => void;
+  onEdit?: (s: StorageShelf) => void;
+  onDelete?: (s: StorageShelf) => void;
   onViewBins: (s: StorageShelf) => void;
 }
 
@@ -170,8 +170,8 @@ export function ShelfTable({
                 key={row.original.uuid}
                 shelf={row.original}
                 t={t}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
                 onViewBins={() => onViewBins(row.original)}
               />
             ))}

@@ -8,6 +8,7 @@ import type { RootState } from "@/store";
 import { BriefcaseBusiness } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -32,6 +33,7 @@ type ModalState =
 
 export default function BusinessParametersPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
@@ -116,7 +118,7 @@ export default function BusinessParametersPage(): JSX.Element {
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
           onDetails={(p) => setModal({ mode: "detail", parameter: p })}
-          onEdit={(p) => setModal({ mode: "edit", parameter: p })}
+          onEdit={can("business_parameters.update") ? (p) => setModal({ mode: "edit", parameter: p }) : undefined}
         />
       </Card>
 
@@ -127,9 +129,8 @@ export default function BusinessParametersPage(): JSX.Element {
           t={t}
           icon={BriefcaseBusiness}
           onClose={closeModal}
-          onEdit={() =>
-            setModal({ mode: "edit", parameter: modal.parameter })
-          }
+          onEdit={can("business_parameters.update") ? () =>
+            setModal({ mode: "edit", parameter: modal.parameter }) : undefined}
         />
       )}
 

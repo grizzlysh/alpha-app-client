@@ -18,8 +18,8 @@ export interface ReferenceRowProps {
   item: ReferenceItem;
   labels: ReferenceLabels;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function ReferenceRow({
@@ -88,10 +88,14 @@ export function ReferenceRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {labels.details}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {labels.editBtn}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -100,6 +104,8 @@ export function ReferenceRow({
               <Trash2 className="h-4 w-4" />
               {labels.deleteBtn}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

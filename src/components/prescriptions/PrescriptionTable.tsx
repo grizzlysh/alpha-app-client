@@ -69,8 +69,8 @@ interface RowMenuProps {
   t: Translations;
   status: PrescriptionStatus;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 function RowMenu({ t, status, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element {
@@ -141,7 +141,7 @@ function RowMenu({ t, status, onDetails, onEdit, onDelete }: RowMenuProps): JSX.
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.prescriptionDetails}
             </button>
-            {canEdit && (
+            {canEdit && onEdit && (
               <button
                 type="button"
                 onClick={() => pick(onEdit)}
@@ -151,6 +151,8 @@ function RowMenu({ t, status, onDetails, onEdit, onDelete }: RowMenuProps): JSX.
                 {t.prescriptionEdit}
               </button>
             )}
+            {onDelete && (
+            <>
             <div className="mx-2 my-1 border-t border-border" />
             <button
               type="button"
@@ -160,6 +162,8 @@ function RowMenu({ t, status, onDetails, onEdit, onDelete }: RowMenuProps): JSX.
               <Trash2 className="h-4 w-4" />
               {t.prescriptionDelete}
             </button>
+            </>
+            )}
           </div>,
           document.body
         )}
@@ -173,8 +177,8 @@ interface PrescriptionRowProps {
   prescription: PrescriptionListItem;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 function PrescriptionRow({
@@ -248,10 +252,10 @@ export interface PrescriptionTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (p: PrescriptionListItem) => void;
-  onEdit: (p: PrescriptionListItem) => void;
-  onDelete: (p: PrescriptionListItem) => void;
+  onEdit?: (p: PrescriptionListItem) => void;
+  onDelete?: (p: PrescriptionListItem) => void;
 }
 
 export function PrescriptionTable({
@@ -385,8 +389,8 @@ export function PrescriptionTable({
                 prescription={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

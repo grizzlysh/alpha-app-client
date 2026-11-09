@@ -35,11 +35,11 @@ export interface StockReturnRowProps {
   stockReturn: StockReturn;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onComplete: () => void;
-  onReject: () => void;
-  onCancel: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onComplete?: () => void;
+  onReject?: () => void;
+  onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export function StockReturnRow({
@@ -128,14 +128,14 @@ export function StockReturnRow({
               {t.srDetails}
             </DropdownMenuItem>
 
-            {canEdit(stockReturn.status) && (
+            {canEdit(stockReturn.status) && onEdit && (
               <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
                 <Pencil className="h-4 w-4 text-muted-foreground" />
                 {t.srEdit}
               </DropdownMenuItem>
             )}
 
-            {canComplete(stockReturn.status) && (
+            {canComplete(stockReturn.status) && onComplete && (
               <DropdownMenuItem
                 onClick={onComplete}
                 className="gap-2.5 rounded-lg text-success focus:bg-success/10 focus:text-success"
@@ -145,7 +145,7 @@ export function StockReturnRow({
               </DropdownMenuItem>
             )}
 
-            {canReject(stockReturn.status) && (
+            {canReject(stockReturn.status) && onReject && (
               <DropdownMenuItem
                 onClick={onReject}
                 className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
@@ -155,7 +155,7 @@ export function StockReturnRow({
               </DropdownMenuItem>
             )}
 
-            {canCancel(stockReturn.status) && (
+            {canCancel(stockReturn.status) && onCancel && (
               <DropdownMenuItem
                 onClick={onCancel}
                 className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
@@ -167,6 +167,8 @@ export function StockReturnRow({
 
             {canDelete(stockReturn.status) && (
               <>
+                {onDelete && (
+                <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onDelete}
@@ -175,6 +177,8 @@ export function StockReturnRow({
                   <Trash2 className="h-4 w-4" />
                   {t.srDelete}
                 </DropdownMenuItem>
+                </>
+                )}
               </>
             )}
           </DropdownMenuContent>

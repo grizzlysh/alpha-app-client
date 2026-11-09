@@ -31,14 +31,14 @@ export interface PurchaseOrderTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (o: PurchaseOrder) => void;
-  onEdit: (o: PurchaseOrder) => void;
+  onEdit?: (o: PurchaseOrder) => void;
   onPrint: (o: PurchaseOrder) => void;
-  onMarkReceived: (o: PurchaseOrder) => void;
-  onRepurchase: (o: PurchaseOrder) => void;
-  onCancel: (o: PurchaseOrder) => void;
-  onDelete: (o: PurchaseOrder) => void;
+  onMarkReceived?: (o: PurchaseOrder) => void;
+  onRepurchase?: (o: PurchaseOrder) => void;
+  onCancel?: (o: PurchaseOrder) => void;
+  onDelete?: (o: PurchaseOrder) => void;
 }
 
 export function PurchaseOrderTable({
@@ -184,11 +184,11 @@ export function PurchaseOrderTable({
                 order={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
                 onPrint={() => onPrint(row.original)}
-                onRepurchase={() => onRepurchase(row.original)}
-                onCancel={() => onCancel(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onRepurchase={onRepurchase ? () => onRepurchase(row.original) : undefined}
+                onCancel={onCancel ? () => onCancel(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

@@ -13,8 +13,8 @@ interface RowMenuProps {
   t: Translations;
   isWalkIn: boolean;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element {
@@ -86,6 +86,7 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
             </button>
             {!isWalkIn && (
               <>
+                {onEdit && (
                 <button
                   type="button"
                   onClick={() => pick(onEdit)}
@@ -94,6 +95,9 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
                   <Pencil className="h-4 w-4 text-muted-foreground" />
                   {t.customerEdit}
                 </button>
+                )}
+                {onDelete && (
+                <>
                 <div className="mx-2 my-1 border-t border-border" />
                 <button
                   type="button"
@@ -103,6 +107,8 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
                   <Trash2 className="h-4 w-4" />
                   {t.customerDelete}
                 </button>
+                </>
+                )}
               </>
             )}
           </div>,
@@ -116,8 +122,8 @@ export interface CustomerRowProps {
   customer: Customer;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function CustomerRow({

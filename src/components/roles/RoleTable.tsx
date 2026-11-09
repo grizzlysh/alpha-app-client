@@ -31,10 +31,10 @@ export interface RoleTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (r: Role) => void;
-  onEdit: (r: Role) => void;
-  onDelete: (r: Role) => void;
+  onEdit?: (r: Role) => void;
+  onDelete?: (r: Role) => void;
 }
 
 export function RoleTable({
@@ -176,8 +176,8 @@ export function RoleTable({
                 role={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

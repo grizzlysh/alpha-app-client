@@ -37,12 +37,12 @@ export interface PurchaseOrderRowProps {
   order: PurchaseOrder;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
   onPrint: () => void;
   // onMarkReceived: () => void; // disabled — completion handled via invoice
-  onRepurchase: () => void;
-  onCancel: () => void;
-  onDelete: () => void;
+  onRepurchase?: () => void;
+  onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export function PurchaseOrderRow({
@@ -126,7 +126,7 @@ export function PurchaseOrderRow({
               {t.poDetails}
             </DropdownMenuItem>
 
-            {canEdit(order.status) && (
+            {canEdit(order.status) && onEdit && (
               <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
                 <Pencil className="h-4 w-4 text-muted-foreground" />
                 {t.poEdit}
@@ -141,21 +141,21 @@ export function PurchaseOrderRow({
             )}
 
             {/* Mark as Received disabled — completion is handled via invoice, not manually */}
-            {/* {canMarkReceived(order.status) && (
+            {/* {canMarkReceived(order.status) && onMarkReceived && (
               <DropdownMenuItem onClick={onMarkReceived} className="gap-2.5 rounded-lg text-success focus:bg-success/10 focus:text-success">
                 <PackageCheck className="h-4 w-4" />
                 {t.poMarkReceived}
               </DropdownMenuItem>
             )} */}
 
-            {canRepurchase(order.status) && (
+            {canRepurchase(order.status) && onRepurchase && (
               <DropdownMenuItem onClick={onRepurchase} className="gap-2.5 rounded-lg">
                 <Repeat className="h-4 w-4 text-muted-foreground" />
                 {t.poRepurchase}
               </DropdownMenuItem>
             )}
 
-            {canCancel(order.status) && (
+            {canCancel(order.status) && onCancel && (
               <DropdownMenuItem onClick={onCancel} className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive">
                 <Ban className="h-4 w-4" />
                 {t.poCancel}
@@ -164,6 +164,8 @@ export function PurchaseOrderRow({
 
             {canDelete(order.status) && (
               <>
+                {onDelete && (
+                <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onDelete}
@@ -172,6 +174,8 @@ export function PurchaseOrderRow({
                   <Trash2 className="h-4 w-4" />
                   {t.poDelete}
                 </DropdownMenuItem>
+                </>
+                )}
               </>
             )}
           </DropdownMenuContent>

@@ -33,10 +33,10 @@ export interface DistributorTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (d: Distributor) => void;
-  onEdit: (d: Distributor) => void;
-  onDelete: (d: Distributor) => void;
+  onEdit?: (d: Distributor) => void;
+  onDelete?: (d: Distributor) => void;
 }
 
 export function DistributorTable({
@@ -168,8 +168,8 @@ export function DistributorTable({
                 distributor={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

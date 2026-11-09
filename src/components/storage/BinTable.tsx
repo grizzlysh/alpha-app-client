@@ -29,9 +29,9 @@ export interface BinTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
-  onEdit: (b: StorageBin) => void;
-  onDelete: (b: StorageBin) => void;
+  onAdd?: () => void;
+  onEdit?: (b: StorageBin) => void;
+  onDelete?: (b: StorageBin) => void;
 }
 
 export function BinTable({
@@ -165,8 +165,8 @@ export function BinTable({
                 key={row.original.uuid}
                 bin={row.original}
                 t={t}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

@@ -26,10 +26,10 @@ export interface SaleDetailPanelProps {
   sale: Sale;
   t: Translations;
   onClose: () => void;
-  onCancel: () => void;
-  onRefund: () => void;
-  onAddPayment: () => void;
-  onComplete: () => void;
+  onCancel?: () => void;
+  onRefund?: () => void;
+  onAddPayment?: () => void;
+  onComplete?: () => void;
 }
 
 export function SaleDetailPanel({

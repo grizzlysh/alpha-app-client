@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -34,6 +35,7 @@ type ModalState =
 
 export default function InvoicesPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
@@ -165,6 +167,7 @@ export default function InvoicesPage(): JSX.Element {
             />
 
             {/* Add button */}
+            {can("invoices.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -175,6 +178,7 @@ export default function InvoicesPage(): JSX.Element {
                 {t.invoiceAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -190,9 +194,9 @@ export default function InvoicesPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("invoices.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(invoice) => setModal({ mode: "detail", invoice })}
-          onDelete={(invoice) => setModal({ mode: "delete", invoice })}
+          onDelete={can("invoices.delete") ? (invoice) => setModal({ mode: "delete", invoice }) : undefined}
         />
       </Card>
 
@@ -202,7 +206,7 @@ export default function InvoicesPage(): JSX.Element {
           invoice={modal.invoice}
           t={t}
           onClose={closeModal}
-          onDelete={() => setModal({ mode: "delete", invoice: modal.invoice })}
+          onDelete={can("invoices.delete") ? () => setModal({ mode: "delete", invoice: modal.invoice }) : undefined}
         />
       )}
 

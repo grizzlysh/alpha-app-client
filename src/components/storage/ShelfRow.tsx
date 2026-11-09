@@ -15,8 +15,8 @@ import type { StorageShelf } from "@/types/storage";
 export interface ShelfRowProps {
   shelf: StorageShelf;
   t: Translations;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   onViewBins: () => void;
 }
 
@@ -91,10 +91,14 @@ export function ShelfRow({
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
               {t.shelfViewBins}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.shelfEdit}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -103,6 +107,8 @@ export function ShelfRow({
               <Trash2 className="h-4 w-4" />
               {t.shelfDelete}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

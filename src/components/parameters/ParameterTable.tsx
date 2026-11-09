@@ -49,7 +49,7 @@ export interface ParameterTableProps {
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   onDetails: (p: Parameter) => void;
-  onEdit: (p: Parameter) => void;
+  onEdit?: (p: Parameter) => void;
 }
 
 export function ParameterTable({
@@ -184,7 +184,7 @@ export function ParameterTable({
                 parameter={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
               />
             ))}
           </tbody>

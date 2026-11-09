@@ -14,8 +14,8 @@ export interface MedicineDetailPanelProps {
   medicine: Medicine;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function MedicineDetailPanel({

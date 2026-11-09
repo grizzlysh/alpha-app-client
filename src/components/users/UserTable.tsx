@@ -31,11 +31,11 @@ export interface UserTableProps {
   totalPages: number;
   onPageChange: (p: number) => void;
   onLimitChange: (l: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (u: UserListItem) => void;
-  onEdit: (u: UserListItem) => void;
-  onDelete: (u: UserListItem) => void;
-  onResetPassword: (u: UserListItem) => void;
+  onEdit?: (u: UserListItem) => void;
+  onDelete?: (u: UserListItem) => void;
+  onResetPassword?: (u: UserListItem) => void;
 }
 
 export function UserTable({
@@ -175,9 +175,9 @@ export function UserTable({
                 user={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
-                onResetPassword={() => onResetPassword(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
+                onResetPassword={onResetPassword ? () => onResetPassword(row.original) : undefined}
               />
             ))}
           </tbody>

@@ -15,8 +15,8 @@ import type { StorageCabinet } from "@/types/storage";
 export interface CabinetRowProps {
   cabinet: StorageCabinet;
   t: Translations;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   onViewShelves: () => void;
 }
 
@@ -84,10 +84,14 @@ export function CabinetRow({
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
               {t.cabinetViewShelves}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.cabinetEdit}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -96,6 +100,8 @@ export function CabinetRow({
               <Trash2 className="h-4 w-4" />
               {t.cabinetDelete}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

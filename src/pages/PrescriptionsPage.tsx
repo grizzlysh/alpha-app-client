@@ -12,6 +12,7 @@ import { cn } from "@/utils/cn";
 import { toDoctorName } from "@/utils/stringHelpers";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -36,6 +37,7 @@ type ActiveTab = "all" | "queue";
 
 export default function PrescriptionsPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const {
@@ -199,6 +201,7 @@ export default function PrescriptionsPage(): JSX.Element {
                 placeholder={t.prescriptionSearchPlaceholder}
                 isFetching={isFetching && !isLoading}
               />
+              {can("prescriptions.create") && (
               <Button
                 onClick={() => setModal({ mode: "create" })}
                 variant="success"
@@ -209,6 +212,7 @@ export default function PrescriptionsPage(): JSX.Element {
                   {t.prescriptionAdd}
                 </span>
               </Button>
+              )}
             </div>
           </div>
         )}
@@ -226,10 +230,10 @@ export default function PrescriptionsPage(): JSX.Element {
             totalPages={totalPages}
             onPageChange={setPage}
             onLimitChange={handleLimitChange}
-            onAdd={() => setModal({ mode: "create" })}
+            onAdd={can("prescriptions.create") ? () => setModal({ mode: "create" }) : undefined}
             onDetails={(p) => handleOpenDetail(p)}
-            onEdit={(p) => handleOpenEdit(p)}
-            onDelete={(p) => setModal({ mode: "delete", prescription: p })}
+            onEdit={can("prescriptions.update") ? (p) => handleOpenEdit(p) : undefined}
+            onDelete={can("prescriptions.delete") ? (p) => setModal({ mode: "delete", prescription: p }) : undefined}
           />
         )}
 
@@ -250,8 +254,8 @@ export default function PrescriptionsPage(): JSX.Element {
           prescription={modal.prescription}
           t={t}
           onClose={closeModal}
-          onEdit={() => handleOpenEdit(modal.prescription)}
-          onDelete={() => setModal({ mode: "delete", prescription: modal.prescription })}
+          onEdit={can("prescriptions.update") ? () => handleOpenEdit(modal.prescription) : undefined}
+          onDelete={can("prescriptions.delete") ? () => setModal({ mode: "delete", prescription: modal.prescription }) : undefined}
           showCancelDialog={showCancelDialog}
           onCancelRequest={() => setShowCancelDialog(true)}
           onCancelClose={() => setShowCancelDialog(false)}

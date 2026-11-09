@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -38,6 +39,7 @@ type ModalState =
 
 export default function MedicinesPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
@@ -219,6 +221,7 @@ export default function MedicinesPage(): JSX.Element {
             />
 
             {/* Add button */}
+            {can("medicines.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -229,6 +232,7 @@ export default function MedicinesPage(): JSX.Element {
                 {t.medicineAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -244,10 +248,10 @@ export default function MedicinesPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("medicines.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(med) => setModal({ mode: "detail", medicine: med })}
-          onEdit={(med) => setModal({ mode: "edit", medicine: med })}
-          onDelete={(med) => setModal({ mode: "delete", medicine: med })}
+          onEdit={can("medicines.update") ? (med) => setModal({ mode: "edit", medicine: med }) : undefined}
+          onDelete={can("medicines.delete") ? (med) => setModal({ mode: "delete", medicine: med }) : undefined}
         />
       </Card>
 
@@ -257,10 +261,9 @@ export default function MedicinesPage(): JSX.Element {
           medicine={modal.medicine}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", medicine: modal.medicine })}
-          onDelete={() =>
-            setModal({ mode: "delete", medicine: modal.medicine })
-          }
+          onEdit={can("medicines.update") ? () => setModal({ mode: "edit", medicine: modal.medicine }) : undefined}
+          onDelete={can("medicines.delete") ? () =>
+            setModal({ mode: "delete", medicine: modal.medicine }) : undefined}
         />
       )}
 

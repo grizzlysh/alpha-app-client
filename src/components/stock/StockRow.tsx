@@ -24,8 +24,8 @@ export interface StockRowProps {
   stock: Stock;
   t: Translations;
   onDetails: () => void;
-  onSetPrice: () => void;
-  onSetReorder: () => void;
+  onSetPrice?: () => void;
+  onSetReorder?: () => void;
 }
 
 export function StockRow({
@@ -126,14 +126,18 @@ export function StockRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.stockDetails}
             </DropdownMenuItem>
+            {onSetPrice && (
             <DropdownMenuItem onClick={onSetPrice} className="gap-2.5 rounded-lg">
               <Tag className="h-4 w-4 text-muted-foreground" />
               {t.stockUpdatePrice}
             </DropdownMenuItem>
+            )}
+            {onSetReorder && (
             <DropdownMenuItem onClick={onSetReorder} className="gap-2.5 rounded-lg">
               <ListOrdered className="h-4 w-4 text-muted-foreground" />
               {t.stockUpdateReorder}
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

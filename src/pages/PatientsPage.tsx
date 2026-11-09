@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -30,6 +31,7 @@ type ModalState =
 
 export default function PatientsPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
@@ -153,6 +155,7 @@ export default function PatientsPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            {can("customers.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -163,6 +166,7 @@ export default function PatientsPage(): JSX.Element {
                 {t.patientAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -177,10 +181,10 @@ export default function PatientsPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("customers.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(patient) => setModal({ mode: "detail", patient })}
-          onEdit={(patient) => setModal({ mode: "edit", patient })}
-          onDelete={(patient) => setModal({ mode: "delete", patient })}
+          onEdit={can("customers.update") ? (patient) => setModal({ mode: "edit", patient }) : undefined}
+          onDelete={can("customers.delete") ? (patient) => setModal({ mode: "delete", patient }) : undefined}
         />
       </Card>
 
@@ -189,8 +193,8 @@ export default function PatientsPage(): JSX.Element {
           patient={modal.patient}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", patient: modal.patient })}
-          onDelete={() => setModal({ mode: "delete", patient: modal.patient })}
+          onEdit={can("customers.update") ? () => setModal({ mode: "edit", patient: modal.patient }) : undefined}
+          onDelete={can("customers.delete") ? () => setModal({ mode: "delete", patient: modal.patient }) : undefined}
         />
       )}
 

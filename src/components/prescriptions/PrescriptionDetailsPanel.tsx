@@ -83,8 +83,8 @@ export interface PrescriptionDetailsPanelProps {
   prescription: PrescriptionListItem;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   showCancelDialog: boolean;
   onCancelRequest: () => void;
   onCancelClose: () => void;

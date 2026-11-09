@@ -26,8 +26,8 @@ export interface PatientDetailPanelProps {
   patient: Patient;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function PatientDetailPanel({

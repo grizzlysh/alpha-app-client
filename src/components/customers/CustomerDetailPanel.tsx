@@ -22,8 +22,8 @@ export interface CustomerDetailPanelProps {
   customer: Customer;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function CustomerDetailPanel({

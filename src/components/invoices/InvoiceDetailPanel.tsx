@@ -59,7 +59,7 @@ export interface InvoiceDetailPanelProps {
   invoice: Invoice;
   t: Translations;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 export function InvoiceDetailPanel({
@@ -395,6 +395,7 @@ export function InvoiceDetailPanel({
         {/* Delete button — pinned to bottom of right column */}
         {canBeDeleted && (
           <div className="border-t border-border p-5">
+            {onDelete && (
             <Button
               variant="destructive"
               className="w-full gap-2 rounded-xl"
@@ -403,6 +404,7 @@ export function InvoiceDetailPanel({
               <Trash2 className="h-4 w-4" />
               {t.invoiceDelete}
             </Button>
+            )}
           </div>
         )}
       </div>

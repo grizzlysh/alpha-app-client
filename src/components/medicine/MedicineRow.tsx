@@ -19,8 +19,8 @@ export interface MedicineRowProps {
   medicine: Medicine;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function MedicineRow({
@@ -100,10 +100,14 @@ export function MedicineRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.medicineDetails}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.medicineEdit}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -112,6 +116,8 @@ export function MedicineRow({
               <Trash2 className="h-4 w-4" />
               {t.medicineDelete}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

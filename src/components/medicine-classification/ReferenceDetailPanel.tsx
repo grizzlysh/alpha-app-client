@@ -15,8 +15,8 @@ export interface ReferenceDetailPanelProps {
   labels: ReferenceLabels;
   icon: JSX.Element;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function ReferenceDetailPanel({
