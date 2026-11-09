@@ -136,7 +136,7 @@ function PatientListItem({
   patient,
   isSelected,
   onClick,
-  medicalRecordLabel: _medicalRecordLabel,
+  medicalRecordLabel,
 }: PatientListItemProps): JSX.Element {
   return (
     <button
@@ -147,6 +147,8 @@ function PatientListItem({
           : "hover:bg-muted/60 text-foreground"
       )}
       onClick={() => onClick(patient)}
+      aria-current={isSelected ? "true" : undefined}
+      aria-label={[patient.name, patient.medicalRecord?.number && `${medicalRecordLabel} ${patient.medicalRecord.number}`].filter(Boolean).join(", ")}
     >
       <div
         className={cn(

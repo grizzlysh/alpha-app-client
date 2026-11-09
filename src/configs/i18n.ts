@@ -2002,6 +2002,16 @@ export interface Translations {
   posDiscountLimited: string;
   posTotalsByServer: string;
   posRemoveItem: string;
+  datePickPlaceholder: string;
+  dateToday: string;
+  dateClear: string;
+  medicalRecordVisitTimelineEmpty: string;
+  medicalRecordVisitLatest: string;
+  medicalRecordVisitDaysAgo: string;
+  medicalRecordVisitToday: string;
+  medicalRecordVisitYesterday: string;
+  medicalRecordVisitBy: string;
+  medicalRecordVisitFutureDate: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -3961,6 +3971,16 @@ export const translations: Record<Language, Translations> = {
     posDiscountLimited: "Discount was limited to {n}%",
     posTotalsByServer: "Totals are verified by the server at checkout",
     posRemoveItem: "Remove",
+    datePickPlaceholder: "Pick a date",
+    dateToday: "Today",
+    dateClear: "Clear",
+    medicalRecordVisitTimelineEmpty: "No visits recorded yet",
+    medicalRecordVisitLatest: "Latest",
+    medicalRecordVisitDaysAgo: "{n} days ago",
+    medicalRecordVisitToday: "Today",
+    medicalRecordVisitYesterday: "Yesterday",
+    medicalRecordVisitBy: "by",
+    medicalRecordVisitFutureDate: "Visit date can't be in the future",
   },
   id: {
     appName: "PharmaCare",
@@ -5916,6 +5936,16 @@ export const translations: Record<Language, Translations> = {
     posDiscountLimited: "Diskon dibatasi {n}%",
     posTotalsByServer: "Total diverifikasi server saat pembayaran",
     posRemoveItem: "Hapus",
+    datePickPlaceholder: "Pilih tanggal",
+    dateToday: "Hari ini",
+    dateClear: "Hapus",
+    medicalRecordVisitTimelineEmpty: "Belum ada kunjungan tercatat",
+    medicalRecordVisitLatest: "Terbaru",
+    medicalRecordVisitDaysAgo: "{n} hari lalu",
+    medicalRecordVisitToday: "Hari ini",
+    medicalRecordVisitYesterday: "Kemarin",
+    medicalRecordVisitBy: "oleh",
+    medicalRecordVisitFutureDate: "Tanggal kunjungan tidak boleh di masa depan",
   },
 };
 

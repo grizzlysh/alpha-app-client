@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import {
   getMedicalRecord,
   getVisits,
@@ -50,31 +51,47 @@ import { VisitFormModal } from "./VisitFormModal";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function formatVisitDate(isoStr: string): string {
-  return new Date(isoStr).toLocaleDateString([], {
+function formatVisitDate(isoStr: string, language: string): string {
+  return new Date(isoStr).toLocaleDateString(language === "id" ? "id-ID" : "en-US", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 }
 
-function severityClass(s: AllergySeverity): string {
-  const map: Record<AllergySeverity, string> = {
-    MILD: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    MODERATE: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-    SEVERE: "bg-destructive/10 text-destructive",
-  };
-  return map[s];
+function formatMonthYear(isoStr: string, language: string): string {
+  return new Date(isoStr).toLocaleDateString(language === "id" ? "id-ID" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
 }
 
-function allergyTypeClass(type: string): string {
-  const map: Record<string, string> = {
-    MEDICINE: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
-    FOOD: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-    ENVIRONMENT: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
-    OTHER: "bg-muted text-muted-foreground",
-  };
-  return map[type] ?? "bg-muted text-muted-foreground";
+// Colour is reserved for severity only; everything else stays neutral so the
+// one thing that matters clinically stands out.
+const SEVERITY_ACCENT: Record<AllergySeverity, { bar: string; dot: string; text: string }> = {
+  MILD: { bar: "bg-amber-400", dot: "bg-amber-400", text: "text-amber-700 dark:text-amber-400" },
+  MODERATE: { bar: "bg-orange-500", dot: "bg-orange-500", text: "text-orange-700 dark:text-orange-400" },
+  SEVERE: { bar: "bg-destructive", dot: "bg-destructive", text: "text-destructive" },
+};
+
+const SEVERITY_ORDER: Record<AllergySeverity, number> = { SEVERE: 0, MODERATE: 1, MILD: 2 };
+
+function sortBySeverity(list: Allergy[]): Allergy[] {
+  return [...list].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
+}
+
+function relativeDayLabel(isoStr: string, t: { medicalRecordVisitToday: string; medicalRecordVisitYesterday: string; medicalRecordVisitDaysAgo: string }): string | null {
+  const day = new Date(isoStr);
+  const today = new Date();
+  const diff = Math.round(
+    (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+      Date.UTC(day.getFullYear(), day.getMonth(), day.getDate())) /
+      86400000
+  );
+  if (diff === 0) return t.medicalRecordVisitToday;
+  if (diff === 1) return t.medicalRecordVisitYesterday;
+  if (diff > 1 && diff <= 30) return t.medicalRecordVisitDaysAgo.replace("{n}", String(diff));
+  return null;
 }
 
 // ── Overview Section ──────────────────────────────────────────────────────────
@@ -99,72 +116,43 @@ function InfoRow({ icon, label, value }: { icon: JSX.Element; label: string; val
 
 interface AllergyCardProps {
   allergy: Allergy;
-  onDelete: (allergy: Allergy) => void;
+  onDelete?: (allergy: Allergy) => void;
   deleteLabel: string;
-  severityMild: string;
-  severityModerate: string;
-  severitySevere: string;
-  typeMedicine: string;
-  typeFood: string;
-  typeEnvironment: string;
-  typeOther: string;
+  reactionLabel: string;
+  severityLabel: string;
+  typeLabel: string;
 }
 
-function AllergyCard({
-  allergy,
-  onDelete,
-  deleteLabel,
-  severityMild,
-  severityModerate,
-  severitySevere,
-  typeMedicine,
-  typeFood,
-  typeEnvironment,
-  typeOther,
-}: AllergyCardProps): JSX.Element {
-  const severityLabels: Record<AllergySeverity, string> = {
-    MILD: severityMild,
-    MODERATE: severityModerate,
-    SEVERE: severitySevere,
-  };
-  const typeLabels: Record<string, string> = {
-    MEDICINE: typeMedicine,
-    FOOD: typeFood,
-    ENVIRONMENT: typeEnvironment,
-    OTHER: typeOther,
-  };
-
+function AllergyCard({ allergy, onDelete, deleteLabel, reactionLabel, severityLabel, typeLabel }: AllergyCardProps): JSX.Element {
+  const accent = SEVERITY_ACCENT[allergy.severity];
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
-      {allergy.severity === "SEVERE" && (
-        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-destructive" />
-      )}
+    <div className="relative flex items-start gap-3 overflow-hidden rounded-xl border border-border bg-card py-3 pl-4 pr-2">
+      <span className={cn("absolute inset-y-0 left-0 w-1", accent.bar)} aria-hidden />
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-sm font-semibold text-foreground">{allergy.allergenName}</span>
-          <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", allergyTypeClass(allergy.allergenType))}>
-            {typeLabels[allergy.allergenType] ?? allergy.allergenType}
-          </span>
-          <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", severityClass(allergy.severity))}>
-            {severityLabels[allergy.severity] ?? allergy.severity}
-          </span>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+          <p className="text-sm font-semibold text-foreground">{allergy.allergenName}</p>
+          <span className={cn("text-xs font-medium", accent.text)}>{severityLabel}</span>
         </div>
+        <p className="mt-0.5 text-xs text-muted-foreground">{typeLabel}</p>
         {allergy.reaction && (
-          <p className="mt-1 text-xs text-muted-foreground">{allergy.reaction}</p>
+          <p className="mt-1.5 text-xs text-foreground/80">
+            <span className="text-muted-foreground">{reactionLabel}: </span>
+            {allergy.reaction}
+          </p>
         )}
-        {allergy.notes && (
-          <p className="mt-0.5 text-xs text-muted-foreground/70 italic">{allergy.notes}</p>
-        )}
+        {allergy.notes && <p className="mt-0.5 text-xs text-muted-foreground">{allergy.notes}</p>}
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
-        onClick={() => onDelete(allergy)}
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-        <span className="sr-only">{deleteLabel}</span>
-      </Button>
+      {onDelete && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
+          onClick={() => onDelete(allergy)}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          <span className="sr-only">{deleteLabel}</span>
+        </Button>
+      )}
     </div>
   );
 }
@@ -186,6 +174,8 @@ export interface MedicalRecordPanelProps {
 
 export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.Element {
   const { t, language } = useLanguage();
+  const can = useCan();
+  const canWrite = can("medical_records.write");
   const queryClient = useQueryClient();
   const [modal, setModal] = useState<ModalState>(null);
   const [visitPage, setVisitPage] = useState(1);
@@ -203,6 +193,18 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
   });
 
   const record = recordData?.data;
+  const severityLabels: Record<AllergySeverity, string> = {
+    MILD: t.medicalRecordAllergySeverityMild,
+    MODERATE: t.medicalRecordAllergySeverityModerate,
+    SEVERE: t.medicalRecordAllergySeveritySevere,
+  };
+  const typeLabels: Record<string, string> = {
+    MEDICINE: t.medicalRecordAllergyTypeMedicine,
+    FOOD: t.medicalRecordAllergyTypeFood,
+    ENVIRONMENT: t.medicalRecordAllergyTypeEnvironment,
+    OTHER: t.medicalRecordAllergyTypeOther,
+  };
+  const allergies = record ? sortBySeverity(record.allergies) : [];
   const visits = visitsData?.data ?? [];
   const visitMeta = visitsData?.meta;
 
@@ -303,12 +305,10 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
               <TabsTrigger value="allergies">
                 {t.medicalRecordAllergiesTab}
                 {record.allergies.length > 0 && (
-                  <span className={cn(
-                    "ml-1.5 rounded-full px-1.5 py-0.5 text-xs font-semibold",
-                    record.allergies.some(a => a.severity === "SEVERE")
-                      ? "bg-destructive/10 text-destructive"
-                      : "bg-muted text-muted-foreground"
-                  )}>
+                  <span className="ml-1.5 flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    {record.allergies.some((a) => a.severity === "SEVERE") && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-destructive" aria-hidden />
+                    )}
                     {record.allergies.length}
                   </span>
                 )}
@@ -322,15 +322,17 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t.medicalRecordTitle}
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-xl text-xs"
-                  onClick={() => setModal({ mode: "editRecord" })}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                  {t.medicalRecordEdit}
-                </Button>
+                {canWrite && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 rounded-xl text-xs"
+                    onClick={() => setModal({ mode: "editRecord" })}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {t.medicalRecordEdit}
+                  </Button>
+                )}
               </div>
 
               <div className="mt-3 divide-y divide-border rounded-xl border border-border bg-card px-3">
@@ -363,15 +365,13 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                     {t.medicalRecordAllergiesTab}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {record.allergies.map((a) => (
+                    {allergies.map((a) => (
                       <span
                         key={a.uuid}
-                        className={cn(
-                          "flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium",
-                          severityClass(a.severity)
-                        )}
+                        title={severityLabels[a.severity]}
+                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground"
                       >
-                        {a.severity === "SEVERE" && <AlertTriangle className="h-3 w-3" />}
+                        <span className={cn("h-1.5 w-1.5 rounded-full", SEVERITY_ACCENT[a.severity].dot)} aria-hidden />
                         {a.allergenName}
                       </span>
                     ))}
@@ -386,15 +386,17 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t.medicalRecordAllergiesTab}
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-xl text-xs"
-                  onClick={() => setModal({ mode: "addAllergy" })}
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  {t.medicalRecordAllergyAdd}
-                </Button>
+                {canWrite && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 rounded-xl text-xs"
+                    onClick={() => setModal({ mode: "addAllergy" })}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    {t.medicalRecordAllergyAdd}
+                  </Button>
+                )}
               </div>
 
               {record.allergies.length === 0 ? (
@@ -404,19 +406,15 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                 </div>
               ) : (
                 <div className="mt-3 space-y-2">
-                  {record.allergies.map((a) => (
+                  {allergies.map((a) => (
                     <AllergyCard
                       key={a.uuid}
                       allergy={a}
-                      onDelete={(allergy) => setModal({ mode: "deleteAllergy", allergy })}
+                      onDelete={canWrite ? (allergy) => setModal({ mode: "deleteAllergy", allergy }) : undefined}
                       deleteLabel={t.medicalRecordAllergyDelete}
-                      severityMild={t.medicalRecordAllergySeverityMild}
-                      severityModerate={t.medicalRecordAllergySeverityModerate}
-                      severitySevere={t.medicalRecordAllergySeveritySevere}
-                      typeMedicine={t.medicalRecordAllergyTypeMedicine}
-                      typeFood={t.medicalRecordAllergyTypeFood}
-                      typeEnvironment={t.medicalRecordAllergyTypeEnvironment}
-                      typeOther={t.medicalRecordAllergyTypeOther}
+                      reactionLabel={t.medicalRecordAllergyReaction}
+                      severityLabel={severityLabels[a.severity] ?? a.severity}
+                      typeLabel={typeLabels[a.allergenType] ?? a.allergenType}
                     />
                   ))}
                 </div>
@@ -429,15 +427,17 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t.medicalRecordVisitsTab}
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-xl text-xs"
-                  onClick={() => setModal({ mode: "addVisit" })}
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  {t.medicalRecordVisitAdd}
-                </Button>
+                {canWrite && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 rounded-xl text-xs"
+                    onClick={() => setModal({ mode: "addVisit" })}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    {t.medicalRecordVisitAdd}
+                  </Button>
+                )}
               </div>
 
               {visitsLoading ? (
@@ -452,21 +452,13 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
               ) : (
                 <div className="mt-3 flex flex-1 flex-col overflow-hidden">
                   <div className="flex-1 overflow-y-auto px-5 pb-2">
-                    <div className="space-y-2">
-                      {visits.map((visit) => (
-                        <VisitRow
-                          key={visit.uuid}
-                          visit={visit}
-                          onEdit={(v) => setModal({ mode: "editVisit", visit: v })}
-                          onDelete={(v) => setModal({ mode: "deleteVisit", visit: v })}
-                          editLabel={t.medicalRecordVisitEdit}
-                          deleteLabel={t.medicalRecordVisitDelete}
-                          chiefComplaintLabel={t.medicalRecordVisitChiefComplaint}
-                          diagnosisLabel={t.medicalRecordVisitDiagnosis}
-                          doctorLabel={t.medicalRecordVisitDoctor}
-                        />
-                      ))}
-                    </div>
+                    <VisitTimeline
+                      visits={visits}
+                      language={language}
+                      isFirstPage={visitPage === 1}
+                      onEdit={canWrite ? (v) => setModal({ mode: "editVisit", visit: v }) : undefined}
+                      onDelete={canWrite ? (v) => setModal({ mode: "deleteVisit", visit: v }) : undefined}
+                    />
                   </div>
 
                   {/* Pagination */}
@@ -589,7 +581,7 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
               </div>
             </DialogHeader>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-              <p className="font-medium text-foreground">{formatVisitDate(modal.visit.visitDate)}</p>
+              <p className="font-medium text-foreground">{formatVisitDate(modal.visit.visitDate, language)}</p>
               {modal.visit.chiefComplaint && (
                 <p className="mt-0.5 text-sm text-muted-foreground">{modal.visit.chiefComplaint}</p>
               )}
@@ -609,106 +601,163 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
   );
 }
 
-// ── Visit Row ─────────────────────────────────────────────────────────────────
+// ── Visit Timeline ────────────────────────────────────────────────────────────
+// Newest first, grouped by month, on a vertical rail with one dot per visit.
 
-interface VisitRowProps {
-  visit: MedicalVisit;
-  onEdit: (v: MedicalVisit) => void;
-  onDelete: (v: MedicalVisit) => void;
-  editLabel: string;
-  deleteLabel: string;
-  chiefComplaintLabel: string;
-  diagnosisLabel: string;
-  doctorLabel: string;
+interface VisitTimelineProps {
+  visits: MedicalVisit[];
+  language: string;
+  isFirstPage: boolean;
+  onEdit?: (v: MedicalVisit) => void;
+  onDelete?: (v: MedicalVisit) => void;
 }
 
-function VisitRow({
-  visit,
-  onEdit,
-  onDelete,
-  editLabel,
-  deleteLabel,
-  chiefComplaintLabel,
-  diagnosisLabel,
-  doctorLabel: _doctorLabel,
-}: VisitRowProps): JSX.Element {
+function VisitTimeline({ visits, language, isFirstPage, onEdit, onDelete }: VisitTimelineProps): JSX.Element {
+  const { t } = useLanguage();
+  const sorted = [...visits].sort((a, b) => new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime());
+
+  const groups: { label: string; items: MedicalVisit[] }[] = [];
+  for (const v of sorted) {
+    const label = formatMonthYear(v.visitDate, language);
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) last.items.push(v);
+    else groups.push({ label, items: [v] });
+  }
+
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
+    <ol className="relative space-y-5">
+      {groups.map((group, gi) => (
+        <li key={group.label}>
+          <p className="mb-2 pl-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {group.label}
+          </p>
+          <ol className="relative">
+            {/* the rail */}
+            <span className="absolute bottom-2 left-[7px] top-2 w-px bg-border" aria-hidden />
+            {group.items.map((visit, vi) => {
+              const isLatest = isFirstPage && gi === 0 && vi === 0;
+              return (
+                <li key={visit.uuid} className="relative pb-3 pl-7 last:pb-0">
+                  <span
+                    className={cn(
+                      "absolute left-0 top-3 h-[15px] w-[15px] rounded-full border-2 bg-card",
+                      isLatest ? "border-primary" : "border-muted-foreground/40"
+                    )}
+                    aria-hidden
+                  >
+                    {isLatest && <span className="absolute inset-[3px] rounded-full bg-primary" />}
+                  </span>
+                  <VisitCard
+                    visit={visit}
+                    language={language}
+                    isLatest={isLatest}
+                    latestLabel={t.medicalRecordVisitLatest}
+                    relativeLabel={relativeDayLabel(visit.visitDate, t)}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                </li>
+              );
+            })}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+interface VisitCardProps {
+  visit: MedicalVisit;
+  language: string;
+  isLatest: boolean;
+  latestLabel: string;
+  relativeLabel: string | null;
+  onEdit?: (v: MedicalVisit) => void;
+  onDelete?: (v: MedicalVisit) => void;
+}
+
+function VisitCard({ visit, language, isLatest, latestLabel, relativeLabel, onEdit, onDelete }: VisitCardProps): JSX.Element {
+  const { t } = useLanguage();
+  const vitals = [
+    visit.bloodPressure ? `${visit.bloodPressure} mmHg` : null,
+    visit.temperatureCelsius != null ? `${visit.temperatureCelsius}°C` : null,
+    visit.pulsePerMinute != null ? `${visit.pulsePerMinute} bpm` : null,
+    visit.weightKg != null ? `${visit.weightKg} kg` : null,
+    visit.heightCm != null ? `${visit.heightCm} cm` : null,
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className={cn("group rounded-xl border bg-card p-3", isLatest ? "border-primary/30" : "border-border")}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold text-foreground">
-              {formatVisitDate(visit.visitDate)}
-            </span>
-            {visit.doctor && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Stethoscope className="h-3 w-3" />
-                {visit.doctor.name}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-sm font-semibold text-foreground">{formatVisitDate(visit.visitDate, language)}</span>
+            {relativeLabel && <span className="text-xs text-muted-foreground">· {relativeLabel}</span>}
+            {isLatest && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                {latestLabel}
               </span>
             )}
           </div>
+          {visit.doctor && (
+            <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+              <Stethoscope className="h-3 w-3" aria-hidden />
+              {t.medicalRecordVisitDoctor}: {visit.doctor.name}
+            </p>
+          )}
+        </div>
+        {(onEdit || onDelete) && (
+          <div className="flex flex-shrink-0 gap-0.5 opacity-70 transition-opacity group-hover:opacity-100">
+            {onEdit && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                onClick={() => onEdit(visit)}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span className="sr-only">{t.medicalRecordVisitEdit}</span>
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                onClick={() => onDelete(visit)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span className="sr-only">{t.medicalRecordVisitDelete}</span>
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {(visit.chiefComplaint || visit.diagnosis) && (
+        <dl className="mt-2 space-y-1 text-xs">
           {visit.chiefComplaint && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              <span className="font-medium">{chiefComplaintLabel}:</span> {visit.chiefComplaint}
-            </p>
-          )}
-          {visit.diagnosis && (
-            <p className="text-xs text-muted-foreground">
-              <span className="font-medium">{diagnosisLabel}:</span> {visit.diagnosis}
-            </p>
-          )}
-          {/* Vitals mini row */}
-          {(visit.weightKg || visit.heightCm || visit.bloodPressure || visit.temperatureCelsius || visit.pulsePerMinute) && (
-            <div className="mt-1.5 flex flex-wrap gap-2">
-              {visit.weightKg != null && (
-                <span className="rounded-md bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                  {visit.weightKg}kg
-                </span>
-              )}
-              {visit.heightCm != null && (
-                <span className="rounded-md bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                  {visit.heightCm}cm
-                </span>
-              )}
-              {visit.bloodPressure && (
-                <span className="rounded-md bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                  {visit.bloodPressure} mmHg
-                </span>
-              )}
-              {visit.temperatureCelsius != null && (
-                <span className="rounded-md bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                  {visit.temperatureCelsius}°C
-                </span>
-              )}
-              {visit.pulsePerMinute != null && (
-                <span className="rounded-md bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                  {visit.pulsePerMinute} bpm
-                </span>
-              )}
+            <div className="flex gap-2">
+              <dt className="w-20 flex-shrink-0 text-muted-foreground">{t.medicalRecordVisitChiefComplaint}</dt>
+              <dd className="min-w-0 text-foreground">{visit.chiefComplaint}</dd>
             </div>
           )}
-        </div>
-        <div className="flex flex-shrink-0 gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-foreground"
-            onClick={() => onEdit(visit)}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            <span className="sr-only">{editLabel}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-destructive"
-            onClick={() => onDelete(visit)}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            <span className="sr-only">{deleteLabel}</span>
-          </Button>
-        </div>
-      </div>
+          {visit.diagnosis && (
+            <div className="flex gap-2">
+              <dt className="w-20 flex-shrink-0 text-muted-foreground">{t.medicalRecordVisitDiagnosis}</dt>
+              <dd className="min-w-0 text-foreground">{visit.diagnosis}</dd>
+            </div>
+          )}
+        </dl>
+      )}
+
+      {visit.notes && <p className="mt-1.5 text-xs text-muted-foreground">{visit.notes}</p>}
+
+      {vitals.length > 0 && (
+        <p className="mt-2 border-t border-border pt-2 font-mono text-[11px] text-muted-foreground">
+          {vitals.join("  ·  ")}
+        </p>
+      )}
     </div>
   );
 }

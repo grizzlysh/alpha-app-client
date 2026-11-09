@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,9 +35,14 @@ import { getDoctorsDropdown } from "@/service/doctorService";
 import { getApiErrorMessage } from "@/utils/apiError";
 import type { MedicalVisit, CreateVisitPayload } from "@/types/medicalRecord";
 
-function buildSchema(t: { medicalRecordVisitDateRequired: string }) {
+const todayStr = (): string => format(new Date(), "yyyy-MM-dd");
+
+function buildSchema(t: { medicalRecordVisitDateRequired: string; medicalRecordVisitFutureDate: string }) {
   return z.object({
-    visitDate: z.string().min(1, t.medicalRecordVisitDateRequired),
+    visitDate: z
+      .string()
+      .min(1, t.medicalRecordVisitDateRequired)
+      .refine((v) => v <= todayStr(), t.medicalRecordVisitFutureDate),
     chiefComplaint: z.string().trim().optional(),
     diagnosis: z.string().trim().optional(),
     notes: z.string().trim().optional(),
@@ -77,7 +83,8 @@ export function VisitFormModal({
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      visitDate: visit ? toDateStr(visit.visitDate) : "",
+      // A new visit is almost always today's.
+      visitDate: visit ? toDateStr(visit.visitDate) : todayStr(),
       chiefComplaint: visit?.chiefComplaint ?? "",
       diagnosis: visit?.diagnosis ?? "",
       notes: visit?.notes ?? "",
@@ -92,7 +99,8 @@ export function VisitFormModal({
 
   useEffect(() => {
     form.reset({
-      visitDate: visit ? toDateStr(visit.visitDate) : "",
+      // A new visit is almost always today's.
+      visitDate: visit ? toDateStr(visit.visitDate) : todayStr(),
       chiefComplaint: visit?.chiefComplaint ?? "",
       diagnosis: visit?.diagnosis ?? "",
       notes: visit?.notes ?? "",
@@ -149,7 +157,8 @@ export function VisitFormModal({
 
   function onSubmit(values: FormValues): void {
     const payload: CreateVisitPayload = {
-      visitDate: new Date(values.visitDate).toISOString(),
+      // Noon local time, so the stored date never shifts a day across time zones.
+      visitDate: new Date(`${values.visitDate}T12:00:00`).toISOString(),
       chiefComplaint: values.chiefComplaint || undefined,
       diagnosis: values.diagnosis || undefined,
       notes: values.notes || undefined,
@@ -179,51 +188,47 @@ export function VisitFormModal({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Visit Date */}
-            <FormField
-              control={form.control}
-              name="visitDate"
-              render={() => (
-                <FormItem>
-                  <FormLabel>{t.medicalRecordVisitDate}</FormLabel>
-                  <FormControl>
-                    <Controller
-                      control={form.control}
-                      name="visitDate"
-                      render={({ field }) => (
-                        <DateInput
-                          value={field.value}
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                        />
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Doctor */}
-            <FormField
-              control={form.control}
-              name="doctorUuid"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.medicalRecordVisitDoctor}</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      value={field.value ?? ""}
-                      onValueChange={field.onChange}
-                      options={doctorOptions}
-                      placeholder={t.medicalRecordVisitDoctorPlaceholder}
-                      className="h-10 w-full rounded-xl text-sm"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Visit date + doctor */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="visitDate"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>{t.medicalRecordVisitDate}</FormLabel>
+                    <FormControl>
+                      <DateInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        maxDate={new Date()}
+                        aria-invalid={!!fieldState.error}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="doctorUuid"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.medicalRecordVisitDoctor}</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                        options={doctorOptions}
+                        placeholder={t.medicalRecordVisitDoctorPlaceholder}
+                        className="h-10 w-full rounded-xl text-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Chief Complaint */}
             <FormField
@@ -290,7 +295,7 @@ export function VisitFormModal({
               <p className="text-sm font-semibold text-foreground">
                 {t.medicalRecordVisitVitals}
               </p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <FormField
                   control={form.control}
                   name="weightKg"
@@ -298,12 +303,16 @@ export function VisitFormModal({
                     <FormItem>
                       <FormLabel className="text-xs">{t.medicalRecordVisitWeight}</FormLabel>
                       <FormControl>
+                        <div className="relative">
                         <Input
+                          className="rounded-xl pr-14"
                           {...field}
                           type="number"
                           step="0.1"
                           placeholder={t.medicalRecordVisitWeightPlaceholder}
                         />
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">kg</span>
+                      </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -316,12 +325,16 @@ export function VisitFormModal({
                     <FormItem>
                       <FormLabel className="text-xs">{t.medicalRecordVisitHeight}</FormLabel>
                       <FormControl>
+                        <div className="relative">
                         <Input
+                          className="rounded-xl pr-14"
                           {...field}
                           type="number"
                           step="0.1"
                           placeholder={t.medicalRecordVisitHeightPlaceholder}
                         />
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">cm</span>
+                      </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -334,10 +347,14 @@ export function VisitFormModal({
                     <FormItem>
                       <FormLabel className="text-xs">{t.medicalRecordVisitBloodPressure}</FormLabel>
                       <FormControl>
+                        <div className="relative">
                         <Input
+                          className="rounded-xl pr-14"
                           {...field}
                           placeholder={t.medicalRecordVisitBloodPressurePlaceholder}
                         />
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">mmHg</span>
+                      </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -350,12 +367,16 @@ export function VisitFormModal({
                     <FormItem>
                       <FormLabel className="text-xs">{t.medicalRecordVisitTemperature}</FormLabel>
                       <FormControl>
+                        <div className="relative">
                         <Input
+                          className="rounded-xl pr-14"
                           {...field}
                           type="number"
                           step="0.1"
                           placeholder={t.medicalRecordVisitTemperaturePlaceholder}
                         />
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">°C</span>
+                      </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -368,11 +389,15 @@ export function VisitFormModal({
                     <FormItem>
                       <FormLabel className="text-xs">{t.medicalRecordVisitPulse}</FormLabel>
                       <FormControl>
+                        <div className="relative">
                         <Input
+                          className="rounded-xl pr-14"
                           {...field}
                           type="number"
                           placeholder={t.medicalRecordVisitPulsePlaceholder}
                         />
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">bpm</span>
+                      </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
