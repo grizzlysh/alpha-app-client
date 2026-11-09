@@ -1977,6 +1977,31 @@ export interface Translations {
   notFoundTitle: string;
   notFoundDesc: string;
   backToHome: string;
+  posQtyLabel: string;
+  posAddBox: string;
+  posBoxUnit: string;
+  posPcsUnit: string;
+  posAvailableShort: string;
+  posPriceLockedHint: string;
+  posEditPriceHint: string;
+  posRxRequiredBadge: string;
+  posTabProducts: string;
+  posTabCart: string;
+  posShortcutSearch: string;
+  posShortcutHold: string;
+  posShortcutPay: string;
+  posShortcutsTitle: string;
+  posScannerReady: string;
+  posScanAdded: string;
+  posDraftRestored: string;
+  posAmountReceived: string;
+  posExactAmount: string;
+  posChangeDue: string;
+  posAmountShort: string;
+  posDiscountMaxHint: string;
+  posDiscountLimited: string;
+  posTotalsByServer: string;
+  posRemoveItem: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -3911,6 +3936,31 @@ export const translations: Record<Language, Translations> = {
     notFoundTitle: "Page not found",
     notFoundDesc: "The page you opened doesn't exist or has moved.",
     backToHome: "Back to home",
+    posQtyLabel: "Qty",
+    posAddBox: "+1 box",
+    posBoxUnit: "box",
+    posPcsUnit: "pcs",
+    posAvailableShort: "{n} available",
+    posPriceLockedHint: "Price changes need the 'override price' permission",
+    posEditPriceHint: "Click to change the price",
+    posRxRequiredBadge: "Prescription required",
+    posTabProducts: "Products",
+    posTabCart: "Cart",
+    posShortcutSearch: "Search",
+    posShortcutHold: "Hold",
+    posShortcutPay: "Pay",
+    posShortcutsTitle: "Shortcuts",
+    posScannerReady: "Barcode scanner ready — scan anytime",
+    posScanAdded: "Added: {name}",
+    posDraftRestored: "Your unfinished cart was restored",
+    posAmountReceived: "Amount received",
+    posExactAmount: "Exact",
+    posChangeDue: "Change",
+    posAmountShort: "Amount received is less than the total",
+    posDiscountMaxHint: "Max {n}% for your role",
+    posDiscountLimited: "Discount was limited to {n}%",
+    posTotalsByServer: "Totals are verified by the server at checkout",
+    posRemoveItem: "Remove",
   },
   id: {
     appName: "PharmaCare",
@@ -5841,6 +5891,31 @@ export const translations: Record<Language, Translations> = {
     notFoundTitle: "Halaman tidak ditemukan",
     notFoundDesc: "Halaman yang Anda buka tidak ada atau sudah dipindahkan.",
     backToHome: "Kembali ke beranda",
+    posQtyLabel: "Jml",
+    posAddBox: "+1 box",
+    posBoxUnit: "box",
+    posPcsUnit: "pcs",
+    posAvailableShort: "tersedia {n}",
+    posPriceLockedHint: "Ubah harga memerlukan izin 'ubah harga'",
+    posEditPriceHint: "Klik untuk mengubah harga",
+    posRxRequiredBadge: "Wajib resep",
+    posTabProducts: "Produk",
+    posTabCart: "Keranjang",
+    posShortcutSearch: "Cari",
+    posShortcutHold: "Tahan",
+    posShortcutPay: "Bayar",
+    posShortcutsTitle: "Pintasan",
+    posScannerReady: "Scanner barcode siap — scan kapan saja",
+    posScanAdded: "Ditambahkan: {name}",
+    posDraftRestored: "Keranjang yang belum selesai dipulihkan",
+    posAmountReceived: "Uang diterima",
+    posExactAmount: "Uang pas",
+    posChangeDue: "Kembalian",
+    posAmountShort: "Uang yang diterima kurang dari total",
+    posDiscountMaxHint: "Maks {n}% untuk peran Anda",
+    posDiscountLimited: "Diskon dibatasi {n}%",
+    posTotalsByServer: "Total diverifikasi server saat pembayaran",
+    posRemoveItem: "Hapus",
   },
 };
 

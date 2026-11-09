@@ -69,8 +69,8 @@ export interface UpdateSalePayload {
   discountAmount?: number;
   ppnPercentage?: number;
   ppnAmount?: number;
-  totalAmount: number;
-  grandTotal: number;
+  totalAmount?: number;
+  grandTotal?: number;
   description?: string;
   isPrescription?: boolean;
   details: CreateSaleDetailPayload[];
@@ -153,8 +153,9 @@ export interface CreateSalePayload {
   discountAmount?: number;
   ppnPercentage?: number;
   ppnAmount?: number;
-  totalAmount: number;
-  grandTotal: number;
+  // Totals are computed by the server; sent only for older API versions.
+  totalAmount?: number;
+  grandTotal?: number;
   paidAmount?: number;
   description?: string;
   isPending?: boolean;

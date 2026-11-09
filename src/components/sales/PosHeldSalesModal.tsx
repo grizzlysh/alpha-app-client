@@ -25,7 +25,8 @@ export interface PosHeldSalesModalProps {
   cartHasItems: boolean;
   cancellingUuid: string | null;
   onContinue: (sale: Sale) => void;
-  onCancelHeld: (sale: Sale) => void;
+  /** Omitted when the user may not cancel sales. */
+  onCancelHeld?: (sale: Sale) => void;
   onClose: () => void;
 }
 
@@ -108,19 +109,21 @@ export function PosHeldSalesModal({
                       </div>
 
                       <div className="flex shrink-0 gap-1.5">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                          disabled={isAnyBusy}
-                          onClick={() => setConfirmSale(sale)}
-                        >
-                          {isCancelling ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            t.posHeldSalesCancelHeld
-                          )}
-                        </Button>
+                        {onCancelHeld && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            disabled={isAnyBusy}
+                            onClick={() => setConfirmSale(sale)}
+                          >
+                            {isCancelling ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              t.posHeldSalesCancelHeld
+                            )}
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           className="rounded-lg"
@@ -173,7 +176,7 @@ export function PosHeldSalesModal({
             variant="destructive"
             className="min-w-[8rem] rounded-xl"
             onClick={() => {
-              if (confirmSale) {
+              if (confirmSale && onCancelHeld) {
                 onCancelHeld(confirmSale);
                 setConfirmSale(null);
               }

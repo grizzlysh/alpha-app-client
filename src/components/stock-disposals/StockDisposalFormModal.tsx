@@ -183,6 +183,7 @@ export function StockDisposalFormModal({
           batchNumber: d.stockDetail.batchNumber,
           expiryDate: d.stockDetail.expiryDate,
           quantityPieces: d.quantityPieces,
+          availablePieces: d.quantityPieces,
           quantityBox: 0,
           quantityPerBox: 0,
           distributor: { uuid: "", name: "" },
@@ -192,7 +193,7 @@ export function StockDisposalFormModal({
             name: d.medicine.name,
             unit: d.medicine.unit,
             shape: { name: "" },
-            type: { name: "" },
+            type: { name: "", requiredPrescription: false },
           },
         },
       })) ?? []
