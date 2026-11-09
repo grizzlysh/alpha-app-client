@@ -1,3 +1,5 @@
+import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 import type { JSX } from "react";
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -65,7 +67,16 @@ export function DashboardLayout(): JSX.Element {
           <DashboardHeader pageTitle={pageTitle} />
 
           <main className="flex-1 p-4 md:p-6">
-            <Outlet />
+            {/* Pages are code-split; keep the shell visible while one loads. */}
+            <Suspense
+              fallback={
+                <div className="flex h-64 items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              }
+            >
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>

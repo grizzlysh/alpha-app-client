@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import { lazy, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -15,31 +16,31 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useBootstrapAuth } from "@/hooks/useBootstrapAuth";
 import LoginPage from "@/pages/LoginPage";
 import HomePage from "@/pages/HomePage";
-import DashboardPage from "@/pages/DashboardPage";
-import DistributorsPage from "@/pages/DistributorsPage";
-import MedicinesPage from "@/pages/MedicinesPage";
-import MedicineClassificationPage from "@/pages/MedicineClassificationPage";
-import BusinessParametersPage from "@/pages/BusinessParametersPage";
-import SystemParametersPage from "@/pages/SystemParametersPage";
-import RolesPage from "@/pages/RolesPage";
-import UsersPage from "@/pages/UsersPage";
-import PharmaciesPage from "@/pages/PharmaciesPage";
-import PurchaseOrdersPage from "@/pages/PurchaseOrdersPage";
-import InvoicesPage from "@/pages/InvoicesPage";
-import StockPage from "@/pages/StockPage";
-import CustomersPage from "@/pages/CustomersPage";
-import StockDisposalsPage from "@/pages/StockDisposalsPage";
-import StockReturnsPage from "@/pages/StockReturnsPage";
-import StockMovementsPage from "@/pages/StockMovementsPage";
-import PosPage from "@/pages/PosPage";
-import SalesPage from "@/pages/SalesPage";
-import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
-import ReportsPage from "@/pages/ReportsPage";
-import StoragePage from "@/pages/StoragePage";
-import InventoryPage from "@/pages/InventoryPage";
-import DoctorsPage from "@/pages/DoctorsPage";
-import PrescriptionsPage from "@/pages/PrescriptionsPage";
-import MedicalRecordsPage from "@/pages/MedicalRecordsPage";
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const DistributorsPage = lazy(() => import("@/pages/DistributorsPage"));
+const MedicinesPage = lazy(() => import("@/pages/MedicinesPage"));
+const MedicineClassificationPage = lazy(() => import("@/pages/MedicineClassificationPage"));
+const BusinessParametersPage = lazy(() => import("@/pages/BusinessParametersPage"));
+const SystemParametersPage = lazy(() => import("@/pages/SystemParametersPage"));
+const RolesPage = lazy(() => import("@/pages/RolesPage"));
+const UsersPage = lazy(() => import("@/pages/UsersPage"));
+const PharmaciesPage = lazy(() => import("@/pages/PharmaciesPage"));
+const PurchaseOrdersPage = lazy(() => import("@/pages/PurchaseOrdersPage"));
+const InvoicesPage = lazy(() => import("@/pages/InvoicesPage"));
+const StockPage = lazy(() => import("@/pages/StockPage"));
+const CustomersPage = lazy(() => import("@/pages/CustomersPage"));
+const StockDisposalsPage = lazy(() => import("@/pages/StockDisposalsPage"));
+const StockReturnsPage = lazy(() => import("@/pages/StockReturnsPage"));
+const StockMovementsPage = lazy(() => import("@/pages/StockMovementsPage"));
+const PosPage = lazy(() => import("@/pages/PosPage"));
+const SalesPage = lazy(() => import("@/pages/SalesPage"));
+const ProfileSettingsPage = lazy(() => import("@/pages/ProfileSettingsPage"));
+const ReportsPage = lazy(() => import("@/pages/ReportsPage"));
+const StoragePage = lazy(() => import("@/pages/StoragePage"));
+const InventoryPage = lazy(() => import("@/pages/InventoryPage"));
+const DoctorsPage = lazy(() => import("@/pages/DoctorsPage"));
+const PrescriptionsPage = lazy(() => import("@/pages/PrescriptionsPage"));
+const MedicalRecordsPage = lazy(() => import("@/pages/MedicalRecordsPage"));
 import StatusPage from "@/pages/StatusPage";
 import { PermissionGate } from "@/components/shared/PermissionGate";
 
@@ -59,6 +60,7 @@ function AppRoutes(): JSX.Element {
     <>
       <Toaster richColors theme={theme} position="bottom-right" closeButton />
       <BrowserRouter>
+      <Suspense fallback={null}>
       <Routes>
         <Route element={<GuestGuard />}>
           <Route path="/login" element={<LoginPage />} />
@@ -121,6 +123,7 @@ function AppRoutes(): JSX.Element {
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
     </>
   );
