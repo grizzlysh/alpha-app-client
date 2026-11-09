@@ -2012,6 +2012,9 @@ export interface Translations {
   medicalRecordVisitYesterday: string;
   medicalRecordVisitBy: string;
   medicalRecordVisitFutureDate: string;
+  placementHeadPharmacist: string;
+  placementHeadPharmacistDesc: string;
+  placementHeadPharmacistForced: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -2117,7 +2120,7 @@ export const translations: Record<Language, Translations> = {
     dashboardComplianceTitle: "Pharmacy Compliance",
     dashboardSipnapLabel: "SIPNAP",
     dashboardSiaLabel: "SIA (Business License)",
-    dashboardApjLabel: "APJ (Pharmacist-in-Charge)",
+    dashboardApjLabel: "Head Pharmacist",
     dashboardLicenseExpiresLabel: "Expires",
     dashboardLicenseOverdue: "Overdue",
     dashboardQuickActionsTitle: "Quick Actions",
@@ -2980,7 +2983,7 @@ export const translations: Record<Language, Translations> = {
     placementSelectUser: "Select a user",
     placementUserRequired: "User is required",
     pharmaNoHeadPharmacist: "No Head Pharmacist",
-    pharmaNoHeadPharmacistHint: "This pharmacy has no assigned head pharmacist and cannot be selected",
+    pharmaNoHeadPharmacistHint: "This pharmacy has no Head Pharmacist yet and can't be selected",
     bizLicenseTitle: "Business License (SIA)",
     bizLicenseDesc: "Register the pharmacy's operating license",
     bizLicenseNumber: "License Number",
@@ -3981,6 +3984,9 @@ export const translations: Record<Language, Translations> = {
     medicalRecordVisitYesterday: "Yesterday",
     medicalRecordVisitBy: "by",
     medicalRecordVisitFutureDate: "Visit date can't be in the future",
+    placementHeadPharmacist: "Head Pharmacist",
+    placementHeadPharmacistDesc: "Responsible pharmacist for this pharmacy (one per pharmacy, needs an active license). The owner can be the Head Pharmacist too.",
+    placementHeadPharmacistForced: "Always on for the Head Pharmacist role",
   },
   id: {
     appName: "PharmaCare",
@@ -4082,7 +4088,7 @@ export const translations: Record<Language, Translations> = {
     dashboardComplianceTitle: "Kepatuhan Apotek",
     dashboardSipnapLabel: "SIPNAP",
     dashboardSiaLabel: "SIA (Izin Usaha)",
-    dashboardApjLabel: "APJ (Apoteker Penanggung Jawab)",
+    dashboardApjLabel: "Head Pharmacist",
     dashboardLicenseExpiresLabel: "Kedaluwarsa",
     dashboardLicenseOverdue: "Terlambat",
     dashboardQuickActionsTitle: "Aksi Cepat",
@@ -4944,8 +4950,8 @@ export const translations: Record<Language, Translations> = {
     placementUser: "Pengguna",
     placementSelectUser: "Pilih pengguna",
     placementUserRequired: "Pengguna wajib diisi",
-    pharmaNoHeadPharmacist: "Tanpa Apoteker Penanggung Jawab",
-    pharmaNoHeadPharmacistHint: "Apotek ini belum memiliki apoteker penanggung jawab dan tidak dapat dipilih",
+    pharmaNoHeadPharmacist: "Belum ada Head Pharmacist",
+    pharmaNoHeadPharmacistHint: "Apotek ini belum memiliki Head Pharmacist dan belum bisa dipilih",
     bizLicenseTitle: "Izin Usaha (SIA)",
     bizLicenseDesc: "Daftarkan izin operasional apotek",
     bizLicenseNumber: "Nomor Izin",
@@ -5946,6 +5952,9 @@ export const translations: Record<Language, Translations> = {
     medicalRecordVisitYesterday: "Kemarin",
     medicalRecordVisitBy: "oleh",
     medicalRecordVisitFutureDate: "Tanggal kunjungan tidak boleh di masa depan",
+    placementHeadPharmacist: "Head Pharmacist",
+    placementHeadPharmacistDesc: "Apoteker yang bertanggung jawab atas apotek ini (satu per apotek, wajib izin praktik aktif). Owner juga boleh menjadi Head Pharmacist.",
+    placementHeadPharmacistForced: "Selalu aktif untuk peran Head Pharmacist",
   },
 };
 

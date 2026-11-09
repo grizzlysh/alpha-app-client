@@ -81,7 +81,14 @@ function TenureRow({
     <div className="px-3.5 py-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium uppercase text-foreground">{tenure.role.name}</p>
+          <p className="flex flex-wrap items-center gap-1.5 text-sm font-medium uppercase text-foreground">
+            {tenure.role.name}
+            {tenure.isHeadPharmacist && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold normal-case text-primary">
+                {t.placementHeadPharmacist}
+              </span>
+            )}
+          </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {formatDate(tenure.joinedAt)}
             {tenure.leftAt

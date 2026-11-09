@@ -122,12 +122,49 @@ function FieldError({ message }: { message?: string }): JSX.Element | null {
   );
 }
 
+// ── Head Pharmacist toggle ─────────────────────────────────────────────────────
+
+interface HeadPharmacistToggleProps {
+  t: Translations;
+  checked: boolean;
+  forced: boolean;
+  onChange: (value: boolean) => void;
+}
+
+function HeadPharmacistToggle({ t, checked, forced, onChange }: HeadPharmacistToggleProps): JSX.Element {
+  const on = forced || checked;
+  return (
+    <label
+      className={cn(
+        "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors",
+        on ? "border-primary/40 bg-primary/5" : "border-border hover:border-primary/30",
+        forced && "cursor-default"
+      )}
+    >
+      <input
+        type="checkbox"
+        className="mt-0.5 h-4 w-4 accent-[hsl(var(--primary))]"
+        checked={on}
+        disabled={forced}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+      <span className="min-w-0">
+        <span className="block text-sm font-medium text-foreground">{t.placementHeadPharmacist}</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground">
+          {forced ? t.placementHeadPharmacistForced : t.placementHeadPharmacistDesc}
+        </span>
+      </span>
+    </label>
+  );
+}
+
 // ── Step 1: Placement Info ─────────────────────────────────────────────────────
 
 interface Step1Values {
   pharmacyUuid: string;
   roleUuid: string;
   joinedAt: string;
+  isHeadPharmacist: boolean;
 }
 
 function makeStep1Schema(t: Translations) {
@@ -135,6 +172,7 @@ function makeStep1Schema(t: Translations) {
     pharmacyUuid: z.string().min(1, t.placementPharmacyRequired),
     roleUuid: z.string().min(1, t.placementRoleRequired),
     joinedAt: z.string().min(1, t.placementJoinedAtRequired),
+    isHeadPharmacist: z.boolean(),
   });
 }
 
@@ -152,9 +190,14 @@ function Step1Form({ t, defaultValues, pharmacies, roles, onCancel, onNext }: St
   const form = useForm<Step1Values>({ resolver: zodResolver(schema), defaultValues });
   const err = (k: keyof Step1Values) => form.formState.errors[k]?.message;
 
+  const watchedRole = roles.find((r) => r.uuid === form.watch("roleUuid"));
+  const headForced = watchedRole?.type === "HEAD_PHARMACIST";
+
   function handleSubmit(values: Step1Values): void {
     const selectedRole = roles.find((r) => r.uuid === values.roleUuid);
-    onNext(values, selectedRole?.requiresLicense ?? false);
+    const isHead = values.isHeadPharmacist || selectedRole?.type === "HEAD_PHARMACIST";
+    // A Head Pharmacist always needs a practice license, whatever the role.
+    onNext({ ...values, isHeadPharmacist: isHead }, (selectedRole?.requiresLicense ?? false) || isHead);
   }
 
   return (
@@ -222,6 +265,14 @@ function Step1Form({ t, defaultValues, pharmacies, roles, onCancel, onNext }: St
             />
             <FieldError message={err("joinedAt")} />
           </div>
+
+          <Controller
+            name="isHeadPharmacist"
+            control={form.control}
+            render={({ field }) => (
+              <HeadPharmacistToggle t={t} checked={field.value} forced={headForced} onChange={field.onChange} />
+            )}
+          />
         </div>
       </div>
 
@@ -383,7 +434,7 @@ function PlacementCreateWizard({ userUuid, onClose, onSuccess }: PlacementCreate
   onSuccessRef.current = onSuccess;
 
   const [step, setStep] = useState<1 | 2>(1);
-  const [step1Data, setStep1Data] = useState<Step1Values>({ pharmacyUuid: "", roleUuid: "", joinedAt: "" });
+  const [step1Data, setStep1Data] = useState<Step1Values>({ pharmacyUuid: "", roleUuid: "", joinedAt: "", isHeadPharmacist: false });
   const [licenseRequired, setLicenseRequired] = useState(false);
 
   const { data: pharmaciesData } = useQuery({
@@ -428,6 +479,7 @@ function PlacementCreateWizard({ userUuid, onClose, onSuccess }: PlacementCreate
       pharmacyUuid: step1Data.pharmacyUuid,
       roleUuid: step1Data.roleUuid,
       joinedAt: toISOString(step1Data.joinedAt),
+      isHeadPharmacist: step1Data.isHeadPharmacist,
       license,
     });
   }
@@ -488,6 +540,7 @@ function makeEditSchema(t: Translations) {
       joinedAt: z.string().min(1, t.placementJoinedAtRequired),
       leftAt: z.string().optional().or(z.literal("")),
       status: z.enum(["ACTIVE", "INACTIVE"] as const).optional(),
+      isHeadPharmacist: z.boolean(),
     })
     .refine(
       (d) => !d.joinedAt || !d.leftAt || new Date(d.leftAt) > new Date(d.joinedAt),
@@ -500,6 +553,7 @@ interface EditFormValues {
   joinedAt: string;
   leftAt?: string;
   status?: "ACTIVE" | "INACTIVE";
+  isHeadPharmacist: boolean;
 }
 
 interface PlacementEditFormProps {
@@ -531,8 +585,11 @@ function PlacementEditForm({ userUuid, placement, onClose, onSuccess }: Placemen
       status: (placement.status === "ACTIVE" || placement.status === "INACTIVE")
         ? placement.status
         : undefined,
+      isHeadPharmacist: placement.isHeadPharmacist ?? false,
     },
   });
+  const editRole = roles.find((r) => r.uuid === form.watch("roleUuid"));
+  const editHeadForced = editRole?.type === "HEAD_PHARMACIST";
 
   const updateMutation = useMutation({
     mutationFn: (payload: UpdatePlacementPayload) => updatePlacement(userUuid, placement.uuid, payload),
@@ -555,6 +612,9 @@ function PlacementEditForm({ userUuid, placement, onClose, onSuccess }: Placemen
     const existingLeft = placement.leftAt ? new Date(placement.leftAt).toISOString() : null;
     if (newLeft !== existingLeft) payload.leftAt = newLeft;
     if (values.status && values.status !== placement.status) payload.status = values.status;
+    if (!editHeadForced && values.isHeadPharmacist !== (placement.isHeadPharmacist ?? false)) {
+      payload.isHeadPharmacist = values.isHeadPharmacist;
+    }
     updateMutation.mutate(payload);
   }
 
@@ -637,6 +697,14 @@ function PlacementEditForm({ userUuid, placement, onClose, onSuccess }: Placemen
                 />
                 <FieldError message={err("leftAt")} />
               </div>
+
+              <Controller
+                name="isHeadPharmacist"
+                control={form.control}
+                render={({ field }) => (
+                  <HeadPharmacistToggle t={t} checked={field.value} forced={editHeadForced} onChange={field.onChange} />
+                )}
+              />
 
               <div className="space-y-1.5">
                 <Label htmlFor="e-status">{t.placementStatus}</Label>
