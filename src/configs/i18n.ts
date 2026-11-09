@@ -1966,6 +1966,12 @@ export interface Translations {
   copy: string;
   copied: string;
   done: string;
+  errNetwork: string;
+  errTimeout: string;
+  errBadResponse: string;
+  errServer: string;
+  errForbidden: string;
+  errOffline: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -3889,6 +3895,12 @@ export const translations: Record<Language, Translations> = {
     copy: "Copy",
     copied: "Copied",
     done: "Done",
+    errNetwork: "Cannot reach the server. Check your internet connection, or make sure the server is running.",
+    errTimeout: "The server took too long to respond. Please check whether the action went through before trying again.",
+    errBadResponse: "The server returned an unexpected response (HTTP {status}). The server address may be wrong.",
+    errServer: "A server error occurred (HTTP {status}). Please try again; contact support if it persists.",
+    errForbidden: "You do not have permission for this action.",
+    errOffline: "You are offline. Reconnect to the internet and try again.",
   },
   id: {
     appName: "PharmaCare",
@@ -5808,6 +5820,12 @@ export const translations: Record<Language, Translations> = {
     copy: "Salin",
     copied: "Tersalin",
     done: "Selesai",
+    errNetwork: "Tidak dapat terhubung ke server. Periksa koneksi internet, atau pastikan server sedang berjalan.",
+    errTimeout: "Server terlalu lama merespons. Periksa dulu apakah proses sudah tersimpan sebelum mencoba lagi.",
+    errBadResponse: "Server mengembalikan respons yang tidak dikenal (HTTP {status}). Kemungkinan alamat server salah.",
+    errServer: "Terjadi kesalahan pada server (HTTP {status}). Silakan coba lagi; hubungi admin jika terus terjadi.",
+    errForbidden: "Anda tidak memiliki izin untuk tindakan ini.",
+    errOffline: "Anda sedang offline. Sambungkan kembali internet lalu coba lagi.",
   },
 };
 

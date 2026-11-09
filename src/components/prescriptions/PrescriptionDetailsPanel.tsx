@@ -12,7 +12,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import type { Translations } from "@/configs/i18n";
-import type { PrescriptionListItem, Prescription } from "@/types/prescription";
+import type { PrescriptionListItem } from "@/types/prescription";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { PrescriptionStatusBadge } from "./PrescriptionTable";

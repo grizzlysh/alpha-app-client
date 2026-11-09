@@ -8,7 +8,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { RootState } from "@/store";
 import type { Translations } from "@/configs/i18n";
 import type { Sale } from "@/types/sale";
-import { getPaymentMethodLabel, getSalePaymentStatusLabel, formatCurrency, formatDate } from "./salesUtils";
+import { getPaymentMethodLabel, formatCurrency, formatDate } from "./salesUtils";
 import { SalePrintModal, type SalePrintMeta } from "./SalePrintModal";
 
 function formatDateTime(value: string): string {
@@ -32,7 +32,6 @@ export function SaleSuccessModal({ sale, amountReceived, t, onNewSale }: SaleSuc
 
   const lastPaymentMethod = sale.payment?.history[sale.payment.history.length - 1]?.paymentMethod ?? "CASH";
   const paymentMethodLabel = getPaymentMethodLabel(lastPaymentMethod, t);
-  const paymentStatusLabel = getSalePaymentStatusLabel(sale.payment?.paymentStatus ?? "UNPAID", t);
   const change = amountReceived - sale.grandTotal;
 
   const printMeta: SalePrintMeta = {

@@ -12,14 +12,6 @@ import type {
   UpdatePaymentHistoryPayload,
 } from "@/types/sale";
 
-const EMPTY_204: ApiResponse<null> = {
-  success: true,
-  code: "",
-  data: null,
-  message: { en: "", id: "" },
-  errors: null,
-  meta: null,
-};
 
 export async function getSales(
   params?: SaleListParams

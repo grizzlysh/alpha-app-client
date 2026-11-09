@@ -630,7 +630,7 @@ function VisitRow({
   deleteLabel,
   chiefComplaintLabel,
   diagnosisLabel,
-  doctorLabel,
+  doctorLabel: _doctorLabel,
 }: VisitRowProps): JSX.Element {
   return (
     <div className="rounded-xl border border-border bg-card p-3">

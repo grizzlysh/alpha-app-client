@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { ClipboardPlus, UserRound, Stethoscope } from "lucide-react";
+import { ClipboardPlus, UserRound } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -136,7 +136,7 @@ function PatientListItem({
   patient,
   isSelected,
   onClick,
-  medicalRecordLabel,
+  medicalRecordLabel: _medicalRecordLabel,
 }: PatientListItemProps): JSX.Element {
   return (
     <button
