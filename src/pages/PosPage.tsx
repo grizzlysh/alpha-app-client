@@ -10,17 +10,20 @@ import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { getApiErrorMessage } from "@/utils/apiError";
+import { toDoctorName } from "@/utils/stringHelpers";
 import type { StockDetailSearchResult } from "@/types/stock";
 import { getCustomersDropdown } from "@/service/customerService";
 import { getStockDetails } from "@/service/stockService";
 import type { Sale, SaleType, CreateSalePayload, UpdateSalePayload, PaymentMethod } from "@/types/sale";
 import { createSale, updateSale, completeSale, cancelSale } from "@/service/saleService";
+import { getPrescriptionsQueue } from "@/service/prescriptionService";
 import { getBusinessParameters } from "@/service/businessParameterService";
 import { BarcodeScannerModal } from "@/components/sales/BarcodeScannerModal";
 import { PosProductGrid } from "@/components/sales/PosProductGrid";
 import { PosCartPanel, type CartItem } from "@/components/sales/PosCartPanel";
 import { PosPaymentModal, type PaymentConfirmation } from "@/components/sales/PosPaymentModal";
 import { PosHeldSalesModal } from "@/components/sales/PosHeldSalesModal";
+import { PosPrescriptionModal } from "@/components/sales/PosPrescriptionModal";
 import { SaleSuccessModal } from "@/components/sales/SaleSuccessModal";
 
 const PPN_PARAMETER_KEY = "PPN_PERCENTAGE_SELL";
@@ -37,6 +40,7 @@ export default function PosPage(): JSX.Element {
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customerUuid, setCustomerUuid] = useState("");
+  const [prescriptionUuid, setPrescriptionUuid] = useState("");
 
   const [scannerOpen, setScannerOpen] = useState(false);
 
@@ -47,6 +51,7 @@ export default function PosPage(): JSX.Element {
   const [resumedSaleUuid, setResumedSaleUuid] = useState<string | null>(null);
   const [resumedSaleNumber, setResumedSaleNumber] = useState<string | null>(null);
   const [cancellingUuid, setCancellingUuid] = useState<string | null>(null);
+  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
 
   // ── Remote data ────────────────────────────────────────────────────────────
   const { data: customersData } = useQuery({
@@ -61,14 +66,38 @@ export default function PosPage(): JSX.Element {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: prescriptionsQueueData } = useQuery({
+    queryKey: ["prescriptions-queue"],
+    queryFn: () => getPrescriptionsQueue(),
+    staleTime: 2 * 60 * 1000,
+  });
+
   const customerOptions = useMemo(
     () => [
-      { value: "", label: t.posWalkInCustomer },
+      { value: "", label: t.posWalkInPatient },
       ...(customersData?.data ?? [])
         .filter((c) => !c.isWalkIn)
         .map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
     ],
-    [customersData?.data, t.posWalkInCustomer]
+    [customersData?.data, t.posWalkInPatient]
+  );
+
+  const prescriptionOptions = useMemo(
+    () => [
+      { value: "", label: "—" },
+      ...(prescriptionsQueueData?.data ?? []).map((p) => ({
+        value: p.uuid,
+        label: [
+          p.prescriptionNumber ?? "No #",
+          "·",
+          p.patient.name.toUpperCase(),
+          p.doctor ? `(${toDoctorName(p.doctor.name)})` : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+      })),
+    ],
+    [prescriptionsQueueData?.data]
   );
 
   const ppnPercentage = useMemo(() => {
@@ -85,7 +114,7 @@ export default function PosPage(): JSX.Element {
 
   // ── Cart handlers ──────────────────────────────────────────────────────────
 
-  function handleAddToCart(detail: StockDetailSearchResult): void {
+  function handleAddToCart(detail: StockDetailSearchResult, requiresPrescription: boolean): void {
     setCart((prev) => {
       const existingIndex = prev.findIndex((item) => item.stockDetailUuid === detail.uuid);
       if (existingIndex >= 0) {
@@ -106,6 +135,7 @@ export default function PosPage(): JSX.Element {
         unitPrice: detail.stock.effectiveSellingPrice,
         originalPrice: detail.stock.effectiveSellingPrice,
         availablePieces: detail.quantityPieces,
+        requiresPrescription,
       };
       return [...prev, newItem];
     });
@@ -142,6 +172,7 @@ export default function PosPage(): JSX.Element {
   function resetSale(): void {
     setCart([]);
     setCustomerUuid("");
+    setPrescriptionUuid("");
     setCompletedSale(null);
     setPaidAmount(0);
     setResumedSaleUuid(null);
@@ -156,7 +187,7 @@ export default function PosPage(): JSX.Element {
     onSuccess: (res, barcode) => {
       const match = res.data?.find((item) => item.barcode === barcode);
       if (match) {
-        handleAddToCart(match);
+        handleAddToCart(match, false);
       } else {
         toast.error(<LiveToastMessage getMessage={(t) => t.posScanNotFound} />);
       }
@@ -195,6 +226,8 @@ export default function PosPage(): JSX.Element {
             },
           }
         : {}),
+      ...(prescriptionUuid ? { prescriptionUuid } : {}),
+      isPrescription: cart.some((item) => item.requiresPrescription) || !!prescriptionUuid,
       discountPercentage: 0,
       discountAmount,
       ppnPercentage,
@@ -208,6 +241,7 @@ export default function PosPage(): JSX.Element {
         sellingPrice: item.unitPrice,
         originalPrice: item.originalPrice,
         discountPercentage: item.discount,
+        requiresPrescription: item.requiresPrescription,
       })),
     };
   }
@@ -217,6 +251,8 @@ export default function PosPage(): JSX.Element {
   function buildUpdatePayload(): UpdateSalePayload {
     return {
       ...(customerUuid ? { customerUuid } : {}),
+      ...(prescriptionUuid ? { prescriptionUuid } : {}),
+      isPrescription: cart.some((item) => item.requiresPrescription) || !!prescriptionUuid,
       discountPercentage: 0,
       discountAmount: 0,
       ppnPercentage,
@@ -229,6 +265,7 @@ export default function PosPage(): JSX.Element {
         sellingPrice: item.unitPrice,
         originalPrice: item.originalPrice,
         discountPercentage: item.discount,
+        requiresPrescription: item.requiresPrescription,
       })),
     };
   }
@@ -323,9 +360,11 @@ export default function PosPage(): JSX.Element {
       unitPrice: d.sellingPrice,
       originalPrice: d.originalPrice,
       availablePieces: d.quantityPieces,
+      requiresPrescription: d.requiresPrescription,
     }));
     setCart(items);
     setCustomerUuid(sale.customer?.isWalkIn ? "" : (sale.customer?.uuid ?? ""));
+    setPrescriptionUuid(sale.prescription?.uuid ?? "");
     setResumedSaleUuid(sale.uuid);
     setResumedSaleNumber(sale.saleNumber);
     setHeldModalOpen(false);
@@ -339,6 +378,25 @@ export default function PosPage(): JSX.Element {
 
   function openPaymentModal(): void {
     if (cart.length === 0) return;
+    const overstock = cart.filter((item) => item.quantityPieces > item.availablePieces);
+    if (overstock.length > 0) {
+      toast.error(
+        `${t.posStockExceededItems} ${overstock.map((i) => i.medicineName).join(", ")}`,
+        { description: t.posStockInsufficient }
+      );
+      return;
+    }
+    const hasRxItems = cart.some((item) => item.requiresPrescription);
+    if (hasRxItems || !!prescriptionUuid) {
+      if (!customerUuid) {
+        toast.error(<LiveToastMessage getMessage={(t) => t.posRxNoPatientWarning} />);
+        return;
+      }
+    }
+    if (hasRxItems && !prescriptionUuid) {
+      toast.error(<LiveToastMessage getMessage={(t) => t.posRxNoPrescriptionWarning} />);
+      return;
+    }
     setPaymentModalOpen(true);
   }
 
@@ -350,6 +408,14 @@ export default function PosPage(): JSX.Element {
     if (cart.length === 0) return;
     holdMutation.mutate(resumedSaleUuid);
   }
+
+  function handlePrescriptionCreated(uuid: string): void {
+    setPrescriptionUuid(uuid);
+    queryClient.invalidateQueries({ queryKey: ["prescriptions-queue"] });
+    setPrescriptionModalOpen(false);
+  }
+
+  const rxCartItems = cart.filter((item) => item.requiresPrescription);
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -364,7 +430,7 @@ export default function PosPage(): JSX.Element {
         <p className="mt-0.5 text-sm text-muted-foreground">{t.posSubtitle}</p>
       </div>
 
-      <Card className="grid min-h-0 flex-1 grid-cols-[1fr,440px] overflow-hidden">
+      <Card className="grid min-h-0 flex-1 grid-cols-[45fr,55fr] overflow-hidden">
         <div className="h-full min-h-0 overflow-hidden border-r border-border">
           <PosProductGrid
             t={t}
@@ -383,6 +449,16 @@ export default function PosPage(): JSX.Element {
           customerUuid={customerUuid}
           onCustomerChange={setCustomerUuid}
           customerOptions={customerOptions}
+          prescriptionUuid={prescriptionUuid}
+          onPrescriptionChange={setPrescriptionUuid}
+          prescriptionOptions={prescriptionOptions}
+          onAddPrescription={() => {
+            if (!customerUuid) {
+              toast.error(<LiveToastMessage getMessage={(t) => t.posCreatePrescriptionRequiresPatient} />);
+              return;
+            }
+            setPrescriptionModalOpen(true);
+          }}
           subtotal={subtotal}
           ppnPercentage={ppnPercentage}
           ppnAmount={ppnAmount}
@@ -422,10 +498,20 @@ export default function PosPage(): JSX.Element {
           ppnAmount={ppnAmount}
           total={total}
           customerUuid={customerUuid}
-          customerLabel={customerOptions.find((c) => c.value === customerUuid)?.label ?? t.posWalkInCustomer}
+          customerLabel={customerOptions.find((c) => c.value === customerUuid)?.label ?? t.posWalkInPatient}
           isSubmitting={checkoutMutation.isPending}
           onCancel={() => setPaymentModalOpen(false)}
           onConfirm={handlePaymentConfirm}
+        />
+      )}
+
+      {prescriptionModalOpen && customerUuid && (
+        <PosPrescriptionModal
+          patientUuid={customerUuid}
+          patientName={customerOptions.find((c) => c.value === customerUuid)?.label ?? ""}
+          rxItems={rxCartItems}
+          onClose={() => setPrescriptionModalOpen(false)}
+          onSuccess={handlePrescriptionCreated}
         />
       )}
 

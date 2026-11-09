@@ -3,6 +3,7 @@ import { Pencil, Pill, Trash2 } from "lucide-react";
 
 import type { Translations } from "@/configs/i18n";
 import type { Medicine } from "@/types/medicine";
+import { toTitleCase } from "@/utils/stringHelpers";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getInitials, getAvatarColor, formatDate } from "./medicineUtils";
@@ -57,9 +58,9 @@ export function MedicineDetailPanel({
 
       {/* Info pairs */}
       <div className="divide-y divide-border px-5">
-        <InfoPair label={t.medicineShapeLabel} value={medicine.medicineShape?.name} />
-        <InfoPair label={t.medicineTypeLabel} value={medicine.medicineType?.name} />
-        <InfoPair label={t.medicineClassLabel} value={medicine.medicineClass?.name} />
+        <InfoPair label={t.medicineShapeLabel} value={medicine.medicineShape?.name != null ? toTitleCase(medicine.medicineShape.name) : undefined} />
+        <InfoPair label={t.medicineTypeLabel} value={medicine.medicineType?.name != null ? toTitleCase(medicine.medicineType.name) : undefined} />
+        <InfoPair label={t.medicineClassLabel} value={medicine.medicineClass?.name != null ? toTitleCase(medicine.medicineClass.name) : undefined} />
         <InfoPair label={t.medicineUnit} value={medicine.unit} />
         {medicine.ingredients.length > 0 && (
           <div className="py-2.5">

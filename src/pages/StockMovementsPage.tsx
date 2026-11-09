@@ -1,9 +1,11 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
@@ -24,6 +26,7 @@ type ReasonFilter = StockMovementReason | "all";
 
 export default function StockMovementsPage(): JSX.Element {
   const { t } = useLanguage();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
@@ -33,7 +36,7 @@ export default function StockMovementsPage(): JSX.Element {
   const [filterReason, setFilterReason] = useState<ReasonFilter>("all");
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["stock-movements", page, limit, debouncedSearch, filterType, filterReason],
+    queryKey: ["stock-movements", pharmacyUuid, page, limit, debouncedSearch, filterType, filterReason],
     queryFn: () =>
       getStockMovements({
         page,

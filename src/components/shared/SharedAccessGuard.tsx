@@ -15,8 +15,9 @@ export function SharedAccessGuard(): JSX.Element {
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   const isPlatformUser = user !== null && user.platformRole !== null;
+  const isOwner = user?.accessiblePharmacies.some((p) => p.role?.type === "OWNER") ?? false;
 
-  if (!isPlatformUser && !pharmacySelected) {
+  if (!isPlatformUser && !pharmacySelected && !isOwner) {
     return <Navigate to="/" replace />;
   }
 

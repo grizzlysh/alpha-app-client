@@ -17,6 +17,7 @@ import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { MedicineRow } from "./MedicineRow";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── MedicineTable ─────────────────────────────────────────────────────────────
 
@@ -60,13 +61,13 @@ export function MedicineTable({
       { accessorKey: "name", header: t.medicineName, enableSorting: true },
       {
         id: "medicineShape",
-        accessorFn: (row) => row.medicineShape?.name ?? "",
+        accessorFn: (row) => row.medicineShape?.name != null ? toTitleCase(row.medicineShape.name) : "",
         header: t.medicineShapeLabel,
         enableSorting: true,
       },
       {
         id: "medicineType",
-        accessorFn: (row) => row.medicineType?.name ?? "",
+        accessorFn: (row) => row.medicineType?.name != null ? toTitleCase(row.medicineType.name) : "",
         header: t.medicineTypeLabel,
         enableSorting: true,
       },

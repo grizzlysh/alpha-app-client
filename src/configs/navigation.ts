@@ -5,6 +5,7 @@ import {
   Pill,
   FileText,
   ClipboardList,
+  ClipboardPlus,
   Receipt,
   Users,
   Truck,
@@ -21,6 +22,7 @@ import {
   History,
   Warehouse,
   Boxes,
+  Stethoscope,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Translations } from "@/configs/i18n";
@@ -34,6 +36,7 @@ export interface NavItem {
 }
 
 export interface NavGroup {
+  label?: keyof Translations;
   items: NavItem[];
 }
 
@@ -67,6 +70,18 @@ export const PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+// Shown when an owner has no pharmacy selected — same as staff pre-select plus People management
+export const PHARMACY_OWNER_PRE_SELECT_NAV_GROUPS: NavGroup[] = [
+  ...PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS,
+  {
+    label: "navGroupPeople",
+    items: [
+      { key: "users", labelKey: "navUsers", icon: Users, path: "/users" },
+      { key: "roles", labelKey: "navRoles", icon: UserRoundKey, path: "/roles" },
+    ],
+  },
+];
+
 // Shown when a pharmacy is selected (pharmacy-context dashboard)
 export const PHARMACY_NAV_GROUPS: NavGroup[] = [
   {
@@ -75,14 +90,17 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: "navGroupSales",
     items: [
       { key: "pos", labelKey: "navPOS", icon: ShoppingCart, path: "/pos" },
       { key: "sales", labelKey: "navSales", icon: History, path: "/sales" },
       { key: "prescriptions", labelKey: "navPrescriptions", icon: FileText, path: "/prescriptions" },
       { key: "customers", labelKey: "navCustomers", icon: Users, path: "/customers" },
+      { key: "medical-records", labelKey: "navMedicalRecords", icon: ClipboardPlus, path: "/medical-records" },
     ],
   },
   {
+    label: "navGroupInventory",
     items: [
       { key: "medicines", labelKey: "navMedicines", icon: Pill, path: "/medicines" },
       { key: "medicine-classification", labelKey: "navMedicineClassification", icon: LibraryBig, path: "/medicine-classification" },
@@ -95,6 +113,7 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: "navGroupProcurement",
     items: [
       { key: "purchase-orders", labelKey: "navPurchaseOrders", icon: ClipboardList, path: "/purchase-orders" },
       { key: "distributors", labelKey: "navDistributors", icon: Truck, path: "/distributors" },
@@ -102,12 +121,15 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: "navGroupPeople",
     items: [
       { key: "users", labelKey: "navUsers", icon: Users, path: "/users" },
       { key: "roles", labelKey: "navRoles", icon: UserRoundKey, path: "/roles" },
+      { key: "doctors", labelKey: "navDoctors", icon: Stethoscope, path: "/doctors" },
     ],
   },
   {
+    label: "navGroupSettings",
     items: [
       { key: "reports", labelKey: "navReports", icon: BarChart2, path: "/reports" },
       { key: "business-parameters", labelKey: "navBusinessParameters", icon: BriefcaseBusiness, path: "/business-parameters" },

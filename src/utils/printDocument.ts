@@ -1,16 +1,47 @@
-import type { Sale } from "@/types/sale";
+import type { Sale, PaymentMethod, PaymentStatus } from "@/types/sale";
 import type { Pharmacy } from "@/types/pharmacy";
 import type { Customer } from "@/types/customer";
+import { translations } from "@/configs/i18n";
 import { formatCurrency } from "@/components/sales/salesUtils";
+
+const ID = translations.id;
+
+function idPaymentMethod(method: PaymentMethod): string {
+  const map: Record<PaymentMethod, string> = {
+    CASH: ID.salePaymentMethodCash,
+    TRANSFER: ID.salePaymentMethodTransfer,
+    CREDIT: ID.salePaymentMethodCredit,
+  };
+  return map[method] ?? method;
+}
+
+function idPaymentStatus(status: PaymentStatus): string {
+  const map: Record<PaymentStatus, string> = {
+    UNPAID: ID.salePaymentStatusUnpaid,
+    PARTIAL: ID.salePaymentStatusPartial,
+    PAID: ID.salePaymentStatusPaid,
+  };
+  return map[status] ?? status;
+}
 
 interface PrintMetadata {
   sale: Sale;
   pharmacy: Pharmacy | null;
   customer: Customer | null;
   cashierName: string;
-  paymentMethodLabel: string;
-  paymentStatusLabel: string;
   amountReceived: number;
+}
+
+/** Stacked bilingual: ID on top, EN italic+smaller below. */
+function bil(idText: string, enText: string): string {
+  if (idText === enText) return escapeHtml(idText);
+  return `${escapeHtml(idText)}<br><em style="font-size:0.82em;opacity:0.6;font-style:italic;text-transform:none;letter-spacing:0.02em">${escapeHtml(enText)}</em>`;
+}
+
+/** Slash bilingual for inline labels: "Kepada / To:". */
+function slHtml(idText: string, enText: string): string {
+  if (idText === enText) return escapeHtml(idText);
+  return `${escapeHtml(idText)} / ${escapeHtml(enText)}`;
 }
 
 function escapeHtml(value: string): string {
@@ -59,10 +90,11 @@ export function printReceipt({
   sale,
   pharmacy,
   cashierName,
-  paymentMethodLabel,
   amountReceived,
 }: PrintMetadata): void {
   const change = amountReceived - sale.totalAmount;
+  const lastMethod = sale.payment?.history[sale.payment.history.length - 1]?.paymentMethod ?? "CASH";
+  const paymentMethodLabel = idPaymentMethod(lastMethod);
   const pharmacyName = pharmacy?.name ?? "";
   const rows = sale.details
     .map(
@@ -101,18 +133,19 @@ export function printReceipt({
     <table>
       <tr><td>Subtotal</td><td class="right">${formatCurrency(sale.totalAmount)}</td></tr>
       <tr><td>PPN (${sale.ppnPercentage}%)</td><td class="right">${formatCurrency(sale.ppnAmount)}</td></tr>
-      ${sale.discountAmount > 0 ? `<tr><td>Diskon</td><td class="right">-${formatCurrency(sale.discountAmount)}</td></tr>` : ""}
+      ${sale.discountAmount > 0 ? `<tr><td>${slHtml("Diskon", "Discount")}</td><td class="right">-${formatCurrency(sale.discountAmount)}</td></tr>` : ""}
       <tr class="bold"><td>Total</td><td class="right">${formatCurrency(sale.grandTotal)}</td></tr>
     </table>
     <div class="divider"></div>
     <table>
-      <tr><td>Bayar (${escapeHtml(paymentMethodLabel)})</td><td class="right">${formatCurrency(amountReceived)}</td></tr>
-      ${change > 0 ? `<tr><td>Kembalian</td><td class="right">${formatCurrency(change)}</td></tr>` : ""}
+      <tr><td>${slHtml("Bayar", "Payment")} (${escapeHtml(paymentMethodLabel)})</td><td class="right">${formatCurrency(amountReceived)}</td></tr>
+      ${change > 0 ? `<tr><td>${slHtml("Kembalian", "Change")}</td><td class="right">${formatCurrency(change)}</td></tr>` : ""}
     </table>
     <div class="divider"></div>
-    <p class="center muted">Pelanggan: <span style="text-transform:uppercase">${escapeHtml(sale.customer.name)}</span></p>
-    <p class="center muted">Kasir: ${escapeHtml(cashierName)}</p>
+    <p class="center muted">${slHtml("Pasien", "Patient")}: <span style="text-transform:uppercase">${escapeHtml(sale.customer.name)}</span></p>
+    <p class="center muted">${slHtml("Kasir", "Cashier")}: ${escapeHtml(cashierName)}</p>
     <p class="center muted">Terima kasih atas kunjungan Anda</p>
+    <p class="center muted" style="font-style:italic;font-size:0.9em;opacity:0.7">Thank you for your visit</p>
   `;
 
   openPrintWindow(sale.saleNumber, head, body);
@@ -122,13 +155,15 @@ export function printInvoice({
   sale,
   pharmacy,
   customer,
-  paymentMethodLabel,
-  paymentStatusLabel,
 }: PrintMetadata): void {
   const pharmacyName = pharmacy?.name ?? "";
   const pharmacyInitial = pharmacyName ? pharmacyName.charAt(0).toUpperCase() : "?";
-  const lastPaymentDate = sale.payment?.history[sale.payment.history.length - 1]?.paymentDate ?? sale.soldAt;
+  const lastHistory = sale.payment?.history[sale.payment.history.length - 1];
+  const lastPaymentDate = lastHistory?.paymentDate ?? sale.soldAt;
   const isPaid = sale.payment?.paymentStatus === "PAID";
+  const paymentMethodLabel = idPaymentMethod(lastHistory?.paymentMethod ?? "CASH");
+  const paymentStatusLabel = idPaymentStatus(sale.payment?.paymentStatus ?? "UNPAID");
+  const customerDisplayName = sale.customer.isWalkIn ? ID.posWalkInPatient : sale.customer.name;
 
   const rows = sale.details
     .map(
@@ -183,7 +218,7 @@ export function printInvoice({
       .pharmacy-name { font-size: 17px; font-weight: 700; }
       .divider { border-top: 1px solid #e6e1d6; margin: 28px 0; }
       .label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #9b958a; margin-bottom: 8px; }
-      .customer-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+      .patient-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
       table { width: 100%; border-collapse: collapse; }
       thead td { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #9b958a; padding-bottom: 10px; border-bottom: 1px solid #e6e1d6; }
       tbody td { padding: 14px 0; border-bottom: 1px solid #f0ece2; vertical-align: top; }
@@ -199,7 +234,7 @@ export function printInvoice({
     <div class="card">
       <div class="row">
         <div>
-          <p class="title">Faktur</p>
+          <p class="title">Faktur<br><span style="font-size:0.5em;opacity:0.6;font-weight:300">Invoice</span></p>
           <p class="muted mono">No. ${escapeHtml(sale.saleNumber)} · ${formatPrintDate(sale.soldAt)}</p>
         </div>
         <div class="right">
@@ -213,14 +248,14 @@ export function printInvoice({
 
       <div class="row">
         <div>
-          <p class="label">Ditagihkan kepada</p>
-          <p class="customer-name" style="text-transform:uppercase">${escapeHtml(sale.customer.name)}</p>
+          <p class="label">${bil("Ditagihkan kepada", "Billed to")}</p>
+          <p class="patient-name" style="text-transform:uppercase">${escapeHtml(customerDisplayName)}</p>
           ${customer?.phone ? `<p class="mono">${escapeHtml(customer.phone)}</p>` : ""}
           ${customer?.address ? `<p class="muted">${escapeHtml(customer.address)}</p>` : ""}
         </div>
         <div class="right">
-          <p class="label">Metode Pembayaran</p>
-          <p class="customer-name">${escapeHtml(paymentMethodLabel)}</p>
+          <p class="label">${bil("Metode Pembayaran", "Payment Method")}</p>
+          <p class="patient-name">${escapeHtml(paymentMethodLabel)}</p>
           <p class="muted">${escapeHtml(paymentStatusLabel)}${isPaid ? ` · ${formatPrintTime(lastPaymentDate)}` : ""}</p>
         </div>
       </div>
@@ -229,10 +264,10 @@ export function printInvoice({
         <thead>
           <tr>
             <td>#</td>
-            <td>Deskripsi</td>
+            <td>${bil("Deskripsi", "Description")}</td>
             <td class="right">Qty</td>
-            <td class="right">Harga</td>
-            <td class="right">Jumlah</td>
+            <td class="right">${bil("Harga", "Price")}</td>
+            <td class="right">${bil("Jumlah", "Amount")}</td>
           </tr>
         </thead>
         <tbody>
@@ -243,13 +278,16 @@ export function printInvoice({
       <div class="summary">
         <div class="summary-row"><span>Subtotal</span><span>${formatCurrency(sale.totalAmount)}</span></div>
         <div class="summary-row"><span>PPN ${sale.ppnPercentage}%</span><span>${formatCurrency(sale.ppnAmount)}</span></div>
-        ${sale.discountAmount > 0 ? `<div class="summary-row"><span>Diskon</span><span>-${formatCurrency(sale.discountAmount)}</span></div>` : ""}
+        ${sale.discountAmount > 0 ? `<div class="summary-row"><span>${slHtml("Diskon", "Discount")}</span><span>-${formatCurrency(sale.discountAmount)}</span></div>` : ""}
         <div class="summary-total"><span>Total</span><span>${formatCurrency(sale.grandTotal)}</span></div>
       </div>
 
       <div class="footer">
-        <span>Terima kasih atas kepercayaan Anda kepada ${escapeHtml(pharmacyName)}.</span>
-        ${pharmacy?.email ? `<span>Pertanyaan? ${escapeHtml(pharmacy.email)}</span>` : ""}
+        <span style="display:flex;flex-direction:column;gap:2px">
+          <span>Terima kasih atas kepercayaan Anda kepada ${escapeHtml(pharmacyName)}.</span>
+          <em style="font-size:0.9em;opacity:0.65">Thank you for your trust in ${escapeHtml(pharmacyName)}.</em>
+        </span>
+        ${pharmacy?.email ? `<span style="display:flex;flex-direction:column;gap:2px;text-align:right"><span>Pertanyaan? ${escapeHtml(pharmacy.email)}</span><em style="font-size:0.9em;opacity:0.65">Questions? ${escapeHtml(pharmacy.email)}</em></span>` : ""}
       </div>
     </div>
   `;

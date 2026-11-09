@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -7,6 +8,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
@@ -35,6 +37,7 @@ type ModalState =
 
 export default function SalesPage(): JSX.Element {
   const { t } = useLanguage();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const navigate = useNavigate();
   const pageTitleRef = useScrollAwareTitle();
 
@@ -45,7 +48,7 @@ export default function SalesPage(): JSX.Element {
   const [filterStatus, setFilterStatus] = useState<SaleStatus | "all">("all");
   const [filterSaleType, setFilterSaleType] = useState<SaleType | "all">("all");
   const [filterPaymentStatus, setFilterPaymentStatus] = useState<PaymentStatus | "all">("all");
-  const [filterCustomer, setFilterCustomer] = useState("all");
+  const [filterPatient, setFilterPatient] = useState("all");
 
   const { data: customersData } = useQuery({
     queryKey: ["customers-dropdown"],
@@ -53,21 +56,22 @@ export default function SalesPage(): JSX.Element {
     staleTime: 5 * 60 * 1000,
   });
 
-  const customerFilterOptions = [
-    { value: "all", label: `${t.saleFilterCustomer}: ${t.filterAll}` },
+  const patientFilterOptions = [
+    { value: "all", label: `${t.saleFilterPatient}: ${t.filterAll}` },
     ...(customersData?.data ?? []).map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
   ];
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
       "sales",
+      pharmacyUuid,
       page,
       limit,
       debouncedSearch,
       filterStatus,
       filterSaleType,
       filterPaymentStatus,
-      filterCustomer,
+      filterPatient,
     ],
     queryFn: () =>
       getSales({
@@ -77,7 +81,7 @@ export default function SalesPage(): JSX.Element {
         status: filterStatus !== "all" ? filterStatus : undefined,
         saleType: filterSaleType !== "all" ? filterSaleType : undefined,
         paymentStatus: filterPaymentStatus !== "all" ? filterPaymentStatus : undefined,
-        customerUuid: filterCustomer !== "all" ? filterCustomer : undefined,
+        customerUuid: filterPatient !== "all" ? filterPatient : undefined,
       }),
     placeholderData: keepPreviousData,
   });
@@ -101,8 +105,8 @@ export default function SalesPage(): JSX.Element {
     setPage(1);
   }
 
-  function handleFilterCustomer(value: string): void {
-    setFilterCustomer(value);
+  function handleFilterPatient(value: string): void {
+    setFilterPatient(value);
     setPage(1);
   }
 
@@ -186,12 +190,12 @@ export default function SalesPage(): JSX.Element {
               className="h-10 w-[12rem] shrink-0 rounded-xl text-sm"
             />
 
-            {/* Customer filter */}
+            {/* Patient filter */}
             <Combobox
-              value={filterCustomer}
-              onValueChange={handleFilterCustomer}
-              options={customerFilterOptions}
-              placeholder={t.saleFilterCustomer}
+              value={filterPatient}
+              onValueChange={handleFilterPatient}
+              options={patientFilterOptions}
+              placeholder={t.saleFilterPatient}
               className="h-10 w-[12rem] shrink-0 rounded-xl text-sm"
             />
 

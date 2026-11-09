@@ -34,7 +34,11 @@ export default function UsersPage(): JSX.Element {
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
-  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
+  const { user, currentPharmacy } = useSelector((state: RootState) => state.auth);
+  const isPlatformUser = user !== null && user.platformRole !== null;
+  // Platform admins access the global /users endpoint — never filter by pharmacy UUID,
+  // because passing pharmacyUuid with a pharmacy-context token causes a 403.
+  const pharmacyUuid = isPlatformUser ? undefined : currentPharmacy?.uuid;
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["users", page, limit, debouncedSearch, pharmacyUuid],

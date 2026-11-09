@@ -13,6 +13,7 @@ import type { Translations } from "@/configs/i18n";
 import type { StockDetailSearchResult } from "@/types/stock";
 import { getStockCatalog, getStockDetails } from "@/service/stockService";
 import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
+import { toTitleCase } from "@/utils/stringHelpers";
 import { formatCurrency } from "./salesUtils";
 
 const LOW_STOCK_THRESHOLD = 10;
@@ -21,7 +22,7 @@ const PAGE_LIMIT = 20;
 export interface PosProductGridProps {
   t: Translations;
   onScanClick: () => void;
-  onAddToCart: (detail: StockDetailSearchResult) => void;
+  onAddToCart: (detail: StockDetailSearchResult, requiresPrescription: boolean) => void;
 }
 
 export function PosProductGrid({
@@ -30,6 +31,7 @@ export function PosProductGrid({
   onAddToCart,
 }: PosProductGridProps): JSX.Element {
   const sidebarCollapsed = useSelector((state: RootState) => state.ui.sidebarCollapsed);
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
@@ -42,6 +44,12 @@ export function PosProductGrid({
     setPage(1);
   }, [categoryUuid]);
 
+  useEffect(() => {
+    setPage(1);
+    setCatalogResults([]);
+    setCategoryUuid("all");
+  }, [pharmacyUuid]);
+
   const { data: typesData } = useQuery({
     queryKey: ["medicine-types-dropdown"],
     queryFn: () => getMedicineTypesDropdown(),
@@ -53,7 +61,7 @@ export function PosProductGrid({
   // Default browsing view (no search term): paginated catalog, filterable
   // by category, server-curated (top sellers per the backend's ordering).
   const catalogQuery = useQuery({
-    queryKey: ["stock-catalog", categoryUuid, page],
+    queryKey: ["stock-catalog", pharmacyUuid, categoryUuid, page],
     queryFn: () =>
       getStockCatalog({
         medicineTypeUuid: categoryUuid !== "all" ? categoryUuid : undefined,
@@ -90,7 +98,7 @@ export function PosProductGrid({
   // Search view: full unpaginated lookup across all stock, regardless of
   // category, so search results are as complete as possible.
   const detailsQuery = useQuery({
-    queryKey: ["stock-details-search", debouncedSearch],
+    queryKey: ["stock-details-search", pharmacyUuid, debouncedSearch],
     queryFn: () => getStockDetails({ search: debouncedSearch }),
     enabled: isSearching,
   });
@@ -164,7 +172,7 @@ export function PosProductGrid({
                     : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}
               >
-                {type.name}
+                {toTitleCase(type.name)}
               </button>
             ))}
           </div>
@@ -178,7 +186,7 @@ export function PosProductGrid({
         </p>
 
         {isLoading ? (
-          <div className={cn("grid grid-cols-2 gap-3", sidebarCollapsed ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
+          <div className={cn("grid gap-3", sidebarCollapsed ? "grid-cols-3" : "grid-cols-2")}>
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="h-32 animate-pulse rounded-xl bg-muted/50" />
             ))}
@@ -191,7 +199,7 @@ export function PosProductGrid({
           </div>
         ) : (
           <>
-            <div className={cn("grid grid-cols-2 gap-3", sidebarCollapsed ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
+            <div className={cn("grid gap-3", sidebarCollapsed ? "grid-cols-3" : "grid-cols-2")}>
               {results.map((detail) => {
                 const isOutOfStock = detail.quantityPieces <= 0;
                 const isLowStock = detail.quantityPieces > 0 && detail.quantityPieces <= LOW_STOCK_THRESHOLD;
@@ -201,7 +209,7 @@ export function PosProductGrid({
                   <button
                     key={detail.uuid}
                     type="button"
-                    onClick={() => onAddToCart(detail)}
+                    onClick={() => onAddToCart(detail, requiresPrescription)}
                     disabled={isOutOfStock}
                     className="flex flex-col items-start gap-1.5 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-primary/40 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                   >

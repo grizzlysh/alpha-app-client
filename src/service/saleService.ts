@@ -126,10 +126,9 @@ export async function updatePaymentHistory(
 export async function deletePaymentHistory(
   uuid: string,
   historyUuid: string
-): Promise<ApiResponse<null>> {
-  const response = await axiosInstance.delete<ApiResponse<null>>(
+): Promise<ApiResponse<SalePayment>> {
+  const response = await axiosInstance.delete<ApiResponse<SalePayment>>(
     `/sales/${uuid}/payment/history/${historyUuid}`
   );
-  if (response.status === 204 || !response.data) return EMPTY_204;
   return response.data;
 }

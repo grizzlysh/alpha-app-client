@@ -65,6 +65,11 @@ export interface Translations {
   transactionsLabel: string;
   rxQueueLabel: string;
   navDashboard: string;
+  navGroupSales: string;
+  navGroupInventory: string;
+  navGroupProcurement: string;
+  navGroupPeople: string;
+  navGroupSettings: string;
 
   // Dashboard page
   dashboardSubtitle: string;
@@ -166,6 +171,7 @@ export interface Translations {
   navPurchaseOrders: string;
   navStockDisposals: string;
   navInvoices: string;
+  navPatients: string;
   navCustomers: string;
   navDistributors: string;
   navReports: string;
@@ -260,6 +266,60 @@ export interface Translations {
   distributorUpdateSuccess: string;
   distributorDeleteSuccess: string;
 
+  // Patients
+  patientsSubtitle: string;
+  patientAdd: string;
+  patientEdit: string;
+  patientDelete: string;
+  patientDetails: string;
+  patientDetailsTitle: string;
+  patientSave: string;
+  patientSaving: string;
+  patientDeleting: string;
+  patientName: string;
+  patientNamePlaceholder: string;
+  patientNameRequired: string;
+  patientPhone: string;
+  patientPhonePlaceholder: string;
+  patientAddress: string;
+  patientAddressPlaceholder: string;
+  patientDescription: string;
+  patientDescriptionPlaceholder: string;
+  patientStatusLabel: string;
+  patientStatusActive: string;
+  patientStatusInactive: string;
+  patientIsWalkIn: string;
+  patientWalkInBadge: string;
+  patientWalkInRegular: string;
+  patientSearchPlaceholder: string;
+  patientNoResults: string;
+  patientEmptyTitle: string;
+  patientEmptyDesc: string;
+  patientDeleteConfirmTitle: string;
+  patientDeleteConfirmDesc: string;
+  patientTotal: string;
+  patientSingular: string;
+  patientPlural: string;
+  patientCreateSuccess: string;
+  patientUpdateSuccess: string;
+  patientDeleteSuccess: string;
+  patientFilterStatus: string;
+  patientFilterIsWalkIn: string;
+  patientFilterPartyType: string;
+  patientPartyTypePatient: string;
+  patientPartyTypeProfessional: string;
+  patientNik: string;
+  patientNikPlaceholder: string;
+  patientGender: string;
+  patientGenderMale: string;
+  patientGenderFemale: string;
+  patientDateOfBirth: string;
+  patientBpjsNumber: string;
+  patientBpjsNumberPlaceholder: string;
+  patientMedicalRecordNumber: string;
+  patientMedicalRecordNumberPlaceholder: string;
+  patientDetailSectionTitle: string;
+
   // Customers
   customersSubtitle: string;
   customerAdd: string;
@@ -270,35 +330,249 @@ export interface Translations {
   customerSave: string;
   customerSaving: string;
   customerDeleting: string;
-  customerName: string;
-  customerNamePlaceholder: string;
-  customerNameRequired: string;
-  customerPhone: string;
-  customerPhonePlaceholder: string;
-  customerAddress: string;
-  customerAddressPlaceholder: string;
-  customerDescription: string;
-  customerDescriptionPlaceholder: string;
-  customerStatusLabel: string;
-  customerStatusActive: string;
-  customerStatusInactive: string;
-  customerIsWalkIn: string;
-  customerWalkInBadge: string;
-  customerWalkInRegular: string;
   customerSearchPlaceholder: string;
   customerNoResults: string;
   customerEmptyTitle: string;
   customerEmptyDesc: string;
   customerDeleteConfirmTitle: string;
   customerDeleteConfirmDesc: string;
-  customerTotal: string;
-  customerSingular: string;
-  customerPlural: string;
   customerCreateSuccess: string;
   customerUpdateSuccess: string;
   customerDeleteSuccess: string;
   customerFilterStatus: string;
   customerFilterIsWalkIn: string;
+  customerFilterType: string;
+  customerTypePatient: string;
+  customerTypeProfessional: string;
+  customerMedicalRecordNumber: string;
+  professionalStrNumber: string;
+  professionalStrNumberPlaceholder: string;
+  professionalSipNumber: string;
+  professionalSipNumberPlaceholder: string;
+  professionalProfession: string;
+  professionalProfessionPlaceholder: string;
+  professionalDetailSectionTitle: string;
+
+  // Medical Records
+  navMedicalRecords: string;
+  medicalRecordsSubtitle: string;
+  medicalRecordTitle: string;
+  medicalRecordNumber: string;
+  medicalRecordBloodType: string;
+  medicalRecordBloodTypePlaceholder: string;
+  medicalRecordEmergencyContact: string;
+  medicalRecordEmergencyContactName: string;
+  medicalRecordEmergencyContactNamePlaceholder: string;
+  medicalRecordEmergencyContactPhone: string;
+  medicalRecordEmergencyContactPhonePlaceholder: string;
+  medicalRecordEdit: string;
+  medicalRecordSave: string;
+  medicalRecordSaving: string;
+  medicalRecordUpdateSuccess: string;
+  medicalRecordPatientSearchPlaceholder: string;
+  medicalRecordSelectPatient: string;
+  medicalRecordNoPatientSelected: string;
+  medicalRecordNoPatientSelectedDesc: string;
+  medicalRecordNotFoundTitle: string;
+  medicalRecordNotFoundDesc: string;
+  medicalRecordOverviewTab: string;
+  medicalRecordAllergiesTab: string;
+  medicalRecordVisitsTab: string;
+  // Allergies
+  medicalRecordAllergyAdd: string;
+  medicalRecordAllergyDelete: string;
+  medicalRecordAllergyDeleting: string;
+  medicalRecordAllergyDeleteSuccess: string;
+  medicalRecordAllergyAddSuccess: string;
+  medicalRecordAllergyNoData: string;
+  medicalRecordAllergyName: string;
+  medicalRecordAllergyNamePlaceholder: string;
+  medicalRecordAllergyNameRequired: string;
+  medicalRecordAllergyType: string;
+  medicalRecordAllergyTypeRequired: string;
+  medicalRecordAllergyTypeMedicine: string;
+  medicalRecordAllergyTypeFood: string;
+  medicalRecordAllergyTypeEnvironment: string;
+  medicalRecordAllergyTypeOther: string;
+  medicalRecordAllergyReaction: string;
+  medicalRecordAllergyReactionPlaceholder: string;
+  medicalRecordAllergySeverity: string;
+  medicalRecordAllergySeverityRequired: string;
+  medicalRecordAllergySeverityMild: string;
+  medicalRecordAllergySeverityModerate: string;
+  medicalRecordAllergySeveritySevere: string;
+  medicalRecordAllergyNotes: string;
+  medicalRecordAllergyNotesPlaceholder: string;
+  medicalRecordAllergyDeleteConfirmTitle: string;
+  medicalRecordAllergyDeleteConfirmDesc: string;
+  // Visits
+  medicalRecordVisitAdd: string;
+  medicalRecordVisitEdit: string;
+  medicalRecordVisitDelete: string;
+  medicalRecordVisitDeleting: string;
+  medicalRecordVisitDeleteSuccess: string;
+  medicalRecordVisitAddSuccess: string;
+  medicalRecordVisitUpdateSuccess: string;
+  medicalRecordVisitNoData: string;
+  medicalRecordVisitDate: string;
+  medicalRecordVisitDateRequired: string;
+  medicalRecordVisitChiefComplaint: string;
+  medicalRecordVisitChiefComplaintPlaceholder: string;
+  medicalRecordVisitDiagnosis: string;
+  medicalRecordVisitDiagnosisPlaceholder: string;
+  medicalRecordVisitNotes: string;
+  medicalRecordVisitNotesPlaceholder: string;
+  medicalRecordVisitVitals: string;
+  medicalRecordVisitWeight: string;
+  medicalRecordVisitWeightPlaceholder: string;
+  medicalRecordVisitHeight: string;
+  medicalRecordVisitHeightPlaceholder: string;
+  medicalRecordVisitBloodPressure: string;
+  medicalRecordVisitBloodPressurePlaceholder: string;
+  medicalRecordVisitTemperature: string;
+  medicalRecordVisitTemperaturePlaceholder: string;
+  medicalRecordVisitPulse: string;
+  medicalRecordVisitPulsePlaceholder: string;
+  medicalRecordVisitDoctor: string;
+  medicalRecordVisitDoctorPlaceholder: string;
+  medicalRecordVisitPrescription: string;
+  medicalRecordVisitPrescriptionPlaceholder: string;
+  medicalRecordVisitDeleteConfirmTitle: string;
+  medicalRecordVisitDeleteConfirmDesc: string;
+  medicalRecordVisitSave: string;
+  medicalRecordVisitSaving: string;
+  medicalRecordVisitDetails: string;
+
+  // Doctors page
+  navDoctors: string;
+  doctorsSubtitle: string;
+  doctorAdd: string;
+  doctorEdit: string;
+  doctorDelete: string;
+  doctorDetails: string;
+  doctorDetailsTitle: string;
+  doctorSave: string;
+  doctorSaving: string;
+  doctorDeleting: string;
+  doctorName: string;
+  doctorNamePlaceholder: string;
+  doctorNameRequired: string;
+  doctorLicenseNumber: string;
+  doctorLicenseNumberPlaceholder: string;
+  doctorSpecialty: string;
+  doctorSpecialtyPlaceholder: string;
+  doctorClinicName: string;
+  doctorClinicNamePlaceholder: string;
+  doctorPhone: string;
+  doctorPhonePlaceholder: string;
+  doctorStatusLabel: string;
+  doctorStatusActive: string;
+  doctorStatusInactive: string;
+  doctorFilterStatus: string;
+  doctorSearchPlaceholder: string;
+  doctorNoResults: string;
+  doctorEmptyTitle: string;
+  doctorEmptyDesc: string;
+  doctorDeleteConfirmTitle: string;
+  doctorDeleteConfirmDesc: string;
+  doctorTotal: string;
+  doctorSingular: string;
+  doctorPlural: string;
+  doctorRegistered: string;
+  doctorUpdated: string;
+  doctorCreateSuccess: string;
+  doctorUpdateSuccess: string;
+  doctorDeleteSuccess: string;
+  doctorLinkedUser: string;
+
+  // Prescriptions page
+  prescriptionsSubtitle: string;
+  prescriptionAdd: string;
+  prescriptionEdit: string;
+  prescriptionDelete: string;
+  prescriptionDetails: string;
+  prescriptionDetailsTitle: string;
+  prescriptionSave: string;
+  prescriptionSaving: string;
+  prescriptionDeleting: string;
+  prescriptionNumber: string;
+  prescriptionNumberPlaceholder: string;
+  prescriptionPrescribedAt: string;
+  prescriptionNotes: string;
+  prescriptionNotesPlaceholder: string;
+  prescriptionPatient: string;
+  prescriptionPatientPlaceholder: string;
+  prescriptionPatientRequired: string;
+  prescriptionDoctor: string;
+  prescriptionDoctorPlaceholder: string;
+  prescriptionStatusLabel: string;
+  prescriptionStatusPending: string;
+  prescriptionStatusDispensed: string;
+  prescriptionStatusPartial: string;
+  prescriptionStatusCancelled: string;
+  prescriptionStatusExpired: string;
+  prescriptionFilterStatus: string;
+  prescriptionSearchPlaceholder: string;
+  prescriptionNoResults: string;
+  prescriptionEmptyTitle: string;
+  prescriptionEmptyDesc: string;
+  prescriptionDeleteConfirmTitle: string;
+  prescriptionDeleteConfirmDesc: string;
+  prescriptionTotal: string;
+  prescriptionSingular: string;
+  prescriptionPlural: string;
+  prescriptionCreateSuccess: string;
+  prescriptionUpdateSuccess: string;
+  prescriptionDeleteSuccess: string;
+  prescriptionAllTab: string;
+  prescriptionQueueTab: string;
+  prescriptionQueueTitle: string;
+  prescriptionQueueEmpty: string;
+  prescriptionQueueEmptyDesc: string;
+  prescriptionLinkedSale: string;
+  prescriptionItemsLabel: string;
+  prescriptionItemAdd: string;
+  prescriptionItemRemove: string;
+  prescriptionItemMedicine: string;
+  prescriptionItemMedicinePlaceholder: string;
+  prescriptionItemMedicineRequired: string;
+  prescriptionItemQty: string;
+  prescriptionItemQtyRequired: string;
+  prescriptionItemFrequency: string;
+  prescriptionItemFrequencyPlaceholder: string;
+  prescriptionItemDuration: string;
+  prescriptionItemDurationPlaceholder: string;
+  prescriptionItemNotes: string;
+  prescriptionItemNotesPlaceholder: string;
+  prescriptionItemDispensedOf: string;
+  prescriptionDispense: string;
+  prescriptionDispenseTitle: string;
+  prescriptionDispensing: string;
+  prescriptionDispenseSuccess: string;
+  prescriptionCancel: string;
+  prescriptionCancelConfirmTitle: string;
+  prescriptionCancelConfirmDesc: string;
+  prescriptionCancelling: string;
+  prescriptionCancelSuccess: string;
+  prescriptionDispenseStockBatch: string;
+  prescriptionDispenseQty: string;
+  prescriptionDispenseSellingPrice: string;
+  prescriptionDispenseOriginalPrice: string;
+  prescriptionDispenseSaleType: string;
+  prescriptionDispensePaymentMethod: string;
+  prescriptionDispenseGrandTotal: string;
+  prescriptionDispenseTotalAmount: string;
+  prescriptionDispenseStepItems: string;
+  prescriptionDispenseStepPayment: string;
+  prescriptionDispenseNext: string;
+  prescriptionDispenseBack: string;
+  prescriptionSaleTypeCash: string;
+  prescriptionSaleTypeCredit: string;
+  prescriptionPaymentCash: string;
+  prescriptionPaymentTransfer: string;
+  prescriptionPaymentDebit: string;
+  prescriptionPaymentCreditCard: string;
+  prescriptionPaymentQris: string;
 
   // Session expired
   sessionExpiredTitle: string;
@@ -323,10 +597,12 @@ export interface Translations {
   serverDownRetry: string;
 
   // Generic
+  useValue: string;
   add: string;
   created: string;
   lastUpdated: string;
   cancel: string;
+  save: string;
   deleteConfirm: string;
   showing: string;
   of: string;
@@ -1034,7 +1310,7 @@ export interface Translations {
   saleStatusCancelled: string;
   saleStatusRefunded: string;
   saleStatusPending: string;
-  saleCustomer: string;
+  salePatient: string;
   saleSoldAt: string;
   saleDueDate: string;
   saleDescription: string;
@@ -1052,7 +1328,7 @@ export interface Translations {
   saleFilterStatus: string;
   saleFilterType: string;
   saleFilterPaymentStatus: string;
-  saleFilterCustomer: string;
+  saleFilterPatient: string;
   saleCancelConfirmTitle: string;
   saleCancelConfirmDesc: string;
   saleCancelReason: string;
@@ -1092,6 +1368,10 @@ export interface Translations {
   saleCompleteConfirmTitle: string;
   saleCompleteConfirmDesc: string;
   saleCompleteSuccess: string;
+  salePrescriptionSection: string;
+  salePrescriptionNumber: string;
+  salePrescriptionDoctor: string;
+  salePrescriptionDate: string;
 
   // Cashier / POS page
   posSubtitle: string;
@@ -1113,7 +1393,7 @@ export interface Translations {
   posLoadMore: string;
   posTransactionLabel: string;
   posReset: string;
-  posSelectCustomer: string;
+  posSelectPatient: string;
   posAddNote: string;
   posHold: string;
   posHolding: string;
@@ -1133,16 +1413,29 @@ export interface Translations {
   posCartSection: string;
   posCartEmptyTitle: string;
   posCartEmptyDesc: string;
-  posCustomerLabel: string;
-  posWalkInCustomer: string;
+  posPatientLabel: string;
+  posWalkInPatient: string;
+  posPrescriptionLabel: string;
+  posPrescriptionPlaceholder: string;
+  posPrescriptionOptional: string;
+  posRxNoPrescriptionWarning: string;
+  posRxNoPatientWarning: string;
+  posCreatePrescriptionButton: string;
+  posCreatePrescriptionTitle: string;
+  posCreatePrescriptionRequiresPatient: string;
+  posCreatePrescriptionSuccess: string;
+  posCreatePrescriptionSave: string;
   posSaleTypeLabel: string;
-  posCreditRequiresCustomer: string;
+  posCreditRequiresPatient: string;
   posDescriptionLabel: string;
   posDescriptionPlaceholder: string;
   posSubtotal: string;
   posTaxNote: string;
   posCheckout: string;
   posProcessing: string;
+  posStockInsufficient: string;
+  posStockAvailable: string;
+  posStockExceededItems: string;
   posSaleSuccessTitle: string;
   posNewSale: string;
   posPayLabel: string;
@@ -1199,7 +1492,7 @@ export interface Translations {
   srCancelling: string;
   srRejecting: string;
   srCompleting: string;
-  srStatusOnProcess: string;
+  srStatusInProgress: string;
   srStatusCompleted: string;
   srStatusCancelled: string;
   srStatusRejected: string;
@@ -1343,7 +1636,7 @@ export interface Translations {
   reportSalesTransactions: string;
   reportSalesMethod: string;
   reportSalesSaleNumber: string;
-  reportSalesCustomer: string;
+  reportSalesPatient: string;
   reportSalesSaleType: string;
   reportSalesStatus: string;
   reportSalesTotalAmount: string;
@@ -1523,6 +1816,9 @@ export interface Translations {
   invoiceItemShelf: string;
   invoiceItemBin: string;
   invoiceItemSelectBin: string;
+  invoiceItemCabinetRequired: string;
+  invoiceItemShelfRequired: string;
+  invoiceItemBinRequired: string;
   // ── Invoice Payment ──────────────────────────────────
   invoicePaymentSectionTitle: string;
   invoicePaymentAdd: string;
@@ -1734,6 +2030,11 @@ export const translations: Record<Language, Translations> = {
     transactionsLabel: "Transactions",
     rxQueueLabel: "Rx Queue",
     navDashboard: "Dashboard",
+    navGroupSales: "Sales",
+    navGroupInventory: "Inventory",
+    navGroupProcurement: "Procurement",
+    navGroupPeople: "People",
+    navGroupSettings: "Settings",
 
     // Dashboard page
     dashboardSubtitle: "Here's what's happening in your pharmacy today.",
@@ -1828,6 +2129,7 @@ export const translations: Record<Language, Translations> = {
     navPrescriptions: "Prescriptions",
     navPurchaseOrders: "Purchase Orders",
     navInvoices: "Invoices",
+    navPatients: "Patients",
     navCustomers: "Customers",
     navDistributors: "Distributors",
     navReports: "Reports",
@@ -1920,7 +2222,68 @@ export const translations: Record<Language, Translations> = {
     distributorUpdateSuccess: "Distributor updated successfully",
     distributorDeleteSuccess: "Distributor deleted successfully",
 
-    customersSubtitle: "Manage your customers and walk-in buyers",
+    patientsSubtitle: "Manage your patients and walk-in buyers",
+    patientAdd: "Add",
+    patientEdit: "Edit",
+    patientDelete: "Delete",
+    patientDetails: "Details",
+    patientDetailsTitle: "Patient Details",
+    patientSave: "Save",
+    patientSaving: "Saving...",
+    patientDeleting: "Deleting...",
+    patientName: "Name",
+    patientNamePlaceholder: "Full name",
+    patientNameRequired: "Name is required",
+    patientPhone: "Phone",
+    patientPhonePlaceholder: "Phone number",
+    patientAddress: "Address",
+    patientAddressPlaceholder: "Full address",
+    patientDescription: "Notes",
+    patientDescriptionPlaceholder: "Additional notes",
+    patientStatusLabel: "Status",
+    patientStatusActive: "Active",
+    patientStatusInactive: "Inactive",
+    patientIsWalkIn: "Type",
+    patientWalkInBadge: "Walk-in",
+    patientWalkInRegular: "Regular",
+    patientSearchPlaceholder: "Search patients...",
+    patientNoResults: "No patients found",
+    patientEmptyTitle: "No patients yet",
+    patientEmptyDesc: "Add your first patient to get started",
+    patientDeleteConfirmTitle: "Delete Patient",
+    patientDeleteConfirmDesc: "This action cannot be undone. The patient will be permanently removed from the system.",
+    patientTotal: "patients",
+    patientSingular: "patient",
+    patientPlural: "patients",
+    patientCreateSuccess: "Patient added successfully",
+    patientUpdateSuccess: "Patient updated successfully",
+    patientDeleteSuccess: "Patient deleted successfully",
+    patientFilterStatus: "Status",
+    patientFilterIsWalkIn: "Type",
+    patientFilterPartyType: "Party Type",
+    patientPartyTypePatient: "Patient",
+    patientPartyTypeProfessional: "Professional",
+    patientNik: "NIK",
+    patientNikPlaceholder: "National ID number",
+    patientGender: "Gender",
+    patientGenderMale: "Male",
+    patientGenderFemale: "Female",
+    patientDateOfBirth: "Date of Birth",
+    patientBpjsNumber: "BPJS Number",
+    patientBpjsNumberPlaceholder: "BPJS membership number",
+    patientMedicalRecordNumber: "Medical Record No.",
+    patientMedicalRecordNumberPlaceholder: "Medical record number",
+    patientDetailSectionTitle: "Medical Details",
+    professionalStrNumber: "STR Number",
+    professionalStrNumberPlaceholder: "Surat Tanda Registrasi number",
+    professionalSipNumber: "SIP Number",
+    professionalSipNumberPlaceholder: "Surat Izin Praktik number",
+    professionalProfession: "Profession",
+    professionalProfessionPlaceholder: "e.g. Doctor, Nurse, Pharmacist",
+    professionalDetailSectionTitle: "Professional Details",
+
+    // Customers
+    customersSubtitle: "Manage your customers, patients, and professionals",
     customerAdd: "Add",
     customerEdit: "Edit",
     customerDelete: "Delete",
@@ -1929,35 +2292,240 @@ export const translations: Record<Language, Translations> = {
     customerSave: "Save",
     customerSaving: "Saving...",
     customerDeleting: "Deleting...",
-    customerName: "Name",
-    customerNamePlaceholder: "Full name",
-    customerNameRequired: "Name is required",
-    customerPhone: "Phone",
-    customerPhonePlaceholder: "Phone number",
-    customerAddress: "Address",
-    customerAddressPlaceholder: "Full address",
-    customerDescription: "Notes",
-    customerDescriptionPlaceholder: "Additional notes",
-    customerStatusLabel: "Status",
-    customerStatusActive: "Active",
-    customerStatusInactive: "Inactive",
-    customerIsWalkIn: "Type",
-    customerWalkInBadge: "Walk-in",
-    customerWalkInRegular: "Regular",
     customerSearchPlaceholder: "Search customers...",
     customerNoResults: "No customers found",
     customerEmptyTitle: "No customers yet",
     customerEmptyDesc: "Add your first customer to get started",
     customerDeleteConfirmTitle: "Delete Customer",
-    customerDeleteConfirmDesc: "This action cannot be undone. The customer will be permanently removed from the system.",
-    customerTotal: "customers",
-    customerSingular: "customer",
-    customerPlural: "customers",
+    customerDeleteConfirmDesc: "This action cannot be undone. The customer will be permanently removed.",
     customerCreateSuccess: "Customer added successfully",
     customerUpdateSuccess: "Customer updated successfully",
     customerDeleteSuccess: "Customer deleted successfully",
     customerFilterStatus: "Status",
     customerFilterIsWalkIn: "Type",
+    customerFilterType: "Customer Type",
+    customerTypePatient: "Patient",
+    customerTypeProfessional: "Professional",
+    customerMedicalRecordNumber: "Medical Record No.",
+
+    // Medical Records
+    navMedicalRecords: "Medical Records",
+    medicalRecordsSubtitle: "View and manage patient medical records, allergies, and visit history",
+    medicalRecordTitle: "Medical Record",
+    medicalRecordNumber: "Record Number",
+    medicalRecordBloodType: "Blood Type",
+    medicalRecordBloodTypePlaceholder: "e.g. A+, B-, O+",
+    medicalRecordEmergencyContact: "Emergency Contact",
+    medicalRecordEmergencyContactName: "Contact Name",
+    medicalRecordEmergencyContactNamePlaceholder: "Full name",
+    medicalRecordEmergencyContactPhone: "Contact Phone",
+    medicalRecordEmergencyContactPhonePlaceholder: "+62 xxx xxxx xxxx",
+    medicalRecordEdit: "Edit Record",
+    medicalRecordSave: "Save",
+    medicalRecordSaving: "Saving...",
+    medicalRecordUpdateSuccess: "Medical record updated successfully",
+    medicalRecordPatientSearchPlaceholder: "Search patients...",
+    medicalRecordSelectPatient: "Select a Patient",
+    medicalRecordNoPatientSelected: "No Patient Selected",
+    medicalRecordNoPatientSelectedDesc: "Select a patient from the list to view their medical record",
+    medicalRecordNotFoundTitle: "No Medical Record Yet",
+    medicalRecordNotFoundDesc: "This patient doesn't have a medical record yet. It will be created automatically once the backend generates one for this patient.",
+    medicalRecordOverviewTab: "Overview",
+    medicalRecordAllergiesTab: "Allergies",
+    medicalRecordVisitsTab: "Visit History",
+    medicalRecordAllergyAdd: "Add Allergy",
+    medicalRecordAllergyDelete: "Remove",
+    medicalRecordAllergyDeleting: "Removing...",
+    medicalRecordAllergyDeleteSuccess: "Allergy removed successfully",
+    medicalRecordAllergyAddSuccess: "Allergy added successfully",
+    medicalRecordAllergyNoData: "No allergies recorded",
+    medicalRecordAllergyName: "Allergen",
+    medicalRecordAllergyNamePlaceholder: "e.g. Penicillin, Peanuts",
+    medicalRecordAllergyNameRequired: "Allergen name is required",
+    medicalRecordAllergyType: "Type",
+    medicalRecordAllergyTypeRequired: "Allergen type is required",
+    medicalRecordAllergyTypeMedicine: "Medicine",
+    medicalRecordAllergyTypeFood: "Food",
+    medicalRecordAllergyTypeEnvironment: "Environment",
+    medicalRecordAllergyTypeOther: "Other",
+    medicalRecordAllergyReaction: "Reaction",
+    medicalRecordAllergyReactionPlaceholder: "Describe the allergic reaction",
+    medicalRecordAllergySeverity: "Severity",
+    medicalRecordAllergySeverityRequired: "Severity is required",
+    medicalRecordAllergySeverityMild: "Mild",
+    medicalRecordAllergySeverityModerate: "Moderate",
+    medicalRecordAllergySeveritySevere: "Severe",
+    medicalRecordAllergyNotes: "Notes",
+    medicalRecordAllergyNotesPlaceholder: "Additional notes",
+    medicalRecordAllergyDeleteConfirmTitle: "Remove Allergy",
+    medicalRecordAllergyDeleteConfirmDesc: "Are you sure you want to remove this allergy record?",
+    medicalRecordVisitAdd: "Add Visit",
+    medicalRecordVisitEdit: "Edit",
+    medicalRecordVisitDelete: "Delete",
+    medicalRecordVisitDeleting: "Deleting...",
+    medicalRecordVisitDeleteSuccess: "Visit deleted successfully",
+    medicalRecordVisitAddSuccess: "Visit recorded successfully",
+    medicalRecordVisitUpdateSuccess: "Visit updated successfully",
+    medicalRecordVisitNoData: "No visit history recorded",
+    medicalRecordVisitDate: "Visit Date",
+    medicalRecordVisitDateRequired: "Visit date is required",
+    medicalRecordVisitChiefComplaint: "Chief Complaint",
+    medicalRecordVisitChiefComplaintPlaceholder: "Main reason for the visit",
+    medicalRecordVisitDiagnosis: "Diagnosis",
+    medicalRecordVisitDiagnosisPlaceholder: "Diagnosis or assessment",
+    medicalRecordVisitNotes: "Notes",
+    medicalRecordVisitNotesPlaceholder: "Additional clinical notes",
+    medicalRecordVisitVitals: "Vital Signs",
+    medicalRecordVisitWeight: "Weight (kg)",
+    medicalRecordVisitWeightPlaceholder: "e.g. 60.5",
+    medicalRecordVisitHeight: "Height (cm)",
+    medicalRecordVisitHeightPlaceholder: "e.g. 170",
+    medicalRecordVisitBloodPressure: "Blood Pressure",
+    medicalRecordVisitBloodPressurePlaceholder: "e.g. 120/80",
+    medicalRecordVisitTemperature: "Temperature (°C)",
+    medicalRecordVisitTemperaturePlaceholder: "e.g. 36.8",
+    medicalRecordVisitPulse: "Pulse (bpm)",
+    medicalRecordVisitPulsePlaceholder: "e.g. 80",
+    medicalRecordVisitDoctor: "Doctor",
+    medicalRecordVisitDoctorPlaceholder: "Select doctor",
+    medicalRecordVisitPrescription: "Prescription",
+    medicalRecordVisitPrescriptionPlaceholder: "Select prescription",
+    medicalRecordVisitDeleteConfirmTitle: "Delete Visit",
+    medicalRecordVisitDeleteConfirmDesc: "This will permanently delete this visit record. This action cannot be undone.",
+    medicalRecordVisitSave: "Save Visit",
+    medicalRecordVisitSaving: "Saving...",
+    medicalRecordVisitDetails: "Visit Details",
+
+    // Doctors page
+    navDoctors: "Doctors",
+    doctorsSubtitle: "Manage registered doctors and their clinic details",
+    doctorAdd: "Add",
+    doctorEdit: "Edit",
+    doctorDelete: "Delete",
+    doctorDetails: "Details",
+    doctorDetailsTitle: "Doctor Details",
+    doctorSave: "Save Doctor",
+    doctorSaving: "Saving...",
+    doctorDeleting: "Deleting...",
+    doctorName: "Full Name",
+    doctorNamePlaceholder: "e.g. Dr. John Smith",
+    doctorNameRequired: "Doctor name is required",
+    doctorLicenseNumber: "License Number",
+    doctorLicenseNumberPlaceholder: "e.g. SIP-123456",
+    doctorSpecialty: "Specialty",
+    doctorSpecialtyPlaceholder: "e.g. General Practitioner",
+    doctorClinicName: "Clinic / Hospital",
+    doctorClinicNamePlaceholder: "e.g. City Clinic",
+    doctorPhone: "Phone",
+    doctorPhonePlaceholder: "e.g. 0812-3456-7890",
+    doctorStatusLabel: "Status",
+    doctorStatusActive: "Active",
+    doctorStatusInactive: "Inactive",
+    doctorFilterStatus: "Status",
+    doctorSearchPlaceholder: "Search by name, license, or clinic...",
+    doctorNoResults: "No doctors match your search",
+    doctorEmptyTitle: "No doctors yet",
+    doctorEmptyDesc: "Add your first doctor to start linking prescriptions",
+    doctorDeleteConfirmTitle: "Delete Doctor",
+    doctorDeleteConfirmDesc: "This doctor will be permanently deleted and unlinked from all prescriptions.",
+    doctorTotal: "Total",
+    doctorSingular: "doctor",
+    doctorPlural: "doctors",
+    doctorRegistered: "Registered",
+    doctorUpdated: "Last updated",
+    doctorCreateSuccess: "Doctor added successfully",
+    doctorUpdateSuccess: "Doctor updated successfully",
+    doctorDeleteSuccess: "Doctor deleted successfully",
+    doctorLinkedUser: "Linked User",
+
+    // Prescriptions page
+    prescriptionsSubtitle: "Manage patient prescriptions and dispensing workflow",
+    prescriptionAdd: "Add",
+    prescriptionEdit: "Edit",
+    prescriptionDelete: "Delete",
+    prescriptionDetails: "Details",
+    prescriptionDetailsTitle: "Prescription Details",
+    prescriptionSave: "Save Prescription",
+    prescriptionSaving: "Saving...",
+    prescriptionDeleting: "Deleting...",
+    prescriptionNumber: "Prescription No.",
+    prescriptionNumberPlaceholder: "e.g. RX-20260001",
+    prescriptionPrescribedAt: "Prescribed Date",
+    prescriptionNotes: "Notes",
+    prescriptionNotesPlaceholder: "Additional notes or instructions",
+    prescriptionPatient: "Patient",
+    prescriptionPatientPlaceholder: "Search patient...",
+    prescriptionPatientRequired: "Patient is required",
+    prescriptionDoctor: "Doctor",
+    prescriptionDoctorPlaceholder: "Search doctor (optional)...",
+    prescriptionStatusLabel: "Status",
+    prescriptionStatusPending: "Pending",
+    prescriptionStatusDispensed: "Dispensed",
+    prescriptionStatusPartial: "Partial",
+    prescriptionStatusCancelled: "Cancelled",
+    prescriptionStatusExpired: "Expired",
+    prescriptionFilterStatus: "Status",
+    prescriptionSearchPlaceholder: "Search by patient or Rx number...",
+    prescriptionNoResults: "No prescriptions match your search",
+    prescriptionEmptyTitle: "No prescriptions yet",
+    prescriptionEmptyDesc: "Add a new prescription to start the dispensing workflow",
+    prescriptionDeleteConfirmTitle: "Delete Prescription",
+    prescriptionDeleteConfirmDesc: "This prescription will be permanently deleted.",
+    prescriptionTotal: "Total",
+    prescriptionSingular: "prescription",
+    prescriptionPlural: "prescriptions",
+    prescriptionCreateSuccess: "Prescription added successfully",
+    prescriptionUpdateSuccess: "Prescription updated successfully",
+    prescriptionDeleteSuccess: "Prescription deleted successfully",
+    prescriptionAllTab: "All",
+    prescriptionQueueTab: "Queue",
+    prescriptionQueueTitle: "Dispensing Queue",
+    prescriptionQueueEmpty: "Queue is clear",
+    prescriptionQueueEmptyDesc: "No pending prescriptions at the moment",
+    prescriptionLinkedSale: "Linked Sale",
+    prescriptionItemsLabel: "Medication Items",
+    prescriptionItemAdd: "Add Item",
+    prescriptionItemRemove: "Remove",
+    prescriptionItemMedicine: "Medicine Name",
+    prescriptionItemMedicinePlaceholder: "e.g. Amoxicillin 500mg",
+    prescriptionItemMedicineRequired: "Medicine name is required",
+    prescriptionItemQty: "Qty",
+    prescriptionItemQtyRequired: "Quantity is required",
+    prescriptionItemFrequency: "Frequency",
+    prescriptionItemFrequencyPlaceholder: "e.g. 3x per day",
+    prescriptionItemDuration: "Duration",
+    prescriptionItemDurationPlaceholder: "e.g. 5 days",
+    prescriptionItemNotes: "Item Notes",
+    prescriptionItemNotesPlaceholder: "e.g. Take after meals",
+    prescriptionItemDispensedOf: "dispensed of",
+    prescriptionDispense: "Dispense",
+    prescriptionDispenseTitle: "Dispense Prescription",
+    prescriptionDispensing: "Dispensing...",
+    prescriptionDispenseSuccess: "Prescription dispensed successfully",
+    prescriptionCancel: "Cancel Rx",
+    prescriptionCancelConfirmTitle: "Cancel Prescription",
+    prescriptionCancelConfirmDesc: "This prescription will be marked as cancelled and cannot be dispensed.",
+    prescriptionCancelling: "Cancelling...",
+    prescriptionCancelSuccess: "Prescription cancelled successfully",
+    prescriptionDispenseStockBatch: "Stock Batch",
+    prescriptionDispenseQty: "Qty to Dispense",
+    prescriptionDispenseSellingPrice: "Selling Price",
+    prescriptionDispenseOriginalPrice: "Original Price",
+    prescriptionDispenseSaleType: "Sale Type",
+    prescriptionDispensePaymentMethod: "Payment Method",
+    prescriptionDispenseGrandTotal: "Grand Total",
+    prescriptionDispenseTotalAmount: "Subtotal",
+    prescriptionDispenseStepItems: "Stock & Pricing",
+    prescriptionDispenseStepPayment: "Payment",
+    prescriptionDispenseNext: "Next",
+    prescriptionDispenseBack: "Back",
+    prescriptionSaleTypeCash: "Cash",
+    prescriptionSaleTypeCredit: "Credit",
+    prescriptionPaymentCash: "Cash",
+    prescriptionPaymentTransfer: "Transfer",
+    prescriptionPaymentDebit: "Debit",
+    prescriptionPaymentCreditCard: "Credit Card",
+    prescriptionPaymentQris: "QRIS",
 
     sessionExpiredTitle: "Session Ended",
     sessionExpiredDesc: "Your session has expired. Please sign in again.",
@@ -1976,10 +2544,12 @@ export const translations: Record<Language, Translations> = {
     serverDownDesc: "Cannot connect to the server. Please check your connection or try again later.",
     serverDownRetry: "Try Again",
 
+    useValue: 'Use "%s"',
     add: "Add",
     created: "Created",
     lastUpdated: "Last Updated",
     cancel: "Cancel",
+    save: "Save",
     deleteConfirm: "Yes, delete",
     showing: "Showing",
     of: "of",
@@ -2441,7 +3011,7 @@ export const translations: Record<Language, Translations> = {
     poDistributor: "Distributor",
     poSelectDistributor: "Select a distributor",
     poDistributorRequired: "Distributor is required",
-    poSignedBy: "Signed By",
+    poSignedBy: "Authorized By",
     poSelectSignedBy: "Select a signer (optional)",
     poDescription: "Notes",
     poDescriptionPlaceholder: "Additional notes about this order...",
@@ -2508,7 +3078,7 @@ export const translations: Record<Language, Translations> = {
     poReceiptPraktikApoteker: "Pharmacist Practice",
     poReceiptKepada: "To:",
     poReceiptTotalItems: "Total Items",
-    poReceiptPenanggungJawab: "Person in Charge",
+    poReceiptPenanggungJawab: "Responsible Pharmacist",
     poMarkReceived: "Mark as Received",
     poMarkReceivedConfirmTitle: "Mark Order as Received",
     poMarkReceivedConfirmDesc: "Confirm that the goods from this purchase order have been received from the distributor.",
@@ -2529,7 +3099,7 @@ export const translations: Record<Language, Translations> = {
     invoiceDistributorRequired: "Distributor is required",
     invoicePurchaseOrder: "Purchase Order",
     invoiceSelectPurchaseOrder: "Link to a purchase order (optional)",
-    invoiceSignedBy: "Signed By",
+    invoiceSignedBy: "Authorized By",
     invoiceSelectSignedBy: "Select a signer",
     invoiceSignedByRequired: "Signer is required",
     invoiceDescription: "Notes",
@@ -2599,7 +3169,10 @@ export const translations: Record<Language, Translations> = {
     invoiceItemCabinet: "Cabinet",
     invoiceItemShelf: "Shelf",
     invoiceItemBin: "Bin",
-    invoiceItemSelectBin: "Select bin (optional)",
+    invoiceItemSelectBin: "Select bin",
+    invoiceItemCabinetRequired: "Please select a cabinet",
+    invoiceItemShelfRequired: "Please select a shelf",
+    invoiceItemBinRequired: "Please select a bin",
     invoicePaymentSectionTitle: "Payment History",
     invoicePaymentAdd: "Add Payment",
     invoicePaymentAddBtn: "Add",
@@ -2666,7 +3239,7 @@ export const translations: Record<Language, Translations> = {
     stockAdjustDescription: "Reason / Notes",
     stockAdjustDescriptionPlaceholder: "Explain why this stock is being adjusted...",
     stockAdjustDescriptionRequired: "Reason is required",
-    stockAdjustSignedBy: "Signed By",
+    stockAdjustSignedBy: "Authorized By",
     stockAdjustSelectSignedBy: "Select a signer",
     stockAdjustSignedByRequired: "Signer is required",
     stockAdjustSave: "Adjust",
@@ -2713,7 +3286,7 @@ export const translations: Record<Language, Translations> = {
     sdDisposalNumber: "Disposal #",
     sdStatus: "Status",
     sdDisposedAt: "Disposed At",
-    sdSignedBy: "Signed By",
+    sdSignedBy: "Authorized By",
     sdSelectSignedBy: "Select signer (optional)",
     sdDescription: "Description",
     sdDescriptionPlaceholder: "Optional notes about this disposal...",
@@ -2772,7 +3345,7 @@ export const translations: Record<Language, Translations> = {
     saleStatusCancelled: "Cancelled",
     saleStatusRefunded: "Refunded",
     saleStatusPending: "Pending",
-    saleCustomer: "Customer",
+    salePatient: "Patient",
     saleSoldAt: "Sold At",
     saleDueDate: "Due Date",
     saleDescription: "Description",
@@ -2783,14 +3356,14 @@ export const translations: Record<Language, Translations> = {
     saleItemsSection: "Items",
     saleBatchLabel: "Batch",
     saleDiscountLabel: "Discount",
-    saleSearchPlaceholder: "Search by sale number or customer...",
+    saleSearchPlaceholder: "Search by sale number or patient...",
     saleNoResults: "No results found",
     saleEmptyTitle: "No sales found",
     saleEmptyDesc: "Sales will appear here once a checkout is completed",
     saleFilterStatus: "Status",
     saleFilterType: "Sale Type",
     saleFilterPaymentStatus: "Payment Status",
-    saleFilterCustomer: "Customer",
+    saleFilterPatient: "Patient",
     saleCancelConfirmTitle: "Cancel Sale",
     saleCancelConfirmDesc: "This will cancel the sale and reverse its stock movement. This action cannot be undone.",
     saleCancelReason: "Cancellation Reason",
@@ -2830,9 +3403,13 @@ export const translations: Record<Language, Translations> = {
     saleCompleteConfirmTitle: "Complete Sale",
     saleCompleteConfirmDesc: "This will finalize the held sale and mark it as completed.",
     saleCompleteSuccess: "Sale completed successfully",
+    salePrescriptionSection: "Prescription",
+    salePrescriptionNumber: "Prescription No.",
+    salePrescriptionDoctor: "Doctor",
+    salePrescriptionDate: "Prescribed At",
 
     // Cashier / POS page
-    posSubtitle: "Process sales transactions for walk-in and registered customers",
+    posSubtitle: "Process sales transactions for walk-in and registered patients",
     posSearchLabel: "Search Medicine",
     posSearchPlaceholder: "Scan barcode or search by name / SKU...",
     posBatchLabel: "Batch",
@@ -2851,7 +3428,7 @@ export const translations: Record<Language, Translations> = {
     posLoadMore: "Load more",
     posTransactionLabel: "Transaction",
     posReset: "Reset",
-    posSelectCustomer: "Select customer",
+    posSelectPatient: "Select patient",
     posAddNote: "Add note",
     posHold: "Hold",
     posHolding: "Holding...",
@@ -2871,16 +3448,29 @@ export const translations: Record<Language, Translations> = {
     posCartSection: "Cart",
     posCartEmptyTitle: "Cart is empty",
     posCartEmptyDesc: "Search and add medicines to start a sale",
-    posCustomerLabel: "Customer",
-    posWalkInCustomer: "Walk-in Customer",
+    posPatientLabel: "Patient",
+    posWalkInPatient: "Walk-in Patient",
+    posPrescriptionLabel: "Prescription",
+    posPrescriptionPlaceholder: "Search prescription...",
+    posPrescriptionOptional: "Optional — link a prescription to this sale",
+    posRxNoPrescriptionWarning: "Cart contains Rx items — a prescription must be linked before checkout",
+    posRxNoPatientWarning: "Prescription sales require a registered patient — walk-in is not allowed",
+    posCreatePrescriptionButton: "New",
+    posCreatePrescriptionTitle: "New Prescription",
+    posCreatePrescriptionRequiresPatient: "Select a patient first to create a prescription",
+    posCreatePrescriptionSuccess: "Prescription created and linked",
+    posCreatePrescriptionSave: "Create & Link",
     posSaleTypeLabel: "Sale Type",
-    posCreditRequiresCustomer: "A registered customer is required for credit sales",
+    posCreditRequiresPatient: "A registered patient is required for credit sales",
     posDescriptionLabel: "Description",
     posDescriptionPlaceholder: "Enter a note for this sale (optional)",
     posSubtotal: "Subtotal",
     posTaxNote: "PPN will be calculated at checkout",
     posCheckout: "Checkout",
     posProcessing: "Processing...",
+    posStockInsufficient: "Insufficient Stock",
+    posStockAvailable: "available",
+    posStockExceededItems: "Insufficient stock for:",
     posSaleSuccessTitle: "Payment Successful",
     posNewSale: "New Transaction",
     posPayLabel: "Pay",
@@ -2891,7 +3481,7 @@ export const translations: Record<Language, Translations> = {
     posPaymentMethodCash: "Cash",
     posPaymentMethodCashDesc: "Cash drawer opens",
     posPaymentMethodCredit: "Credit",
-    posPaymentMethodCreditDesc: "Customer pays later",
+    posPaymentMethodCreditDesc: "Patient pays later",
     posDownPaymentLabel: "Down payment",
     posRemainingLabel: "Remaining balance",
     posSummaryLabel: "Summary",
@@ -2936,7 +3526,7 @@ export const translations: Record<Language, Translations> = {
     srCancelling: "Cancelling...",
     srRejecting: "Rejecting...",
     srCompleting: "Processing...",
-    srStatusOnProcess: "On Process",
+    srStatusInProgress: "In Progress",
     srStatusCompleted: "Completed",
     srStatusCancelled: "Cancelled",
     srStatusRejected: "Rejected",
@@ -2946,7 +3536,7 @@ export const translations: Record<Language, Translations> = {
     srDistributor: "Distributor",
     srSelectDistributor: "Select a distributor",
     srDistributorRequired: "Distributor is required",
-    srSignedBy: "Signed By",
+    srSignedBy: "Authorized By",
     srSelectSignedBy: "Select signer (optional)",
     srReason: "Reason",
     srReasonPlaceholder: "Return reason (e.g. damaged, expired)...",
@@ -3020,7 +3610,7 @@ export const translations: Record<Language, Translations> = {
     sdBarcodeNotFound: "No batch found for this barcode",
 
     // Stock Movements page
-    navStockMovements: "Stock Movements",
+    navStockMovements: "Inventory Movements",
     smSubtitle: "View and track all stock movements and transactions",
     smType: "Type",
     smReason: "Reason",
@@ -3057,7 +3647,7 @@ export const translations: Record<Language, Translations> = {
     reportsSalesTab: "Sales",
     reportsPurchaseTab: "Purchases",
     reportsInventoryTab: "Inventory",
-    reportsStockMovementTab: "Stock Movements",
+    reportsStockMovementTab: "Inventory Movements",
     reportsDisposalTab: "Disposals",
     reportsReturnsTab: "Returns",
     reportSummaryTitle: "Summary",
@@ -3080,7 +3670,7 @@ export const translations: Record<Language, Translations> = {
     reportSalesTransactions: "Transactions",
     reportSalesMethod: "Payment Method",
     reportSalesSaleNumber: "Sale No.",
-    reportSalesCustomer: "Customer",
+    reportSalesPatient: "Patient",
     reportSalesSaleType: "Sale Type",
     reportSalesStatus: "Status",
     reportSalesTotalAmount: "Total Amount",
@@ -3354,6 +3944,11 @@ export const translations: Record<Language, Translations> = {
     transactionsLabel: "Transaksi",
     rxQueueLabel: "Antrian Rx",
     navDashboard: "Dasbor",
+    navGroupSales: "Penjualan",
+    navGroupInventory: "Inventaris",
+    navGroupProcurement: "Pengadaan",
+    navGroupPeople: "Pengguna",
+    navGroupSettings: "Pengaturan",
 
     // Dashboard page
     dashboardSubtitle: "Ini yang terjadi di apotek Anda hari ini.",
@@ -3448,6 +4043,7 @@ export const translations: Record<Language, Translations> = {
     navPrescriptions: "Resep",
     navPurchaseOrders: "Pesanan Pembelian",
     navInvoices: "Faktur",
+    navPatients: "Pasien",
     navCustomers: "Pelanggan",
     navDistributors: "Distributor",
     navReports: "Laporan",
@@ -3540,7 +4136,68 @@ export const translations: Record<Language, Translations> = {
     distributorUpdateSuccess: "Distributor berhasil diperbarui",
     distributorDeleteSuccess: "Distributor berhasil dihapus",
 
-    customersSubtitle: "Kelola pelanggan dan pembeli walk-in Anda",
+    patientsSubtitle: "Kelola pasien dan pembeli walk-in Anda",
+    patientAdd: "Tambah",
+    patientEdit: "Edit",
+    patientDelete: "Hapus",
+    patientDetails: "Detail",
+    patientDetailsTitle: "Detail Pasien",
+    patientSave: "Simpan",
+    patientSaving: "Menyimpan...",
+    patientDeleting: "Menghapus...",
+    patientName: "Nama",
+    patientNamePlaceholder: "Nama lengkap",
+    patientNameRequired: "Nama wajib diisi",
+    patientPhone: "Telepon",
+    patientPhonePlaceholder: "Nomor telepon",
+    patientAddress: "Alamat",
+    patientAddressPlaceholder: "Alamat lengkap",
+    patientDescription: "Catatan",
+    patientDescriptionPlaceholder: "Catatan tambahan",
+    patientStatusLabel: "Status",
+    patientStatusActive: "Aktif",
+    patientStatusInactive: "Nonaktif",
+    patientIsWalkIn: "Tipe",
+    patientWalkInBadge: "Walk-in",
+    patientWalkInRegular: "Reguler",
+    patientSearchPlaceholder: "Cari pasien...",
+    patientNoResults: "Pasien tidak ditemukan",
+    patientEmptyTitle: "Belum ada pasien",
+    patientEmptyDesc: "Tambahkan pasien pertama Anda untuk memulai",
+    patientDeleteConfirmTitle: "Hapus Pasien",
+    patientDeleteConfirmDesc: "Tindakan ini tidak dapat dibatalkan. Pasien akan dihapus secara permanen dari sistem.",
+    patientTotal: "pasien",
+    patientSingular: "pasien",
+    patientPlural: "pasien",
+    patientCreateSuccess: "Pasien berhasil ditambahkan",
+    patientUpdateSuccess: "Pasien berhasil diperbarui",
+    patientDeleteSuccess: "Pasien berhasil dihapus",
+    patientFilterStatus: "Status",
+    patientFilterIsWalkIn: "Tipe",
+    patientFilterPartyType: "Jenis Pihak",
+    patientPartyTypePatient: "Pasien",
+    patientPartyTypeProfessional: "Profesional",
+    patientNik: "NIK",
+    patientNikPlaceholder: "Nomor Induk Kependudukan",
+    patientGender: "Jenis Kelamin",
+    patientGenderMale: "Laki-laki",
+    patientGenderFemale: "Perempuan",
+    patientDateOfBirth: "Tanggal Lahir",
+    patientBpjsNumber: "No. BPJS",
+    patientBpjsNumberPlaceholder: "Nomor kepesertaan BPJS",
+    patientMedicalRecordNumber: "No. Rekam Medis",
+    patientMedicalRecordNumberPlaceholder: "Nomor rekam medis",
+    patientDetailSectionTitle: "Detail Medis",
+    professionalStrNumber: "No. STR",
+    professionalStrNumberPlaceholder: "Nomor Surat Tanda Registrasi",
+    professionalSipNumber: "No. SIP",
+    professionalSipNumberPlaceholder: "Nomor Surat Izin Praktik",
+    professionalProfession: "Profesi",
+    professionalProfessionPlaceholder: "mis. Dokter, Perawat, Apoteker",
+    professionalDetailSectionTitle: "Detail Profesional",
+
+    // Customers
+    customersSubtitle: "Kelola pelanggan, pasien, dan tenaga profesional Anda",
     customerAdd: "Tambah",
     customerEdit: "Edit",
     customerDelete: "Hapus",
@@ -3549,35 +4206,240 @@ export const translations: Record<Language, Translations> = {
     customerSave: "Simpan",
     customerSaving: "Menyimpan...",
     customerDeleting: "Menghapus...",
-    customerName: "Nama",
-    customerNamePlaceholder: "Nama lengkap",
-    customerNameRequired: "Nama wajib diisi",
-    customerPhone: "Telepon",
-    customerPhonePlaceholder: "Nomor telepon",
-    customerAddress: "Alamat",
-    customerAddressPlaceholder: "Alamat lengkap",
-    customerDescription: "Catatan",
-    customerDescriptionPlaceholder: "Catatan tambahan",
-    customerStatusLabel: "Status",
-    customerStatusActive: "Aktif",
-    customerStatusInactive: "Nonaktif",
-    customerIsWalkIn: "Tipe",
-    customerWalkInBadge: "Walk-in",
-    customerWalkInRegular: "Reguler",
     customerSearchPlaceholder: "Cari pelanggan...",
     customerNoResults: "Pelanggan tidak ditemukan",
     customerEmptyTitle: "Belum ada pelanggan",
     customerEmptyDesc: "Tambahkan pelanggan pertama Anda untuk memulai",
     customerDeleteConfirmTitle: "Hapus Pelanggan",
-    customerDeleteConfirmDesc: "Tindakan ini tidak dapat dibatalkan. Pelanggan akan dihapus secara permanen dari sistem.",
-    customerTotal: "pelanggan",
-    customerSingular: "pelanggan",
-    customerPlural: "pelanggan",
+    customerDeleteConfirmDesc: "Tindakan ini tidak dapat dibatalkan. Pelanggan akan dihapus secara permanen.",
     customerCreateSuccess: "Pelanggan berhasil ditambahkan",
     customerUpdateSuccess: "Pelanggan berhasil diperbarui",
     customerDeleteSuccess: "Pelanggan berhasil dihapus",
     customerFilterStatus: "Status",
     customerFilterIsWalkIn: "Tipe",
+    customerFilterType: "Tipe Pelanggan",
+    customerTypePatient: "Pasien",
+    customerTypeProfessional: "Profesional",
+    customerMedicalRecordNumber: "No. Rekam Medis",
+
+    // Medical Records
+    navMedicalRecords: "Rekam Medis",
+    medicalRecordsSubtitle: "Lihat dan kelola rekam medis pasien, alergi, dan riwayat kunjungan",
+    medicalRecordTitle: "Rekam Medis",
+    medicalRecordNumber: "Nomor Rekam Medis",
+    medicalRecordBloodType: "Golongan Darah",
+    medicalRecordBloodTypePlaceholder: "contoh: A+, B-, O+",
+    medicalRecordEmergencyContact: "Kontak Darurat",
+    medicalRecordEmergencyContactName: "Nama Kontak",
+    medicalRecordEmergencyContactNamePlaceholder: "Nama lengkap",
+    medicalRecordEmergencyContactPhone: "Telepon Kontak",
+    medicalRecordEmergencyContactPhonePlaceholder: "+62 xxx xxxx xxxx",
+    medicalRecordEdit: "Edit Rekam Medis",
+    medicalRecordSave: "Simpan",
+    medicalRecordSaving: "Menyimpan...",
+    medicalRecordUpdateSuccess: "Rekam medis berhasil diperbarui",
+    medicalRecordPatientSearchPlaceholder: "Cari pasien...",
+    medicalRecordSelectPatient: "Pilih Pasien",
+    medicalRecordNoPatientSelected: "Belum Ada Pasien Dipilih",
+    medicalRecordNoPatientSelectedDesc: "Pilih pasien dari daftar untuk melihat rekam medisnya",
+    medicalRecordNotFoundTitle: "Belum Ada Rekam Medis",
+    medicalRecordNotFoundDesc: "Pasien ini belum memiliki rekam medis. Rekam medis akan dibuat otomatis setelah backend membuatkannya untuk pasien ini.",
+    medicalRecordOverviewTab: "Ringkasan",
+    medicalRecordAllergiesTab: "Alergi",
+    medicalRecordVisitsTab: "Riwayat Kunjungan",
+    medicalRecordAllergyAdd: "Tambah Alergi",
+    medicalRecordAllergyDelete: "Hapus",
+    medicalRecordAllergyDeleting: "Menghapus...",
+    medicalRecordAllergyDeleteSuccess: "Alergi berhasil dihapus",
+    medicalRecordAllergyAddSuccess: "Alergi berhasil ditambahkan",
+    medicalRecordAllergyNoData: "Tidak ada alergi yang tercatat",
+    medicalRecordAllergyName: "Alergen",
+    medicalRecordAllergyNamePlaceholder: "contoh: Penisilin, Kacang",
+    medicalRecordAllergyNameRequired: "Nama alergen wajib diisi",
+    medicalRecordAllergyType: "Jenis",
+    medicalRecordAllergyTypeRequired: "Jenis alergen wajib dipilih",
+    medicalRecordAllergyTypeMedicine: "Obat",
+    medicalRecordAllergyTypeFood: "Makanan",
+    medicalRecordAllergyTypeEnvironment: "Lingkungan",
+    medicalRecordAllergyTypeOther: "Lainnya",
+    medicalRecordAllergyReaction: "Reaksi",
+    medicalRecordAllergyReactionPlaceholder: "Jelaskan reaksi alergi",
+    medicalRecordAllergySeverity: "Tingkat Keparahan",
+    medicalRecordAllergySeverityRequired: "Tingkat keparahan wajib dipilih",
+    medicalRecordAllergySeverityMild: "Ringan",
+    medicalRecordAllergySeverityModerate: "Sedang",
+    medicalRecordAllergySeveritySevere: "Berat",
+    medicalRecordAllergyNotes: "Catatan",
+    medicalRecordAllergyNotesPlaceholder: "Catatan tambahan",
+    medicalRecordAllergyDeleteConfirmTitle: "Hapus Alergi",
+    medicalRecordAllergyDeleteConfirmDesc: "Apakah Anda yakin ingin menghapus data alergi ini?",
+    medicalRecordVisitAdd: "Tambah Kunjungan",
+    medicalRecordVisitEdit: "Edit",
+    medicalRecordVisitDelete: "Hapus",
+    medicalRecordVisitDeleting: "Menghapus...",
+    medicalRecordVisitDeleteSuccess: "Kunjungan berhasil dihapus",
+    medicalRecordVisitAddSuccess: "Kunjungan berhasil dicatat",
+    medicalRecordVisitUpdateSuccess: "Kunjungan berhasil diperbarui",
+    medicalRecordVisitNoData: "Belum ada riwayat kunjungan",
+    medicalRecordVisitDate: "Tanggal Kunjungan",
+    medicalRecordVisitDateRequired: "Tanggal kunjungan wajib diisi",
+    medicalRecordVisitChiefComplaint: "Keluhan Utama",
+    medicalRecordVisitChiefComplaintPlaceholder: "Alasan utama kunjungan",
+    medicalRecordVisitDiagnosis: "Diagnosis",
+    medicalRecordVisitDiagnosisPlaceholder: "Diagnosis atau penilaian",
+    medicalRecordVisitNotes: "Catatan",
+    medicalRecordVisitNotesPlaceholder: "Catatan klinis tambahan",
+    medicalRecordVisitVitals: "Tanda Vital",
+    medicalRecordVisitWeight: "Berat Badan (kg)",
+    medicalRecordVisitWeightPlaceholder: "contoh: 60.5",
+    medicalRecordVisitHeight: "Tinggi Badan (cm)",
+    medicalRecordVisitHeightPlaceholder: "contoh: 170",
+    medicalRecordVisitBloodPressure: "Tekanan Darah",
+    medicalRecordVisitBloodPressurePlaceholder: "contoh: 120/80",
+    medicalRecordVisitTemperature: "Suhu (°C)",
+    medicalRecordVisitTemperaturePlaceholder: "contoh: 36.8",
+    medicalRecordVisitPulse: "Denyut Nadi (bpm)",
+    medicalRecordVisitPulsePlaceholder: "contoh: 80",
+    medicalRecordVisitDoctor: "Dokter",
+    medicalRecordVisitDoctorPlaceholder: "Pilih dokter",
+    medicalRecordVisitPrescription: "Resep",
+    medicalRecordVisitPrescriptionPlaceholder: "Pilih resep",
+    medicalRecordVisitDeleteConfirmTitle: "Hapus Kunjungan",
+    medicalRecordVisitDeleteConfirmDesc: "Data kunjungan ini akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.",
+    medicalRecordVisitSave: "Simpan Kunjungan",
+    medicalRecordVisitSaving: "Menyimpan...",
+    medicalRecordVisitDetails: "Detail Kunjungan",
+
+    // Doctors page
+    navDoctors: "Dokter",
+    doctorsSubtitle: "Kelola data dokter dan informasi klinik terdaftar",
+    doctorAdd: "Tambah",
+    doctorEdit: "Edit",
+    doctorDelete: "Hapus",
+    doctorDetails: "Detail",
+    doctorDetailsTitle: "Detail Dokter",
+    doctorSave: "Simpan Dokter",
+    doctorSaving: "Menyimpan...",
+    doctorDeleting: "Menghapus...",
+    doctorName: "Nama Lengkap",
+    doctorNamePlaceholder: "mis. dr. Budi Santoso",
+    doctorNameRequired: "Nama dokter wajib diisi",
+    doctorLicenseNumber: "Nomor SIP",
+    doctorLicenseNumberPlaceholder: "mis. SIP-123456",
+    doctorSpecialty: "Spesialisasi",
+    doctorSpecialtyPlaceholder: "mis. Dokter Umum",
+    doctorClinicName: "Klinik / Rumah Sakit",
+    doctorClinicNamePlaceholder: "mis. Klinik Sehat",
+    doctorPhone: "Telepon",
+    doctorPhonePlaceholder: "mis. 0812-3456-7890",
+    doctorStatusLabel: "Status",
+    doctorStatusActive: "Aktif",
+    doctorStatusInactive: "Tidak Aktif",
+    doctorFilterStatus: "Status",
+    doctorSearchPlaceholder: "Cari berdasarkan nama, SIP, atau klinik...",
+    doctorNoResults: "Tidak ada dokter yang sesuai pencarian",
+    doctorEmptyTitle: "Belum ada dokter",
+    doctorEmptyDesc: "Tambahkan dokter pertama untuk mulai menghubungkan resep",
+    doctorDeleteConfirmTitle: "Hapus Dokter",
+    doctorDeleteConfirmDesc: "Dokter ini akan dihapus secara permanen dan dilepas dari semua resep.",
+    doctorTotal: "Total",
+    doctorSingular: "dokter",
+    doctorPlural: "dokter",
+    doctorRegistered: "Terdaftar",
+    doctorUpdated: "Terakhir diperbarui",
+    doctorCreateSuccess: "Dokter berhasil ditambahkan",
+    doctorUpdateSuccess: "Dokter berhasil diperbarui",
+    doctorDeleteSuccess: "Dokter berhasil dihapus",
+    doctorLinkedUser: "Pengguna Terhubung",
+
+    // Prescriptions page
+    prescriptionsSubtitle: "Kelola resep pasien dan alur dispensing obat",
+    prescriptionAdd: "Tambah",
+    prescriptionEdit: "Edit",
+    prescriptionDelete: "Hapus",
+    prescriptionDetails: "Detail",
+    prescriptionDetailsTitle: "Detail Resep",
+    prescriptionSave: "Simpan Resep",
+    prescriptionSaving: "Menyimpan...",
+    prescriptionDeleting: "Menghapus...",
+    prescriptionNumber: "No. Resep",
+    prescriptionNumberPlaceholder: "mis. RX-20260001",
+    prescriptionPrescribedAt: "Tanggal Resep",
+    prescriptionNotes: "Catatan",
+    prescriptionNotesPlaceholder: "Catatan atau instruksi tambahan",
+    prescriptionPatient: "Pasien",
+    prescriptionPatientPlaceholder: "Cari pasien...",
+    prescriptionPatientRequired: "Pasien wajib dipilih",
+    prescriptionDoctor: "Dokter",
+    prescriptionDoctorPlaceholder: "Cari dokter (opsional)...",
+    prescriptionStatusLabel: "Status",
+    prescriptionStatusPending: "Menunggu",
+    prescriptionStatusDispensed: "Selesai",
+    prescriptionStatusPartial: "Sebagian",
+    prescriptionStatusCancelled: "Dibatalkan",
+    prescriptionStatusExpired: "Kedaluwarsa",
+    prescriptionFilterStatus: "Status",
+    prescriptionSearchPlaceholder: "Cari berdasarkan pasien atau no. resep...",
+    prescriptionNoResults: "Tidak ada resep yang sesuai pencarian",
+    prescriptionEmptyTitle: "Belum ada resep",
+    prescriptionEmptyDesc: "Tambahkan resep baru untuk memulai alur dispensing",
+    prescriptionDeleteConfirmTitle: "Hapus Resep",
+    prescriptionDeleteConfirmDesc: "Resep ini akan dihapus secara permanen.",
+    prescriptionTotal: "Total",
+    prescriptionSingular: "resep",
+    prescriptionPlural: "resep",
+    prescriptionCreateSuccess: "Resep berhasil ditambahkan",
+    prescriptionUpdateSuccess: "Resep berhasil diperbarui",
+    prescriptionDeleteSuccess: "Resep berhasil dihapus",
+    prescriptionAllTab: "Semua",
+    prescriptionQueueTab: "Antrean",
+    prescriptionQueueTitle: "Antrean Dispensing",
+    prescriptionQueueEmpty: "Antrean kosong",
+    prescriptionQueueEmptyDesc: "Tidak ada resep yang menunggu saat ini",
+    prescriptionLinkedSale: "Penjualan Terhubung",
+    prescriptionItemsLabel: "Daftar Obat",
+    prescriptionItemAdd: "Tambah Obat",
+    prescriptionItemRemove: "Hapus",
+    prescriptionItemMedicine: "Nama Obat",
+    prescriptionItemMedicinePlaceholder: "mis. Amoxicillin 500mg",
+    prescriptionItemMedicineRequired: "Nama obat wajib diisi",
+    prescriptionItemQty: "Jumlah",
+    prescriptionItemQtyRequired: "Jumlah wajib diisi",
+    prescriptionItemFrequency: "Frekuensi",
+    prescriptionItemFrequencyPlaceholder: "mis. 3x sehari",
+    prescriptionItemDuration: "Durasi",
+    prescriptionItemDurationPlaceholder: "mis. 5 hari",
+    prescriptionItemNotes: "Catatan Item",
+    prescriptionItemNotesPlaceholder: "mis. Diminum setelah makan",
+    prescriptionItemDispensedOf: "dari",
+    prescriptionDispense: "Dispens",
+    prescriptionDispenseTitle: "Dispensing Resep",
+    prescriptionDispensing: "Memproses...",
+    prescriptionDispenseSuccess: "Resep berhasil didispens",
+    prescriptionCancel: "Batalkan",
+    prescriptionCancelConfirmTitle: "Batalkan Resep",
+    prescriptionCancelConfirmDesc: "Resep ini akan ditandai sebagai dibatalkan dan tidak dapat didispens.",
+    prescriptionCancelling: "Membatalkan...",
+    prescriptionCancelSuccess: "Resep berhasil dibatalkan",
+    prescriptionDispenseStockBatch: "Batch Stok",
+    prescriptionDispenseQty: "Jumlah Dispens",
+    prescriptionDispenseSellingPrice: "Harga Jual",
+    prescriptionDispenseOriginalPrice: "Harga Asli",
+    prescriptionDispenseSaleType: "Tipe Penjualan",
+    prescriptionDispensePaymentMethod: "Metode Pembayaran",
+    prescriptionDispenseGrandTotal: "Total Akhir",
+    prescriptionDispenseTotalAmount: "Subtotal",
+    prescriptionDispenseStepItems: "Stok & Harga",
+    prescriptionDispenseStepPayment: "Pembayaran",
+    prescriptionDispenseNext: "Lanjut",
+    prescriptionDispenseBack: "Kembali",
+    prescriptionSaleTypeCash: "Tunai",
+    prescriptionSaleTypeCredit: "Kredit",
+    prescriptionPaymentCash: "Tunai",
+    prescriptionPaymentTransfer: "Transfer",
+    prescriptionPaymentDebit: "Debit",
+    prescriptionPaymentCreditCard: "Kartu Kredit",
+    prescriptionPaymentQris: "QRIS",
 
     sessionExpiredTitle: "Sesi Berakhir",
     sessionExpiredDesc: "Sesi Anda telah berakhir. Silakan masuk kembali.",
@@ -3596,10 +4458,12 @@ export const translations: Record<Language, Translations> = {
     serverDownDesc: "Tidak dapat terhubung ke server. Periksa koneksi Anda atau coba lagi nanti.",
     serverDownRetry: "Coba Lagi",
 
+    useValue: 'Gunakan "%s"',
     add: "Tambah",
     created: "Dibuat",
     lastUpdated: "Terakhir Diperbarui",
     cancel: "Batal",
+    save: "Simpan",
     deleteConfirm: "Ya, hapus",
     showing: "Menampilkan",
     of: "dari",
@@ -4219,7 +5083,10 @@ export const translations: Record<Language, Translations> = {
     invoiceItemCabinet: "Lemari",
     invoiceItemShelf: "Rak",
     invoiceItemBin: "Laci",
-    invoiceItemSelectBin: "Pilih laci (opsional)",
+    invoiceItemSelectBin: "Pilih laci",
+    invoiceItemCabinetRequired: "Silakan pilih lemari",
+    invoiceItemShelfRequired: "Silakan pilih rak",
+    invoiceItemBinRequired: "Silakan pilih laci",
     invoicePaymentSectionTitle: "Riwayat Pembayaran",
     invoicePaymentAdd: "Tambah Pembayaran",
     invoicePaymentAddBtn: "Tambah",
@@ -4392,7 +5259,7 @@ export const translations: Record<Language, Translations> = {
     saleStatusCancelled: "Dibatalkan",
     saleStatusRefunded: "Direfund",
     saleStatusPending: "Tertunda",
-    saleCustomer: "Pelanggan",
+    salePatient: "Pasien",
     saleSoldAt: "Tanggal Penjualan",
     saleDueDate: "Tanggal Jatuh Tempo",
     saleDescription: "Deskripsi",
@@ -4403,14 +5270,14 @@ export const translations: Record<Language, Translations> = {
     saleItemsSection: "Item",
     saleBatchLabel: "Batch",
     saleDiscountLabel: "Diskon",
-    saleSearchPlaceholder: "Cari berdasarkan nomor penjualan atau pelanggan...",
+    saleSearchPlaceholder: "Cari berdasarkan nomor penjualan atau pasien...",
     saleNoResults: "Tidak ada hasil ditemukan",
     saleEmptyTitle: "Belum ada penjualan",
     saleEmptyDesc: "Penjualan akan muncul di sini setelah transaksi kasir diselesaikan",
     saleFilterStatus: "Status",
     saleFilterType: "Jenis Penjualan",
     saleFilterPaymentStatus: "Status Pembayaran",
-    saleFilterCustomer: "Pelanggan",
+    saleFilterPatient: "Pasien",
     saleCancelConfirmTitle: "Batalkan Penjualan",
     saleCancelConfirmDesc: "Tindakan ini akan membatalkan penjualan dan mengembalikan pergerakan stok. Tindakan ini tidak dapat dibatalkan.",
     saleCancelReason: "Alasan Pembatalan",
@@ -4450,9 +5317,13 @@ export const translations: Record<Language, Translations> = {
     saleCompleteConfirmTitle: "Selesaikan Penjualan",
     saleCompleteConfirmDesc: "Tindakan ini akan menyelesaikan penjualan yang ditunda dan menandainya sebagai selesai.",
     saleCompleteSuccess: "Penjualan berhasil diselesaikan",
+    salePrescriptionSection: "Resep",
+    salePrescriptionNumber: "No. Resep",
+    salePrescriptionDoctor: "Dokter",
+    salePrescriptionDate: "Tanggal Resep",
 
     // Cashier / POS page
-    posSubtitle: "Proses transaksi penjualan untuk pelanggan walk-in maupun terdaftar",
+    posSubtitle: "Proses transaksi penjualan untuk pasien walk-in maupun terdaftar",
     posSearchLabel: "Cari Obat",
     posSearchPlaceholder: "Scan barcode atau cari nama / SKU...",
     posBatchLabel: "Batch",
@@ -4471,7 +5342,7 @@ export const translations: Record<Language, Translations> = {
     posLoadMore: "Muat lebih banyak",
     posTransactionLabel: "Transaksi",
     posReset: "Reset",
-    posSelectCustomer: "Pilih pelanggan",
+    posSelectPatient: "Pilih pasien",
     posAddNote: "Tambah catatan",
     posHold: "Tunda",
     posHolding: "Menunda...",
@@ -4491,16 +5362,29 @@ export const translations: Record<Language, Translations> = {
     posCartSection: "Keranjang",
     posCartEmptyTitle: "Keranjang masih kosong",
     posCartEmptyDesc: "Cari dan tambahkan obat untuk memulai penjualan",
-    posCustomerLabel: "Pelanggan",
-    posWalkInCustomer: "Pelanggan Walk-in",
+    posPatientLabel: "Pasien",
+    posWalkInPatient: "Pasien Walk-in",
+    posPrescriptionLabel: "Resep",
+    posPrescriptionPlaceholder: "Cari resep...",
+    posPrescriptionOptional: "Opsional — tautkan resep ke transaksi ini",
+    posRxNoPrescriptionWarning: "Keranjang mengandung item Rx — resep wajib ditautkan sebelum checkout",
+    posRxNoPatientWarning: "Penjualan resep memerlukan pasien terdaftar — walk-in tidak diizinkan",
+    posCreatePrescriptionButton: "Baru",
+    posCreatePrescriptionTitle: "Resep Baru",
+    posCreatePrescriptionRequiresPatient: "Pilih pasien terlebih dahulu untuk membuat resep",
+    posCreatePrescriptionSuccess: "Resep berhasil dibuat dan ditautkan",
+    posCreatePrescriptionSave: "Buat & Tautkan",
     posSaleTypeLabel: "Jenis Penjualan",
-    posCreditRequiresCustomer: "Pelanggan terdaftar diperlukan untuk penjualan kredit",
+    posCreditRequiresPatient: "Pasien terdaftar diperlukan untuk penjualan kredit",
     posDescriptionLabel: "Deskripsi",
     posDescriptionPlaceholder: "Masukkan catatan untuk penjualan ini (opsional)",
     posSubtotal: "Subtotal",
     posTaxNote: "PPN akan dihitung saat checkout",
     posCheckout: "Checkout",
     posProcessing: "Memproses...",
+    posStockInsufficient: "Stok Tidak Cukup",
+    posStockAvailable: "tersedia",
+    posStockExceededItems: "Stok tidak cukup untuk:",
     posSaleSuccessTitle: "Pembayaran Berhasil",
     posNewSale: "Transaksi Baru",
     posPayLabel: "Bayar",
@@ -4511,7 +5395,7 @@ export const translations: Record<Language, Translations> = {
     posPaymentMethodCash: "Tunai",
     posPaymentMethodCashDesc: "Laci kasir terbuka",
     posPaymentMethodCredit: "Kredit",
-    posPaymentMethodCreditDesc: "Pelanggan bayar nanti",
+    posPaymentMethodCreditDesc: "Pasien bayar nanti",
     posDownPaymentLabel: "Uang muka",
     posRemainingLabel: "Sisa tagihan",
     posSummaryLabel: "Ringkasan",
@@ -4556,7 +5440,7 @@ export const translations: Record<Language, Translations> = {
     srCancelling: "Membatalkan...",
     srRejecting: "Menolak...",
     srCompleting: "Memproses...",
-    srStatusOnProcess: "Sedang Diproses",
+    srStatusInProgress: "Sedang Diproses",
     srStatusCompleted: "Selesai",
     srStatusCancelled: "Dibatalkan",
     srStatusRejected: "Ditolak",
@@ -4700,7 +5584,7 @@ export const translations: Record<Language, Translations> = {
     reportSalesTransactions: "Transaksi",
     reportSalesMethod: "Metode Pembayaran",
     reportSalesSaleNumber: "No. Penjualan",
-    reportSalesCustomer: "Pelanggan",
+    reportSalesPatient: "Pasien",
     reportSalesSaleType: "Jenis Penjualan",
     reportSalesStatus: "Status",
     reportSalesTotalAmount: "Total Harga",

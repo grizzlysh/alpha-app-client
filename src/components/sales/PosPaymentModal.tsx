@@ -158,7 +158,7 @@ export function PosPaymentModal({
                     : t.posPaymentMethodCreditDesc}
               </p>
               {isCreditDisabled && (
-                <p className="text-xs text-muted-foreground/70">{t.posCreditRequiresCustomer}</p>
+                <p className="text-xs text-muted-foreground/70">{t.posCreditRequiresPatient}</p>
               )}
             </div>
 
@@ -281,7 +281,7 @@ export function PosPaymentModal({
 
           <div className="mt-3 space-y-1 border-t border-border pt-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{t.posCustomerLabel}</span>
+              <span className="text-muted-foreground">{t.posPatientLabel}</span>
               <span className="text-foreground">{customerLabel}</span>
             </div>
           </div>

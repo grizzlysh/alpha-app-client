@@ -1,22 +1,41 @@
 import type { JSX } from "react";
-import type { Sale } from "@/types/sale";
+import type React from "react";
+import type { Sale, PaymentMethod, PaymentStatus } from "@/types/sale";
 import type { Pharmacy } from "@/types/pharmacy";
 import type { Customer } from "@/types/customer";
-import type { Translations } from "@/configs/i18n";
+import { translations } from "@/configs/i18n";
+import { BiLabel, sl } from "@/utils/bilingualDoc";
 import { formatCurrency } from "./salesUtils";
+
+const EN = translations.en;
+const ID = translations.id;
+
+function idPaymentMethod(method: PaymentMethod): string {
+  const map: Record<PaymentMethod, string> = {
+    CASH: ID.salePaymentMethodCash,
+    TRANSFER: ID.salePaymentMethodTransfer,
+    CREDIT: ID.salePaymentMethodCredit,
+  };
+  return map[method] ?? method;
+}
+
+function idPaymentStatus(status: PaymentStatus): string {
+  const map: Record<PaymentStatus, string> = {
+    UNPAID: ID.salePaymentStatusUnpaid,
+    PARTIAL: ID.salePaymentStatusPartial,
+    PAID: ID.salePaymentStatusPaid,
+  };
+  return map[status] ?? status;
+}
 
 export interface SaleInvoiceDocProps {
   sale: Sale;
   pharmacy: Pharmacy | null;
   customer: Customer | null;
-  paymentMethodLabel: string;
-  paymentStatusLabel: string;
-  t: Translations;
-  language: string;
 }
 
-function fmtDate(value: string, language: string): string {
-  return new Date(value).toLocaleDateString(language === "id" ? "id-ID" : "en-GB", {
+function fmtDate(value: string): string {
+  return new Date(value).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -44,17 +63,16 @@ export function SaleInvoiceDoc({
   sale,
   pharmacy,
   customer,
-  paymentMethodLabel,
-  paymentStatusLabel,
-  t,
-  language,
 }: SaleInvoiceDocProps): JSX.Element {
   const pharmacyName = pharmacy?.name ?? "";
-  const lastPaymentDate =
-    sale.payment?.history[sale.payment.history.length - 1]?.paymentDate ?? sale.soldAt;
+  const lastHistory = sale.payment?.history[sale.payment.history.length - 1];
+  const lastPaymentDate = lastHistory?.paymentDate ?? sale.soldAt;
   const isPaid = sale.payment?.paymentStatus === "PAID";
+  const paymentMethodLabel = idPaymentMethod(lastHistory?.paymentMethod ?? "CASH");
+  const paymentStatusLabel = idPaymentStatus(sale.payment?.paymentStatus ?? "UNPAID");
+  const customerDisplayName = sale.customer.isWalkIn ? ID.posWalkInPatient : sale.customer.name;
 
-  const label: React.CSSProperties = {
+  const sectionLabel: React.CSSProperties = {
     fontSize: "10px",
     letterSpacing: "0.08em",
     textTransform: "uppercase",
@@ -62,6 +80,14 @@ export function SaleInvoiceDoc({
     marginBottom: "6px",
     fontWeight: 600,
   };
+
+  const colHeaders: { id: string; label: React.ReactNode; align: "left" | "right"; w?: string }[] = [
+    { id: "no",    label: "#",                                               align: "left",  w: "32px" },
+    { id: "desc",  label: <BiLabel id={ID.saleDocItemDescription} en={EN.saleDocItemDescription} />, align: "left"  },
+    { id: "qty",   label: ID.saleDocItemQty,                                  align: "right", w: "48px" },
+    { id: "price", label: <BiLabel id={ID.saleDocItemPrice} en={EN.saleDocItemPrice} />,      align: "right", w: "110px" },
+    { id: "amt",   label: <BiLabel id={ID.saleDocItemAmount} en={EN.saleDocItemAmount} />,    align: "right", w: "110px" },
+  ];
 
   return (
     <div
@@ -100,31 +126,26 @@ export function SaleInvoiceDoc({
               style={{
                 fontFamily: "Georgia, 'Times New Roman', serif",
                 fontStyle: "italic",
-                fontSize: "38px",
-                fontWeight: 400,
-                color: COLOR.ink,
                 lineHeight: 1,
                 marginBottom: "16px",
               }}
             >
-              {t.saleDocInvoiceTitle}
+              <div style={{ fontSize: "38px", fontWeight: 400, color: COLOR.ink }}>
+                {ID.saleDocInvoiceTitle}
+              </div>
+              <div style={{ fontSize: "18px", fontWeight: 300, color: COLOR.muted, marginTop: "6px" }}>
+                {EN.saleDocInvoiceTitle}
+              </div>
             </div>
             <div style={{ fontSize: "12px", color: COLOR.muted, fontFamily: "'Courier New', monospace", lineHeight: 1.7 }}>
               <div>No. {sale.saleNumber}</div>
-              <div>{fmtDate(sale.soldAt, language)} · {fmtTime(sale.soldAt)}</div>
+              <div>{fmtDate(sale.soldAt)} · {fmtTime(sale.soldAt)}</div>
             </div>
           </div>
 
-          {/* Right: pharmacy info — all right-aligned, no badge */}
+          {/* Right: pharmacy info */}
           <div style={{ textAlign: "right" }}>
-            <div
-              style={{
-                fontSize: "17px",
-                fontWeight: 700,
-                color: COLOR.ink,
-                marginBottom: "6px",
-              }}
-            >
+            <div style={{ fontSize: "17px", fontWeight: 700, color: COLOR.ink, marginBottom: "6px" }}>
               {pharmacyName}
             </div>
             {pharmacy?.address && (
@@ -150,9 +171,11 @@ export function SaleInvoiceDoc({
           }}
         >
           <div>
-            <div style={label}>{t.saleDocBilledTo}</div>
+            <div style={sectionLabel}>
+              <BiLabel id={ID.saleDocBilledTo} en={EN.saleDocBilledTo} />
+            </div>
             <div style={{ fontSize: "14px", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>
-              {sale.customer.name}
+              {customerDisplayName}
             </div>
             {customer?.phone && (
               <div style={{ fontSize: "12px", color: COLOR.muted, fontFamily: "'Courier New', monospace" }}>
@@ -164,13 +187,15 @@ export function SaleInvoiceDoc({
             )}
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={label}>{t.saleDocPaymentMethod}</div>
+            <div style={sectionLabel}>
+              <BiLabel id={ID.saleDocPaymentMethod} en={EN.saleDocPaymentMethod} />
+            </div>
             <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "4px" }}>
               {paymentMethodLabel}
             </div>
             <div style={{ fontSize: "12px", color: COLOR.muted }}>
               {paymentStatusLabel}
-              {isPaid ? ` · ${fmtDate(lastPaymentDate, language)} ${fmtTime(lastPaymentDate)}` : ""}
+              {isPaid ? ` · ${fmtDate(lastPaymentDate)} ${fmtTime(lastPaymentDate)}` : ""}
             </div>
           </div>
         </div>
@@ -180,15 +205,9 @@ export function SaleInvoiceDoc({
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                {[
-                  { text: "#", align: "left" as const, w: "32px" },
-                  { text: t.saleDocItemDescription, align: "left" as const },
-                  { text: t.saleDocItemQty, align: "right" as const, w: "48px" },
-                  { text: t.saleDocItemPrice, align: "right" as const, w: "110px" },
-                  { text: t.saleDocItemAmount, align: "right" as const, w: "110px" },
-                ].map(({ text, align, w }) => (
+                {colHeaders.map(({ id, label, align, w }) => (
                   <th
-                    key={text}
+                    key={id}
                     style={{
                       textAlign: align,
                       fontSize: "10px",
@@ -199,9 +218,10 @@ export function SaleInvoiceDoc({
                       padding: "16px 0 10px",
                       borderBottom: `1px solid ${COLOR.border}`,
                       width: w,
+                      verticalAlign: "top",
                     }}
                   >
-                    {text}
+                    {label}
                   </th>
                 ))}
               </tr>
@@ -239,15 +259,15 @@ export function SaleInvoiceDoc({
         <div style={{ padding: "16px 40px 28px", display: "flex", justifyContent: "flex-end" }}>
           <div style={{ width: "260px" }}>
             {[
-              { label: t.posSubtotal, value: formatCurrency(sale.totalAmount) },
-              ...(sale.ppnPercentage > 0 ? [{ label: `PPN ${sale.ppnPercentage}%`, value: formatCurrency(sale.ppnAmount) }] : []),
-              ...(sale.discountAmount > 0 ? [{ label: t.posDiscountLabel, value: `-${formatCurrency(sale.discountAmount)}` }] : []),
-            ].map(({ label: l, value }) => (
+              { key: "subtotal", label: ID.posSubtotal, value: formatCurrency(sale.totalAmount) },
+              ...(sale.ppnPercentage > 0 ? [{ key: "ppn", label: `PPN ${sale.ppnPercentage}%`, value: formatCurrency(sale.ppnAmount) }] : []),
+              ...(sale.discountAmount > 0 ? [{ key: "disc", label: sl(ID.posDiscountLabel, EN.posDiscountLabel), value: `-${formatCurrency(sale.discountAmount)}` }] : []),
+            ].map(({ key, label, value }) => (
               <div
-                key={l}
+                key={key}
                 style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: COLOR.muted, padding: "3px 0" }}
               >
-                <span>{l}</span>
+                <span>{label}</span>
                 <span>{value}</span>
               </div>
             ))}
@@ -276,14 +296,26 @@ export function SaleInvoiceDoc({
             padding: "16px 40px",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "flex-start",
             fontSize: "12px",
             color: COLOR.faint,
             background: COLOR.bg,
           }}
         >
-          <span>{t.saleDocThankYouTrust} {pharmacyName}.</span>
-          {pharmacy?.email && <span>{t.saleDocQuestions} {pharmacy.email}</span>}
+          <span style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <span>{ID.saleDocThankYouTrust} {pharmacyName}.</span>
+            <span style={{ fontStyle: "italic", fontSize: "0.9em", opacity: 0.7 }}>
+              {EN.saleDocThankYouTrust} {pharmacyName}.
+            </span>
+          </span>
+          {pharmacy?.email && (
+            <span style={{ display: "flex", flexDirection: "column", gap: "2px", textAlign: "right" }}>
+              <span>{ID.saleDocQuestions} {pharmacy.email}</span>
+              <span style={{ fontStyle: "italic", fontSize: "0.9em", opacity: 0.7 }}>
+                {EN.saleDocQuestions} {pharmacy.email}
+              </span>
+            </span>
+          )}
         </div>
       </div>
     </div>

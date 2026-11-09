@@ -12,6 +12,7 @@ import {
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 import { getInitials, getAvatarColor } from "./referenceUtils";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 export interface ReferenceRowProps {
   item: ReferenceItem;
@@ -41,7 +42,7 @@ export function ReferenceRow({
           >
             {getInitials(item.name)}
           </div>
-          <p className="truncate font-medium text-foreground">{item.name}</p>
+          <p className="truncate font-medium text-foreground">{toTitleCase(item.name)}</p>
         </div>
       </td>
 

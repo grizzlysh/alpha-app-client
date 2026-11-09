@@ -155,6 +155,9 @@ interface ItemFormErrors {
   quantityBox?: string;
   quantityPerBox?: string;
   price?: string;
+  cabinetUuid?: string;
+  shelfUuid?: string;
+  binUuid?: string;
 }
 
 const EMPTY_ITEM: ItemFormState = {
@@ -406,40 +409,65 @@ function ItemForm({
           </div>
         </div>
 
-        {/* Row 4 — Storage Location (optional) */}
+        {/* Row 4 — Storage Location (required) */}
         <div className="col-span-3 grid grid-cols-3 gap-3">
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{t.invoiceItemCabinet}</Label>
+            <Label className="text-xs">{t.invoiceItemCabinet}</Label>
             <Combobox
               value={value.cabinetUuid}
-              onValueChange={(uuid) => onChange({ ...value, cabinetUuid: uuid, shelfUuid: "", binUuid: "", binLabel: "" })}
+              onValueChange={(uuid) => {
+                onChange({ ...value, cabinetUuid: uuid, shelfUuid: "", binUuid: "", binLabel: "" });
+                onClearError("cabinetUuid");
+              }}
               options={cabinetOptions}
               placeholder={t.invoiceItemCabinet}
               disabled={isPending}
             />
+            {errors.cabinetUuid && (
+              <p className="flex items-center gap-1 text-xs text-destructive">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {errors.cabinetUuid}
+              </p>
+            )}
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{t.invoiceItemShelf}</Label>
+            <Label className="text-xs">{t.invoiceItemShelf}</Label>
             <Combobox
               value={value.shelfUuid}
-              onValueChange={(uuid) => onChange({ ...value, shelfUuid: uuid, binUuid: "", binLabel: "" })}
+              onValueChange={(uuid) => {
+                onChange({ ...value, shelfUuid: uuid, binUuid: "", binLabel: "" });
+                onClearError("shelfUuid");
+              }}
               options={shelfOptions}
               placeholder={loadingShelves ? "..." : t.invoiceItemShelf}
               disabled={isPending || !value.cabinetUuid || loadingShelves}
             />
+            {errors.shelfUuid && (
+              <p className="flex items-center gap-1 text-xs text-destructive">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {errors.shelfUuid}
+              </p>
+            )}
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{t.invoiceItemBin}</Label>
+            <Label className="text-xs">{t.invoiceItemBin}</Label>
             <Combobox
               value={value.binUuid}
               onValueChange={(uuid) => {
                 const label = binOptions.find((b) => b.value === uuid)?.label ?? "";
                 onChange({ ...value, binUuid: uuid, binLabel: label });
+                onClearError("binUuid");
               }}
               options={binOptions}
               placeholder={loadingBins ? "..." : t.invoiceItemSelectBin}
               disabled={isPending || !value.shelfUuid || loadingBins}
             />
+            {errors.binUuid && (
+              <p className="flex items-center gap-1 text-xs text-destructive">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {errors.binUuid}
+              </p>
+            )}
           </div>
         </div>
 
@@ -803,6 +831,9 @@ export function InvoiceFormModal({
     if (itemForm.price === "" || isNaN(price) || price < 0) {
       errs.price = t.invoiceItemPriceRequired;
     }
+    if (!itemForm.cabinetUuid) errs.cabinetUuid = t.invoiceItemCabinetRequired;
+    if (!itemForm.shelfUuid) errs.shelfUuid = t.invoiceItemShelfRequired;
+    if (!itemForm.binUuid) errs.binUuid = t.invoiceItemBinRequired;
 
     setItemErrors(errs);
     return Object.keys(errs).length === 0;

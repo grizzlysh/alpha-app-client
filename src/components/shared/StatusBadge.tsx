@@ -11,7 +11,7 @@ const STATUS_CLASS_MAP: Record<string, string> = {
   ACTIVE:    "bg-success/15 text-success",
   INACTIVE:  "bg-muted text-muted-foreground",
   DELETED:   "bg-destructive/15 text-destructive",
-  ON_PROCESS: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+  IN_PROGRESS: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
   SENT:       "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
   COMPLETED:  "bg-success/15 text-success",
   CANCELLED:  "bg-muted text-muted-foreground",

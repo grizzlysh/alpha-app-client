@@ -17,6 +17,7 @@ import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { StockRow } from "./StockRow";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── StockTable ────────────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ export function StockTable({
       },
       {
         id: "type",
-        accessorFn: (row) => row.medicine.type.name,
+        accessorFn: (row) => toTitleCase(row.medicine.type.name),
         header: t.medicineTypeLabel,
         enableSorting: true,
       },

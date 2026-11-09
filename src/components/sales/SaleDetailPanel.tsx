@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { Receipt, Ban, Undo2, Wallet, CheckCircle2 } from "lucide-react";
+import { Receipt, Ban, Undo2, Wallet, CheckCircle2, Pill } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import type { Translations } from "@/configs/i18n";
@@ -106,7 +106,7 @@ export function SaleDetailPanel({
 
       {/* Info pairs */}
       <div className="divide-y divide-border px-5">
-        <InfoPair label={t.saleCustomer} value={sale.customer.name} valueClassName="uppercase" />
+        <InfoPair label={t.salePatient} value={sale.customer.name} valueClassName="uppercase" />
         <InfoPair label={t.saleType} value={getSaleTypeLabel(sale.saleType, t)} />
         <InfoPair label={t.saleSoldAt} value={formatDate(sale.soldAt)} />
         {sale.saleType === "CREDIT" && sale.dueDate && (
@@ -151,6 +151,31 @@ export function SaleDetailPanel({
           </>
         )}
       </div>
+
+      {/* Prescription */}
+      {sale.prescription && (
+        <div className="px-5 pb-1 pt-5">
+          <p className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <Pill className="h-3.5 w-3.5" />
+            {t.salePrescriptionSection}
+          </p>
+          <div className="rounded-lg border border-border bg-muted/30 px-3 py-2.5">
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm font-medium text-foreground">
+                {sale.prescription.prescriptionNumber ?? "—"}
+              </p>
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {formatDate(sale.prescription.prescribedAt)}
+              </span>
+            </div>
+            {sale.prescription.doctor && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {t.salePrescriptionDoctor}: {sale.prescription.doctor.name}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Items */}
       {sale.details.length > 0 && (

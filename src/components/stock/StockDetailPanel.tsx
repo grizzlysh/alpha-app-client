@@ -24,6 +24,7 @@ import {
   daysUntilExpiry,
 } from "./stockUtils";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── Batch table ───────────────────────────────────────────────────────────────
 
@@ -286,7 +287,7 @@ export function StockDetailPanel({
                 {stock.medicine.name}
               </p>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {stock.medicine.shape.name} · {stock.medicine.type.name}
+                {toTitleCase(stock.medicine.shape.name)} · {toTitleCase(stock.medicine.type.name)}
               </p>
               <span
                 className={cn(

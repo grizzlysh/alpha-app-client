@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { JSX, KeyboardEvent } from "react";
 import { ArrowRight, Loader2, AlertTriangle, ShieldAlert } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -53,9 +53,28 @@ export function PharmacyCard({
   disabled,
 }: PharmacyCardProps): JSX.Element {
   const blocked = hasHeadPharmacist === false;
+  const clickable = !blocked && !disabled;
+
+  const handleCardClick = () => {
+    if (!clickable) return;
+    onSelect(uuid);
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!clickable) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onSelect(uuid);
+    }
+  };
 
   return (
     <div
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      aria-label={clickable ? `Select ${name}` : undefined}
       className={cn(
         "group rounded-2xl border bg-card shadow-sm",
         "transition-all duration-200",
@@ -63,9 +82,10 @@ export function PharmacyCard({
           ? "border-warning/60 opacity-80"
           : [
               "border-border",
-              "hover:border-primary",
+              "hover:border-primary hover:-translate-y-1",
               "hover:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.2),_0_0_18px_hsl(var(--primary)_/_0.1)]",
               "dark:hover:shadow-[0_0_0_1px_hsl(var(--primary)_/_0.55),_0_0_28px_hsl(var(--primary)_/_0.3)]",
+              clickable && "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
               isSelecting && [
                 "border-primary",
                 "shadow-[0_0_0_1px_hsl(var(--primary)_/_0.3),_0_0_18px_hsl(var(--primary)_/_0.12)]",
@@ -98,9 +118,14 @@ export function PharmacyCard({
 
         <button
           type="button"
-          onClick={() => onSelect(uuid)}
+          tabIndex={-1}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect(uuid);
+          }}
           disabled={disabled || blocked}
           aria-label={`Select ${name}`}
+          aria-hidden="true"
           className={cn(
             "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl",
             "border border-border bg-background text-muted-foreground",

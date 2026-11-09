@@ -1,19 +1,21 @@
 import type { JSX } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Layers, RefreshCw, Pill, ChevronLeft, ChevronRight, Languages, Moon, Sun } from "lucide-react";
+import { Layers, RefreshCw, Pill, ChevronLeft, ChevronRight, ChevronDown, Languages, Moon, Sun } from "lucide-react";
 
 import { cn } from "@/utils/cn";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useTheme } from "@/hooks/useTheme";
-import { toggleSidebar, setMobileSidebarOpen } from "@/store/uiSlice";
+import { toggleSidebar, setMobileSidebarOpen, toggleNavGroup } from "@/store/uiSlice";
 import { clearPharmacy } from "@/store/authSlice";
-import { GLOBAL_NAV_GROUPS, PHARMACY_NAV_GROUPS, PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS } from "@/configs/navigation";
+import { GLOBAL_NAV_GROUPS, PHARMACY_NAV_GROUPS, PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS, PHARMACY_OWNER_PRE_SELECT_NAV_GROUPS } from "@/configs/navigation";
 import type { RootState, AppDispatch } from "@/store";
 
 export function Sidebar(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPreSelectPage = location.pathname === "/";
   const collapsed = useSelector((state: RootState) => state.ui.sidebarCollapsed);
   const mobileSidebarOpen = useSelector(
     (state: RootState) => state.ui.mobileSidebarOpen
@@ -35,6 +37,26 @@ export function Sidebar(): JSX.Element {
   const branchLabel = pharmacyCount === 1 ? t.branchSingular : t.branchPlural;
 
   const closeMobile = () => dispatch(setMobileSidebarOpen(false));
+
+  const collapsedNavGroups = useSelector((state: RootState) => state.ui.collapsedNavGroups);
+
+  const isOwnerOfCurrentPharmacy = currentPharmacy?.role?.type === "OWNER";
+
+  const navGroups = (() => {
+    if (isPlatformUser) {
+      // Platform admins switch to pharmacy nav as soon as a pharmacy is selected,
+      // so /users and /roles remain in the pharmacy context (not global).
+      return pharmacySelected && !isPreSelectPage ? PHARMACY_NAV_GROUPS : GLOBAL_NAV_GROUPS;
+    }
+    if (pharmacySelected && !isPreSelectPage) {
+      if (!isOwnerOfCurrentPharmacy) {
+        return PHARMACY_NAV_GROUPS.filter((g) => g.label !== "navGroupPeople");
+      }
+      return PHARMACY_NAV_GROUPS;
+    }
+    if (isOwner) return PHARMACY_OWNER_PRE_SELECT_NAV_GROUPS;
+    return PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS;
+  })();
 
   return (
     <aside
@@ -118,46 +140,84 @@ export function Sidebar(): JSX.Element {
 
       {/* Nav groups */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2">
-        {(pharmacySelected ? PHARMACY_NAV_GROUPS : isPlatformUser ? GLOBAL_NAV_GROUPS : PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS).map((group, gi) => (
-          <div
-            key={gi}
-            className={cn("px-2", gi > 0 && "mt-1 border-t border-border pt-1")}
-          >
-            {group.items.map((item) => (
-              <NavLink
-                key={item.key}
-                to={item.path}
-                end={item.end}
-                title={collapsed ? t[item.labelKey] : undefined}
-                onClick={closeMobile}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium",
-                    "transition-all duration-150",
-                    collapsed && "md:justify-center md:px-0 md:py-2.5",
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                  )
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <item.icon
-                      className={cn(
-                        "h-4 w-4 flex-shrink-0",
-                        isActive ? "text-primary" : "text-muted-foreground"
-                      )}
-                    />
-                    <span className={cn("truncate", collapsed && "md:hidden")}>
-                      {t[item.labelKey]}
-                    </span>
-                  </>
+        {navGroups.map((group, gi) => {
+          const isGroupCollapsed = !!group.label && collapsedNavGroups.includes(group.label);
+          const hasLabel = !!group.label;
+
+          return (
+            <div
+              key={gi}
+              className={cn("px-2", gi > 0 && "mt-1 border-t border-border pt-1")}
+            >
+              {/* Group header — only when label exists and sidebar is expanded */}
+              {hasLabel && (
+                <button
+                  type="button"
+                  onClick={() => dispatch(toggleNavGroup(group.label!))}
+                  className={cn(
+                    "flex w-full items-center justify-between px-3 py-1.5 mb-0.5",
+                    "rounded-lg text-xs font-semibold uppercase tracking-wider",
+                    "text-muted-foreground/70 transition-colors",
+                    "hover:text-muted-foreground",
+                    collapsed && "md:hidden"
+                  )}
+                >
+                  <span>{t[group.label!]}</span>
+                  <ChevronDown
+                    className={cn(
+                      "h-3 w-3 flex-shrink-0 transition-transform duration-200",
+                      isGroupCollapsed && "-rotate-90"
+                    )}
+                  />
+                </button>
+              )}
+
+              {/* Nav items — collapse when group header is toggled */}
+              <div
+                className={cn(
+                  "overflow-hidden transition-all duration-200",
+                  hasLabel && isGroupCollapsed && !collapsed
+                    ? "max-h-0"
+                    : "max-h-[600px]"
                 )}
-              </NavLink>
-            ))}
-          </div>
-        ))}
+              >
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.key}
+                    to={item.path}
+                    end={item.end}
+                    title={collapsed ? t[item.labelKey] : undefined}
+                    onClick={closeMobile}
+                    className={({ isActive }) =>
+                      cn(
+                        "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium",
+                        "transition-all duration-150",
+                        collapsed && "md:justify-center md:px-0 md:py-2.5",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      )
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <item.icon
+                          className={cn(
+                            "h-4 w-4 flex-shrink-0",
+                            isActive ? "text-primary" : "text-muted-foreground"
+                          )}
+                        />
+                        <span className={cn("truncate", collapsed && "md:hidden")}>
+                          {t[item.labelKey]}
+                        </span>
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       {/* Theme + Language — mobile only */}

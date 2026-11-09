@@ -22,8 +22,6 @@ import { SaleInvoiceDoc } from "./SaleInvoiceDoc";
 export interface SalePrintMeta {
   sale: Sale;
   cashierName: string;
-  paymentMethodLabel: string;
-  paymentStatusLabel: string;
   amountReceived: number;
 }
 
@@ -34,7 +32,7 @@ export interface SalePrintModalProps {
 }
 
 export function SalePrintModal({ type, meta, onClose }: SalePrintModalProps): JSX.Element {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const docRef = useRef<HTMLDivElement>(null);
   const currentPharmacy = useSelector((state: RootState) => state.auth.currentPharmacy);
 
@@ -97,20 +95,13 @@ export function SalePrintModal({ type, meta, onClose }: SalePrintModalProps): JS
                     sale={meta.sale}
                     pharmacy={pharmacy}
                     cashierName={meta.cashierName}
-                    paymentMethodLabel={meta.paymentMethodLabel}
                     amountReceived={meta.amountReceived}
-                    t={t}
-                    language={language}
                   />
                 ) : (
                   <SaleInvoiceDoc
                     sale={meta.sale}
                     pharmacy={pharmacy}
                     customer={customer}
-                    paymentMethodLabel={meta.paymentMethodLabel}
-                    paymentStatusLabel={meta.paymentStatusLabel}
-                    t={t}
-                    language={language}
                   />
                 )}
               </div>

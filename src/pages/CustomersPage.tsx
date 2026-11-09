@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -7,6 +8,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
@@ -16,7 +18,7 @@ import { CustomerTable } from "@/components/customers/CustomerTable";
 import { CustomerDetailPanel } from "@/components/customers/CustomerDetailPanel";
 import { CustomerFormModal } from "@/components/customers/CustomerFormModal";
 import { CustomerDeleteModal } from "@/components/customers/CustomerDeleteModal";
-import type { Customer } from "@/types/customer";
+import type { Customer, CustomerType } from "@/types/customer";
 import { getCustomers } from "@/service/customerService";
 
 type ModalState =
@@ -28,15 +30,17 @@ type ModalState =
 
 export default function CustomersPage(): JSX.Element {
   const { t } = useLanguage();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
     useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
   const [filterStatus, setFilterStatus] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
   const [filterIsWalkIn, setFilterIsWalkIn] = useState<"all" | "true" | "false">("all");
+  const [filterType, setFilterType] = useState<"all" | CustomerType>("all");
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["customers", page, limit, debouncedSearch, filterStatus, filterIsWalkIn],
+    queryKey: ["customers", pharmacyUuid, page, limit, debouncedSearch, filterStatus, filterIsWalkIn, filterType],
     queryFn: () =>
       getCustomers({
         page,
@@ -44,6 +48,7 @@ export default function CustomersPage(): JSX.Element {
         search: debouncedSearch || undefined,
         status: filterStatus !== "all" ? filterStatus : undefined,
         isWalkIn: filterIsWalkIn !== "all" ? filterIsWalkIn === "true" : undefined,
+        customerType: filterType !== "all" ? filterType : undefined,
       }),
     placeholderData: keepPreviousData,
   });
@@ -59,6 +64,11 @@ export default function CustomersPage(): JSX.Element {
 
   function handleFilterIsWalkIn(value: string): void {
     setFilterIsWalkIn(value as "all" | "true" | "false");
+    setPage(1);
+  }
+
+  function handleFilterType(value: string): void {
+    setFilterType(value as "all" | CustomerType);
     setPage(1);
   }
 
@@ -103,11 +113,24 @@ export default function CustomersPage(): JSX.Element {
               onValueChange={handleFilterStatus}
               options={[
                 { value: "all", label: `${t.customerFilterStatus}: ${t.filterAll}` },
-                { value: "ACTIVE", label: t.customerStatusActive },
-                { value: "INACTIVE", label: t.customerStatusInactive },
+                { value: "ACTIVE", label: t.patientStatusActive },
+                { value: "INACTIVE", label: t.patientStatusInactive },
               ]}
               placeholder={t.customerFilterStatus}
               className="h-10 w-[10rem] shrink-0 rounded-xl text-sm"
+            />
+
+            {/* Customer type filter */}
+            <Combobox
+              value={filterType}
+              onValueChange={handleFilterType}
+              options={[
+                { value: "all", label: `${t.customerFilterType}: ${t.filterAll}` },
+                { value: "PATIENT", label: t.customerTypePatient },
+                { value: "PROFESSIONAL", label: t.customerTypeProfessional },
+              ]}
+              placeholder={t.customerFilterType}
+              className="h-10 w-[11rem] shrink-0 rounded-xl text-sm"
             />
 
             {/* Walk-in filter */}
@@ -116,8 +139,8 @@ export default function CustomersPage(): JSX.Element {
               onValueChange={handleFilterIsWalkIn}
               options={[
                 { value: "all", label: `${t.customerFilterIsWalkIn}: ${t.filterAll}` },
-                { value: "true", label: t.customerWalkInBadge },
-                { value: "false", label: t.customerWalkInRegular },
+                { value: "true", label: t.patientWalkInBadge },
+                { value: "false", label: t.patientWalkInRegular },
               ]}
               placeholder={t.customerFilterIsWalkIn}
               className="h-10 w-[10rem] shrink-0 rounded-xl text-sm"

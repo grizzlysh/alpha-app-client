@@ -13,6 +13,7 @@ import type { Translations } from "@/configs/i18n";
 import type { Medicine } from "@/types/medicine";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getInitials, getAvatarColor } from "./medicineUtils";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 export interface MedicineRowProps {
   medicine: Medicine;
@@ -59,12 +60,12 @@ export function MedicineRow({
 
       {/* Shape — md+ */}
       <td className="hidden min-w-[120px] px-5 py-4 md:table-cell">
-        <span className="text-sm text-foreground">{medicine.medicineShape.name}</span>
+        <span className="text-sm text-foreground">{toTitleCase(medicine.medicineShape.name)}</span>
       </td>
 
       {/* Type — lg+ */}
       <td className="hidden min-w-[120px] px-5 py-4 lg:table-cell">
-        <span className="text-sm text-foreground">{medicine.medicineType.name}</span>
+        <span className="text-sm text-foreground">{toTitleCase(medicine.medicineType.name)}</span>
       </td>
 
       {/* Unit — sm+ */}

@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -7,6 +8,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
@@ -21,6 +23,7 @@ import { MedicineFormModal } from "@/components/medicine/MedicineFormModal";
 import { MedicineDeleteModal } from "@/components/medicine/MedicineDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Medicine } from "@/types/medicine";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -35,6 +38,7 @@ type ModalState =
 
 export default function MedicinesPage(): JSX.Element {
   const { t } = useLanguage();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
@@ -71,6 +75,7 @@ export default function MedicinesPage(): JSX.Element {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
       "medicines",
+      pharmacyUuid,
       page,
       limit,
       debouncedSearch,
@@ -162,7 +167,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterShape}
               options={[
                 { value: "all", label: `${t.medicineShapeLabel}: ${t.filterAll}` },
-                ...shapes.map((s) => ({ value: s.uuid, label: s.name.toUpperCase() })),
+                ...shapes.map((s) => ({ value: s.uuid, label: toTitleCase(s.name) })),
               ]}
               placeholder={t.medicineShapeLabel}
               className="h-10 w-[11rem] shrink-0 rounded-xl text-sm"
@@ -174,7 +179,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterType}
               options={[
                 { value: "all", label: `${t.medicineTypeLabel}: ${t.filterAll}` },
-                ...types.map((tp) => ({ value: tp.uuid, label: tp.name.toUpperCase() })),
+                ...types.map((tp) => ({ value: tp.uuid, label: toTitleCase(tp.name) })),
               ]}
               placeholder={t.medicineTypeLabel}
               className="h-10 w-[10rem] shrink-0 rounded-xl text-sm"
@@ -186,7 +191,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterClass}
               options={[
                 { value: "all", label: `${t.medicineClassLabel}: ${t.filterAll}` },
-                ...classes.map((cl) => ({ value: cl.uuid, label: cl.name.toUpperCase() })),
+                ...classes.map((cl) => ({ value: cl.uuid, label: toTitleCase(cl.name) })),
               ]}
               placeholder={t.medicineClassLabel}
               className="h-10 w-[13rem] shrink-0 rounded-xl text-sm"

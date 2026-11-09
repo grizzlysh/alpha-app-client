@@ -38,8 +38,6 @@ export function SaleSuccessModal({ sale, amountReceived, t, onNewSale }: SaleSuc
   const printMeta: SalePrintMeta = {
     sale,
     cashierName: user?.name ?? "",
-    paymentMethodLabel,
-    paymentStatusLabel,
     amountReceived,
   };
 

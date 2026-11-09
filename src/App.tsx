@@ -37,6 +37,9 @@ import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import StoragePage from "@/pages/StoragePage";
 import InventoryPage from "@/pages/InventoryPage";
+import DoctorsPage from "@/pages/DoctorsPage";
+import PrescriptionsPage from "@/pages/PrescriptionsPage";
+import MedicalRecordsPage from "@/pages/MedicalRecordsPage";
 import ComingSoonPage from "@/pages/ComingSoonPage";
 
 function AppRoutes(): JSX.Element {
@@ -95,10 +98,12 @@ function AppRoutes(): JSX.Element {
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/medicines" element={<MedicinesPage />} />
             <Route path="/medicine-classification" element={<MedicineClassificationPage />} />
-            <Route path="/prescriptions" element={<ComingSoonPage titleKey="navPrescriptions" />} />
+            <Route path="/prescriptions" element={<PrescriptionsPage />} />
+            <Route path="/doctors" element={<DoctorsPage />} />
             <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/medical-records" element={<MedicalRecordsPage />} />
             <Route path="/distributors" element={<DistributorsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<ComingSoonPage titleKey="navSettings" />} />
