@@ -35,6 +35,7 @@ import { MedicalRecordEditModal } from "./MedicalRecordEditModal";
 import { AllergyFormModal } from "./AllergyFormModal";
 import { VisitFormModal } from "./VisitFormModal";
 import { SEVERITY_DOT, SEVERITY_TEXT, sortBySeverity } from "./severity";
+import { ExamStatusBadge } from "@/components/examinations/examStatus";
 
 const VISIT_LIMIT = 10;
 
@@ -674,6 +675,7 @@ function VisitCard({
                   {t.medicalRecordVisitLatest}
                 </span>
               )}
+              {visit.status !== "COMPLETED" && <ExamStatusBadge status={visit.status} t={t} />}
             </div>
             {visit.doctor && (
               <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">

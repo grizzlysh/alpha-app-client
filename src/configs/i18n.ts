@@ -2030,6 +2030,69 @@ export interface Translations {
   medicalRecordVisitPrescriptionNoNumber: string;
   prescriptionFromVisit: string;
   medicalRecordPatientInfo: string;
+  navExaminations: string;
+  examSubtitle: string;
+  examCheckIn: string;
+  examCheckInTitle: string;
+  examCheckInDesc: string;
+  examPatient: string;
+  examPatientPlaceholder: string;
+  examPatientRequired: string;
+  examDoctorOptional: string;
+  examDoctorPlaceholder: string;
+  examComplaintPlaceholder: string;
+  examCheckInSuccess: string;
+  examStatusWaiting: string;
+  examStatusInProgress: string;
+  examStatusCompleted: string;
+  examStatusCancelled: string;
+  examQueueEmpty: string;
+  examWaitingFor: string;
+  examSelectTitle: string;
+  examSelectDesc: string;
+  examCallIn: string;
+  examCancel: string;
+  examCancelTitle: string;
+  examCancelDesc: string;
+  examCancelReasonPlaceholder: string;
+  examCancelConfirm: string;
+  examKeep: string;
+  examSaveDraft: string;
+  examSavedDraft: string;
+  examComplete: string;
+  examCompleteSuccess: string;
+  examCompleteWithRx: string;
+  examAllergies: string;
+  examNoAllergies: string;
+  examPrescription: string;
+  examPrescriptionHint: string;
+  examAddMedicine: string;
+  examMedicine: string;
+  examMedicinePlaceholder: string;
+  examUseTyped: string;
+  examQty: string;
+  examFrequency: string;
+  examFrequencyPlaceholder: string;
+  examDuration: string;
+  examDurationPlaceholder: string;
+  examRemoveLine: string;
+  examRxNotes: string;
+  examAllergyWarningTitle: string;
+  examAllergyWarningLine: string;
+  examAllergyConfirmTitle: string;
+  examAllergyConfirmDesc: string;
+  examAllergyConfirm: string;
+  examRecentVisits: string;
+  examNoRecentVisits: string;
+  examOpenRecord: string;
+  examOpenPrescription: string;
+  examNoPrescription: string;
+  examChooseDoctor: string;
+  examYears: string;
+  examGenderMale: string;
+  examGenderFemale: string;
+  examLineRequired: string;
+  examUnsaved: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -4017,6 +4080,69 @@ export const translations: Record<Language, Translations> = {
     medicalRecordVisitPrescriptionNoNumber: "Prescription",
     prescriptionFromVisit: "From visit",
     medicalRecordPatientInfo: "Patient data",
+    navExaminations: "Examinations",
+    examSubtitle: "Today's patient queue and the doctor's examination room",
+    examCheckIn: "Register patient",
+    examCheckInTitle: "Register patient to the queue",
+    examCheckInDesc: "New patient? Add them under Customers first.",
+    examPatient: "Patient",
+    examPatientPlaceholder: "Search patient name",
+    examPatientRequired: "Choose a patient",
+    examDoctorOptional: "Doctor (optional)",
+    examDoctorPlaceholder: "Any doctor",
+    examComplaintPlaceholder: "e.g. fever for 2 days",
+    examCheckInSuccess: "Patient added to the queue",
+    examStatusWaiting: "Waiting",
+    examStatusInProgress: "In exam",
+    examStatusCompleted: "Done",
+    examStatusCancelled: "Cancelled",
+    examQueueEmpty: "No patients here yet",
+    examWaitingFor: "waiting {n} min",
+    examSelectTitle: "Choose a patient from the queue",
+    examSelectDesc: "The examination opens here",
+    examCallIn: "Call in & examine",
+    examCancel: "Cancel visit",
+    examCancelTitle: "Cancel this visit?",
+    examCancelDesc: "The patient leaves the queue. Nothing is written to the medical record.",
+    examCancelReasonPlaceholder: "Reason (optional), e.g. went home",
+    examCancelConfirm: "Cancel visit",
+    examKeep: "Keep",
+    examSaveDraft: "Save draft",
+    examSavedDraft: "Draft saved",
+    examComplete: "Finish examination",
+    examCompleteSuccess: "Examination finished",
+    examCompleteWithRx: "Examination finished, prescription sent to the pharmacy",
+    examAllergies: "Allergies",
+    examNoAllergies: "No known allergies",
+    examPrescription: "Prescription",
+    examPrescriptionHint: "Optional. Leave empty if no medicine is needed.",
+    examAddMedicine: "Add medicine",
+    examMedicine: "Medicine",
+    examMedicinePlaceholder: "Choose or type",
+    examUseTyped: "Use \"{v}\"",
+    examQty: "Qty",
+    examFrequency: "Dosage",
+    examFrequencyPlaceholder: "3x1",
+    examDuration: "Duration",
+    examDurationPlaceholder: "5 days",
+    examRemoveLine: "Remove",
+    examRxNotes: "Notes for the pharmacist",
+    examAllergyWarningTitle: "Possible allergy",
+    examAllergyWarningLine: "{medicine} — patient is allergic to {allergen}",
+    examAllergyConfirmTitle: "Prescribe despite the allergy warning?",
+    examAllergyConfirmDesc: "The check matches names only. Confirm you have reviewed it.",
+    examAllergyConfirm: "Yes, I have reviewed it",
+    examRecentVisits: "Recent visits",
+    examNoRecentVisits: "First visit",
+    examOpenRecord: "Open medical record",
+    examOpenPrescription: "Open prescription",
+    examNoPrescription: "No prescription written",
+    examChooseDoctor: "Examining doctor",
+    examYears: "{n} y",
+    examGenderMale: "M",
+    examGenderFemale: "F",
+    examLineRequired: "Fill in the medicine name and quantity",
+    examUnsaved: "Unsaved changes",
   },
   id: {
     appName: "PharmaCare",
@@ -6000,6 +6126,69 @@ export const translations: Record<Language, Translations> = {
     medicalRecordVisitPrescriptionNoNumber: "Resep",
     prescriptionFromVisit: "Dari kunjungan",
     medicalRecordPatientInfo: "Data pasien",
+    navExaminations: "Pemeriksaan",
+    examSubtitle: "Antrean pasien hari ini dan ruang periksa dokter",
+    examCheckIn: "Daftarkan pasien",
+    examCheckInTitle: "Daftarkan pasien ke antrean",
+    examCheckInDesc: "Pasien baru? Tambahkan dulu di menu Pelanggan.",
+    examPatient: "Pasien",
+    examPatientPlaceholder: "Cari nama pasien",
+    examPatientRequired: "Pilih pasien",
+    examDoctorOptional: "Dokter (opsional)",
+    examDoctorPlaceholder: "Dokter mana saja",
+    examComplaintPlaceholder: "mis. demam sejak 2 hari",
+    examCheckInSuccess: "Pasien masuk antrean",
+    examStatusWaiting: "Menunggu",
+    examStatusInProgress: "Diperiksa",
+    examStatusCompleted: "Selesai",
+    examStatusCancelled: "Batal",
+    examQueueEmpty: "Belum ada pasien",
+    examWaitingFor: "menunggu {n} mnt",
+    examSelectTitle: "Pilih pasien dari antrean",
+    examSelectDesc: "Ruang periksa akan tampil di sini",
+    examCallIn: "Panggil & periksa",
+    examCancel: "Batalkan kunjungan",
+    examCancelTitle: "Batalkan kunjungan ini?",
+    examCancelDesc: "Pasien keluar dari antrean. Tidak ada yang dicatat ke rekam medis.",
+    examCancelReasonPlaceholder: "Alasan (opsional), mis. pulang sebelum dipanggil",
+    examCancelConfirm: "Batalkan",
+    examKeep: "Kembali",
+    examSaveDraft: "Simpan draf",
+    examSavedDraft: "Draf tersimpan",
+    examComplete: "Selesai periksa",
+    examCompleteSuccess: "Pemeriksaan selesai",
+    examCompleteWithRx: "Pemeriksaan selesai, resep diteruskan ke apotek",
+    examAllergies: "Alergi",
+    examNoAllergies: "Tidak ada alergi tercatat",
+    examPrescription: "Resep",
+    examPrescriptionHint: "Opsional. Kosongkan bila tidak perlu obat.",
+    examAddMedicine: "Tambah obat",
+    examMedicine: "Obat",
+    examMedicinePlaceholder: "Pilih atau ketik",
+    examUseTyped: "Pakai \"{v}\"",
+    examQty: "Jml",
+    examFrequency: "Aturan pakai",
+    examFrequencyPlaceholder: "3x1",
+    examDuration: "Lama",
+    examDurationPlaceholder: "5 hari",
+    examRemoveLine: "Hapus",
+    examRxNotes: "Catatan untuk apoteker",
+    examAllergyWarningTitle: "Kemungkinan alergi",
+    examAllergyWarningLine: "{medicine} — pasien alergi {allergen}",
+    examAllergyConfirmTitle: "Tetap resepkan meski ada peringatan alergi?",
+    examAllergyConfirmDesc: "Pengecekan hanya mencocokkan nama. Pastikan Anda sudah meninjaunya.",
+    examAllergyConfirm: "Ya, sudah saya tinjau",
+    examRecentVisits: "Kunjungan sebelumnya",
+    examNoRecentVisits: "Kunjungan pertama",
+    examOpenRecord: "Buka rekam medis",
+    examOpenPrescription: "Lihat resep",
+    examNoPrescription: "Tanpa resep",
+    examChooseDoctor: "Dokter pemeriksa",
+    examYears: "{n} th",
+    examGenderMale: "L",
+    examGenderFemale: "P",
+    examLineRequired: "Isi nama obat dan jumlahnya",
+    examUnsaved: "Ada perubahan belum disimpan",
   },
 };
 

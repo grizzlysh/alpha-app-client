@@ -40,6 +40,8 @@ export interface MedicalVisitPrescription {
 
 export interface MedicalVisit {
   uuid: string;
+  status: "WAITING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  queueNumber: number | null;
   visitDate: string;
   chiefComplaint: string | null;
   diagnosis: string | null;

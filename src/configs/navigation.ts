@@ -22,6 +22,7 @@ import {
   Warehouse,
   Boxes,
   Stethoscope,
+  HeartPulse,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -101,6 +102,7 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
       { key: "sales", labelKey: "navSales", icon: History, path: "/sales", permission: "sales.read" },
       { key: "prescriptions", labelKey: "navPrescriptions", icon: FileText, path: "/prescriptions", permission: "prescriptions.read" },
       { key: "customers", labelKey: "navCustomers", icon: Users, path: "/customers", permission: "customers.read" },
+      { key: "examinations", labelKey: "navExaminations", icon: HeartPulse, path: "/examinations", permission: "examinations.read" },
       { key: "medical-records", labelKey: "navMedicalRecords", icon: ClipboardPlus, path: "/medical-records", permission: "medical_records.read" },
     ],
   },
