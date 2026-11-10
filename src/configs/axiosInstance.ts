@@ -1,8 +1,9 @@
 import axios from "axios";
 import { store } from "@/store";
 import { logout, setAccessToken, clearPharmacy } from "@/store/authSlice";
-import { TOKEN_KEY } from "@/utils/constants";
+import { getToken } from "@/utils/tokenStore";
 import { db } from "@/utils/db";
+import { invalidateAfterWrite } from "@/configs/queryInvalidation";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -14,7 +15,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -41,8 +42,39 @@ function rejectSubscribers(reason: unknown): void {
 
 const retriedRequests = new WeakSet<object>();
 
+let refreshInFlight: Promise<string> | null = null;
+
+/**
+ * Exchanges the httpOnly refresh cookie for a new access token and stores it.
+ * Concurrent callers share one request (the server rotates the refresh token).
+ */
+export function refreshSession(): Promise<string> {
+  if (!refreshInFlight) {
+    refreshInFlight = axios
+      .post<{ success: boolean; data: { accessToken: string } | null }>(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+        {},
+        { withCredentials: true, timeout: 10000 }
+      )
+      .then((res) => {
+        const token = res.data?.data?.accessToken;
+        if (!token) throw new Error("No access token in refresh response");
+        store.dispatch(setAccessToken(token));
+        return token;
+      })
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+  return refreshInFlight;
+}
+
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Any successful write refreshes every cached list/dropdown that depends on it.
+    invalidateAfterWrite(response.config.method, response.config.url);
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     const url = originalRequest?.url ?? "";
@@ -75,20 +107,7 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshResponse = await axios.post<{
-          success: boolean;
-          data: { accessToken: string } | null;
-        }>(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
-
-        const newToken = refreshResponse.data?.data?.accessToken;
-        if (!newToken) throw new Error("No access token in refresh response");
-
-        store.dispatch(setAccessToken(newToken));
-        axiosInstance.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+        const newToken = await refreshSession();
         notifySubscribers(newToken);
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;

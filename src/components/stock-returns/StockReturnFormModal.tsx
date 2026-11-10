@@ -541,7 +541,7 @@ export function StockReturnFormModal({
 
   const { data: stocksData, isLoading: loadingBatches } = useQuery({
     queryKey: ["stocks-for-return"],
-    queryFn: () => getStocks({ limit: 500, sortBy: "name", sortOrder: "asc" }),
+    queryFn: () => getStocks({ limit: 1000, sortBy: "name", sortOrder: "asc" }),
     enabled: mode === "edit",
     staleTime: 0,
   });
