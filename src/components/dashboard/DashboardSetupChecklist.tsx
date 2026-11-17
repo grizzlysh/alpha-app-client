@@ -42,7 +42,7 @@ export function DashboardSetupChecklist({ pharmacyUuid }: { pharmacyUuid: string
     { done: s.medicineCount > 0, label: t.setupMedicines, to: "/medicines" },
     { done: s.distributorCount > 0, label: t.setupDistributors, to: "/distributors" },
     { done: s.storageCabinetCount > 0, label: t.setupStorage, to: "/storage" },
-    { done: s.stockedMedicineCount > 0, label: t.setupStock, to: "/invoices" },
+    { done: s.stockedMedicineCount > 0, label: t.setupStock, to: "/stock" },
   ];
   const doneCount = steps.filter((x) => x.done).length;
   if (doneCount === steps.length) return null;

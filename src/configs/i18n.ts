@@ -2089,6 +2089,41 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  importDistributorsTitle: string;
+  importDistributorsExportHint: string;
+  importPatientsExportHint: string;
+  importSkipExistingDesc: string;
+  importPatientsTitle: string;
+  importPatientsDesc: string;
+  importOpeningStockTitle: string;
+  importOpeningStockBtn: string;
+  importOpeningStockDesc: string;
+  importOpeningStockNote: string;
+  importStockSigner: string;
+  importStockDefaultDistributor: string;
+  importWillAddDistributors: string;
+  importAddedDistributors: string;
+  importWillAddPatients: string;
+  importAddedPatients: string;
+  importWillAddBatches: string;
+  importAddedBatches: string;
+  importStockValue: string;
+  importStockInvoices: string;
+  importDownloadTemplate: string;
+  importCompleteFields: string;
+  importCheck: string;
+  importFileEmpty: string;
+  importDone: string;
+  importReasonName: string;
+  importReasonPhone: string;
+  importReasonDate: string;
+  importReasonMedicine: string;
+  importReasonDistributor: string;
+  importReasonBatch: string;
+  importReasonExpired: string;
+  importReasonQuantity: string;
+  importReasonPrice: string;
+  importReasonBatchExists: string;
   allergyWarningTitle: string;
   allergyWarningLine: string;
   medicineTypeControlled: string;
@@ -4300,6 +4335,41 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    importDistributorsTitle: "Import distributors",
+    importDistributorsExportHint: "Download all distributors as Excel",
+    importPatientsExportHint: "Download all patients as Excel",
+    importSkipExistingDesc: "Only new ones are added (matched by name); existing data is not changed.",
+    importPatientsTitle: "Import patients",
+    importPatientsDesc: "Matched by phone number, or by name when there is none. Each new patient gets a medical record number.",
+    importOpeningStockTitle: "Import opening stock",
+    importOpeningStockBtn: "Opening stock",
+    importOpeningStockDesc: "The stock you have on hand when starting to use the system, per batch.",
+    importOpeningStockNote: "Medicines and distributors must exist first (import the medicine list from another branch if needed). Each distributor becomes one paid receipt marked \"saldo awal\", so it is not a debt.",
+    importStockSigner: "Counted & signed by",
+    importStockDefaultDistributor: "Distributor for rows without one",
+    importWillAddDistributors: "{n} distributors will be added",
+    importAddedDistributors: "{n} distributors added",
+    importWillAddPatients: "{n} patients will be added",
+    importAddedPatients: "{n} patients added",
+    importWillAddBatches: "{n} batches will be added to stock",
+    importAddedBatches: "{n} batches added to stock",
+    importStockValue: "value {amount}",
+    importStockInvoices: "{n} receipt invoice(s)",
+    importDownloadTemplate: "Download template",
+    importCompleteFields: "Fill in the fields above to check the file.",
+    importCheck: "Check file",
+    importFileEmpty: "No rows found in this file",
+    importDone: "Import finished",
+    importReasonName: "no name",
+    importReasonPhone: "no phone",
+    importReasonDate: "invalid date",
+    importReasonMedicine: "medicine not registered",
+    importReasonDistributor: "distributor not registered",
+    importReasonBatch: "no batch number",
+    importReasonExpired: "already expired",
+    importReasonQuantity: "invalid quantity",
+    importReasonPrice: "invalid price",
+    importReasonBatchExists: "batch already in stock",
     allergyWarningTitle: "Allergy warning",
     allergyWarningLine: "allergic to {allergen} ({severity})",
     medicineTypeControlled: "Controlled medicine",
@@ -4324,7 +4394,7 @@ export const translations: Record<Language, Translations> = {
     setupMedicines: "Add medicines (or import from a branch)",
     setupDistributors: "Add distributors",
     setupStorage: "Set up storage cabinets",
-    setupStock: "Receive the first stock (invoice)",
+    setupStock: "Add the first stock (invoice or opening stock import)",
     catalogExport: "Export",
     catalogExportHint: "Download the medicine list and classifications as Excel — import it at another branch",
     catalogImport: "Import",
@@ -6507,6 +6577,41 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    importDistributorsTitle: "Impor distributor",
+    importDistributorsExportHint: "Unduh semua distributor (Excel)",
+    importPatientsExportHint: "Unduh semua pasien (Excel)",
+    importSkipExistingDesc: "Hanya yang baru ditambahkan (dicocokkan per nama); data yang sudah ada tidak diubah.",
+    importPatientsTitle: "Impor pasien",
+    importPatientsDesc: "Dicocokkan per nomor telepon, atau per nama jika tanpa telepon. Pasien baru otomatis mendapat nomor rekam medis.",
+    importOpeningStockTitle: "Impor saldo stok awal",
+    importOpeningStockBtn: "Saldo awal",
+    importOpeningStockDesc: "Stok yang ada saat mulai memakai sistem, per batch.",
+    importOpeningStockNote: "Obat dan distributor harus sudah terdaftar (impor daftar obat dari cabang lain bila perlu). Per distributor dibuat satu faktur penerimaan \"saldo awal\" berstatus lunas, jadi tidak menjadi utang.",
+    importStockSigner: "Dihitung & ditandatangani",
+    importStockDefaultDistributor: "Distributor untuk baris yang kosong",
+    importWillAddDistributors: "{n} distributor akan ditambahkan",
+    importAddedDistributors: "{n} distributor ditambahkan",
+    importWillAddPatients: "{n} pasien akan ditambahkan",
+    importAddedPatients: "{n} pasien ditambahkan",
+    importWillAddBatches: "{n} batch akan masuk stok",
+    importAddedBatches: "{n} batch masuk stok",
+    importStockValue: "nilai {amount}",
+    importStockInvoices: "{n} faktur penerimaan",
+    importDownloadTemplate: "Unduh template",
+    importCompleteFields: "Lengkapi isian di atas untuk memeriksa file.",
+    importCheck: "Periksa file",
+    importFileEmpty: "Tidak ada data di file ini",
+    importDone: "Impor selesai",
+    importReasonName: "nama kosong",
+    importReasonPhone: "telepon kosong",
+    importReasonDate: "tanggal tidak valid",
+    importReasonMedicine: "obat belum terdaftar",
+    importReasonDistributor: "distributor belum terdaftar",
+    importReasonBatch: "no. batch kosong",
+    importReasonExpired: "sudah kedaluwarsa",
+    importReasonQuantity: "jumlah tidak valid",
+    importReasonPrice: "harga tidak valid",
+    importReasonBatchExists: "batch sudah ada di stok",
     allergyWarningTitle: "Peringatan alergi",
     allergyWarningLine: "alergi {allergen} ({severity})",
     medicineTypeControlled: "Obat terkendali",
@@ -6531,7 +6636,7 @@ export const translations: Record<Language, Translations> = {
     setupMedicines: "Tambahkan obat (atau impor dari cabang)",
     setupDistributors: "Tambahkan distributor",
     setupStorage: "Atur lemari penyimpanan",
-    setupStock: "Terima stok pertama (faktur)",
+    setupStock: "Masukkan stok pertama (faktur atau impor saldo awal)",
     catalogExport: "Ekspor",
     catalogExportHint: "Unduh daftar obat & klasifikasi (Excel) — bisa diimpor di cabang lain",
     catalogImport: "Impor",

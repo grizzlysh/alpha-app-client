@@ -21,9 +21,13 @@ import { CustomerFormModal } from "@/components/customers/CustomerFormModal";
 import { CustomerDeleteModal } from "@/components/customers/CustomerDeleteModal";
 import type { Customer, CustomerType } from "@/types/customer";
 import { getCustomers } from "@/service/customerService";
+import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import { CustomerImportModal } from "@/components/data-transfer/ImportModals";
+import { downloadCustomers } from "@/components/data-transfer/columns";
 
 type ModalState =
   | { mode: "create" }
+  | { mode: "import" }
   | { mode: "edit"; customer: Customer }
   | { mode: "delete"; customer: Customer }
   | { mode: "detail"; customer: Customer }
@@ -32,6 +36,7 @@ type ModalState =
 export default function CustomersPage(): JSX.Element {
   const { t } = useLanguage();
   const can = useCan();
+  const pharmacyName = useSelector((state: RootState) => state.auth.currentPharmacy?.name ?? "");
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
@@ -155,6 +160,11 @@ export default function CustomersPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            <DataTransferButtons
+              onExport={can("customers.read") ? () => downloadCustomers(pharmacyName) : undefined}
+              onImport={can("customers.create") ? () => setModal({ mode: "import" }) : undefined}
+              exportHint={t.importPatientsExportHint}
+            />
             {can("customers.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
@@ -206,6 +216,8 @@ export default function CustomersPage(): JSX.Element {
           onSuccess={handleSuccess}
         />
       )}
+
+      {modal?.mode === "import" && <CustomerImportModal onClose={() => setModal(null)} />}
 
       {modal?.mode === "delete" && (
         <CustomerDeleteModal

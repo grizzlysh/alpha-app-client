@@ -22,11 +22,14 @@ import { StockUpdateReorderModal } from "@/components/stock/StockUpdateReorderMo
 import { StockDisposalFormModal } from "@/components/stock-disposals/StockDisposalFormModal";
 import { StockReturnFormModal } from "@/components/stock-returns/StockReturnFormModal";
 import type { Stock, StockDetail } from "@/types/stock";
+import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import { OpeningStockImportModal } from "@/components/data-transfer/ImportModals";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type ModalState =
   | { mode: "detail"; stock: Stock }
+  | { mode: "opening" }
   | { mode: "adjust"; stock: Stock; stockDetail: StockDetail }
   | { mode: "price"; stock: Stock }
   | { mode: "reorder"; stock: Stock }
@@ -169,6 +172,14 @@ export default function StockPage(): JSX.Element {
               placeholder={t.stockSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+            {/* Day-one stock count for a pharmacy that is new to the system */}
+            {can("invoices.create") && (
+              <DataTransferButtons
+                onImport={() => setModal({ mode: "opening" })}
+                importLabel={t.importOpeningStockBtn}
+                importHint={t.importOpeningStockDesc}
+              />
+            )}
           </div>
         </div>
 
@@ -191,6 +202,8 @@ export default function StockPage(): JSX.Element {
       </Card>
 
       {/* Detail panel */}
+      {modal?.mode === "opening" && <OpeningStockImportModal onClose={() => setModal(null)} />}
+
       {modal?.mode === "detail" && (
         <StockDetailPanel
           stock={modal.stock}

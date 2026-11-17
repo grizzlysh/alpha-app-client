@@ -51,6 +51,10 @@ const DEPENDENCIES: Record<string, string[]> = {
   "medicine-shapes": ["medicine-shapes-dropdown", "medicines", "medicines-dropdown"],
   "medicine-types": ["medicine-types-dropdown", "medicines", "medicines-dropdown", "stock-catalog"],
   "medicine-classes": ["medicine-classes-dropdown", "medicines", "medicines-dropdown"],
+  // Spreadsheet imports of starting data; opening stock is booked as receipts.
+  "data-transfer": [
+    "distributors", "distributors-dropdown", ...CUSTOMERS, "invoices", "invoice", "pharmacy-setup", ...STOCK,
+  ],
   // Import adds medicines and any missing classifications.
   catalog: [
     "medicines", "medicines-dropdown", "pharmacy-setup",

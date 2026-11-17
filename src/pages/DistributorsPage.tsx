@@ -20,9 +20,13 @@ import { DeleteConfirmModal } from "@/components/distributor/DeleteConfirmModal"
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Distributor } from "@/types/distributor";
 import { getDistributors } from "@/service/distributorService";
+import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import { DistributorImportModal } from "@/components/data-transfer/ImportModals";
+import { downloadDistributors } from "@/components/data-transfer/columns";
 
 type ModalState =
   | { mode: "create" }
+  | { mode: "import" }
   | { mode: "edit"; distributor: Distributor }
   | { mode: "delete"; distributor: Distributor }
   | { mode: "detail"; distributor: Distributor }
@@ -31,6 +35,7 @@ type ModalState =
 export default function DistributorsPage(): JSX.Element {
   const { t } = useLanguage();
   const can = useCan();
+  const pharmacyName = useSelector((state: RootState) => state.auth.currentPharmacy?.name ?? "");
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
@@ -87,6 +92,11 @@ export default function DistributorsPage(): JSX.Element {
               placeholder={t.distributorSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+            <DataTransferButtons
+              onExport={can("distributors.read") ? () => downloadDistributors(pharmacyName) : undefined}
+              onImport={can("distributors.create") ? () => setModal({ mode: "import" }) : undefined}
+              exportHint={t.importDistributorsExportHint}
+            />
             {can("distributors.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
@@ -138,6 +148,8 @@ export default function DistributorsPage(): JSX.Element {
           onSuccess={handleSuccess}
         />
       )}
+
+      {modal?.mode === "import" && <DistributorImportModal onClose={() => setModal(null)} />}
 
       {modal?.mode === "delete" && (
         <DeleteConfirmModal
