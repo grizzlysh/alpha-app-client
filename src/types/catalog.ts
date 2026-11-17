@@ -11,7 +11,7 @@ export interface CatalogExport {
   pharmacy: { name: string; code: string };
   exportedAt: string;
   shapes: { name: string }[];
-  types: { name: string; requiredPrescription: boolean }[];
+  types: { name: string; requiredPrescription: boolean; isControlled: boolean }[];
   classes: { name: string }[];
   medicines: CatalogMedicine[];
 }
@@ -19,7 +19,7 @@ export interface CatalogExport {
 export interface CatalogImportPayload {
   dryRun?: boolean;
   shapes: { name: string }[];
-  types: { name: string; requiredPrescription?: boolean }[];
+  types: { name: string; requiredPrescription?: boolean; isControlled?: boolean }[];
   classes: { name: string }[];
   medicines: CatalogMedicine[];
 }

@@ -84,12 +84,12 @@ export function ReturnReportTab(): JSX.Element {
         const rows = resp.data ?? [];
         exportToCsv("return-list.csv",
           [t.reportReturnNumber, t.reportReturnDate, t.reportReturnDistributor, t.reportReturnMedicine, t.reportReturnBatch, t.reportReturnQty, t.reportReturnReason, t.reportReturnStatus],
-          rows.map((r) => [r.returnNumber, r.returnedAt ?? "", r.distributorName, r.medicineName, r.batchNumber, r.quantityPieces, r.reason ?? "", r.status])
+          rows.map((r) => [r.returnNumber, r.returnedAt ?? "", fmt(r.distributorName), fmt(r.medicineName), r.batchNumber, r.quantityPieces, r.reason ?? "", r.status])
         );
       } else {
         exportToCsv("return-by-distributor.csv",
           [t.reportReturnDistributor, t.reportReturnCount, t.reportReturnTotalQty],
-          summary.byDistributor.map((r) => [r.distributorName, r.returnCount, r.totalQuantityPieces])
+          summary.byDistributor.map((r) => [fmt(r.distributorName), r.returnCount, r.totalQuantityPieces])
         );
       }
     } finally {
@@ -107,12 +107,12 @@ export function ReturnReportTab(): JSX.Element {
         {
           name: t.reportReturnList,
           headers: [t.reportReturnNumber, t.reportReturnDate, t.reportReturnDistributor, t.reportReturnMedicine, t.reportReturnBatch, t.reportReturnQty, t.reportReturnReason, t.reportReturnStatus],
-          rows: rows.map((r) => [r.returnNumber, r.returnedAt ?? "", r.distributorName, r.medicineName, r.batchNumber, r.quantityPieces, r.reason ?? "", r.status]),
+          rows: rows.map((r) => [r.returnNumber, r.returnedAt ?? "", fmt(r.distributorName), fmt(r.medicineName), r.batchNumber, r.quantityPieces, r.reason ?? "", r.status]),
         },
         {
           name: t.reportReturnByDistributor,
           headers: [t.reportReturnDistributor, t.reportReturnCount, t.reportReturnTotalQty],
-          rows: summary.byDistributor.map((r) => [r.distributorName, r.returnCount, r.totalQuantityPieces]),
+          rows: summary.byDistributor.map((r) => [fmt(r.distributorName), r.returnCount, r.totalQuantityPieces]),
         },
       ]);
     } finally {

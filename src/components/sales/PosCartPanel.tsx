@@ -10,9 +10,12 @@ import { cn } from "@/utils/cn";
 import type { Translations } from "@/configs/i18n";
 import { lineTotal, splitBoxes } from "@/utils/saleMath";
 import { formatCurrency } from "./salesUtils";
+import { AllergyWarning } from "@/components/shared/AllergyWarning";
 
 export interface CartItem {
   stockDetailUuid: string;
+  /** For the allergy check. */
+  medicineUuid?: string;
   quantityPieces: number;
   discount: number;
   medicineName: string;
@@ -248,6 +251,7 @@ export function PosCartPanel({
 
       {/* Totals + actions */}
       <div className="shrink-0 space-y-2 border-t border-border bg-muted/20 px-4 py-4 sm:px-5">
+        <AllergyWarning customerUuid={customerUuid} items={cart.map((i) => ({ medicineUuid: i.medicineUuid, medicineName: i.medicineName }))} />
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">{t.posSubtotal}</span>
           <span className="font-semibold text-foreground">{formatCurrency(subtotal)}</span>

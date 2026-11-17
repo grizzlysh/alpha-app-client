@@ -27,6 +27,7 @@ interface FormValues {
   name: string;
   status: "ACTIVE" | "INACTIVE";
   requiredPrescription: boolean;
+  isControlled: boolean;
 }
 
 export interface ReferenceFormModalProps {
@@ -67,6 +68,7 @@ export function ReferenceFormModal({
         name: z.string().min(1, labels.nameRequired),
         status: z.enum(["ACTIVE", "INACTIVE"]),
         requiredPrescription: z.boolean(),
+        isControlled: z.boolean(),
       }),
     [labels.nameRequired]
   );
@@ -77,6 +79,7 @@ export function ReferenceFormModal({
       name: item?.name ?? "",
       status: item?.status ?? "ACTIVE",
       requiredPrescription: item?.requiredPrescription ?? false,
+      isControlled: item?.isControlled ?? false,
     },
   });
 
@@ -91,6 +94,11 @@ export function ReferenceFormModal({
         status: values.status,
         ...(labels.requiredPrescriptionLabel !== undefined && {
           requiredPrescription: values.requiredPrescription,
+        }),
+        ...(labels.controlledLabel !== undefined && {
+          // Controlled medicines always need a prescription.
+          isControlled: values.isControlled,
+          ...(values.isControlled && { requiredPrescription: true }),
         }),
       };
       return mode === "create"
@@ -209,6 +217,28 @@ export function ReferenceFormModal({
                   )}
                 />
               </div>
+            )}
+
+            {/* Controlled (medicine types only) */}
+            {labels.controlledLabel !== undefined && (
+              <Controller
+                name="isControlled"
+                control={form.control}
+                render={({ field }) => (
+                  <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border px-3 py-2.5">
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 accent-primary"
+                    />
+                    <span>
+                      <span className="block text-sm font-medium text-foreground">{labels.controlledLabel}</span>
+                      <span className="block text-xs text-muted-foreground">{labels.controlledHint}</span>
+                    </span>
+                  </label>
+                )}
+              />
             )}
           </div>
 

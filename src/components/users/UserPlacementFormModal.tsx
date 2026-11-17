@@ -226,7 +226,11 @@ function Step1Form({ t, defaultValues, pharmacies, onCancel, onNext }: Step1Form
               render={({ field }) => (
                 <Combobox
                   value={field.value ?? ""}
-                  onValueChange={field.onChange}
+                  onValueChange={(v) => {
+                    field.onChange(v);
+                    // Roles differ per pharmacy; a role picked for another one may not exist here.
+                    form.setValue("roleUuid", "");
+                  }}
                   options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name.toUpperCase()} (${p.code})` }))}
                   placeholder={t.placementSelectPharmacy}
                   className={cn(err("pharmacyUuid") && "border-destructive")}

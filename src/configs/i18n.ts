@@ -2089,6 +2089,11 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  allergyWarningTitle: string;
+  allergyWarningLine: string;
+  medicineTypeControlled: string;
+  medicineTypeControlledHint: string;
+  medicineTypeControlledBadge: string;
   nameCaseUpper: string;
   nameCaseTitle: string;
   nameCaseLower: string;
@@ -4295,6 +4300,11 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    allergyWarningTitle: "Allergy warning",
+    allergyWarningLine: "allergic to {allergen} ({severity})",
+    medicineTypeControlled: "Controlled medicine",
+    medicineTypeControlledHint: "Narcotics, psychotropics, precursors. Orders, receipts, returns and disposals must be signed by the Head Pharmacist; always needs a prescription.",
+    medicineTypeControlledBadge: "Controlled",
     nameCaseUpper: "ALL CAPS",
     nameCaseTitle: "Title Case",
     nameCaseLower: "all lowercase",
@@ -6497,6 +6507,11 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    allergyWarningTitle: "Peringatan alergi",
+    allergyWarningLine: "alergi {allergen} ({severity})",
+    medicineTypeControlled: "Obat terkendali",
+    medicineTypeControlledHint: "Narkotika, psikotropika, prekursor. Surat pesanan, penerimaan, retur, dan pemusnahan wajib ditandatangani Head Pharmacist; selalu wajib resep.",
+    medicineTypeControlledBadge: "Terkendali",
     nameCaseUpper: "KAPITAL SEMUA",
     nameCaseTitle: "Huruf Awal Kapital",
     nameCaseLower: "huruf kecil semua",

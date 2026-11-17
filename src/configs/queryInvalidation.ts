@@ -94,6 +94,9 @@ export function invalidateAfterWrite(method: string | undefined, url: string | u
   const m = (method ?? "get").toLowerCase();
   if (m === "get" || m === "head" || m === "options" || !url) return;
 
+  // Read-only POSTs (a long list in the body) change nothing.
+  if (/\/allergy-check(\?|$)/.test(url)) return;
+
   const resource = resourceOf(url);
   if (!resource || IGNORED.has(resource)) return;
 

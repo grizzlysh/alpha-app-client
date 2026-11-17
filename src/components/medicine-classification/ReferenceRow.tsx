@@ -58,7 +58,11 @@ export function ReferenceRow({
       {/* Required prescription — sm+, types only */}
       {labels.requiredPrescriptionLabel && (
         <td className="hidden min-w-[160px] px-5 py-4 sm:table-cell">
-          {item.requiredPrescription ? (
+          {item.isControlled ? (
+            <span className="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive">
+              {labels.controlledBadge}
+            </span>
+          ) : item.requiredPrescription ? (
             <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
               {labels.requiredPrescriptionYes}
             </span>

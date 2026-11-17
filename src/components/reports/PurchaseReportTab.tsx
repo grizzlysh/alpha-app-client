@@ -84,12 +84,12 @@ export function PurchaseReportTab(): JSX.Element {
         const rows = resp.data ?? [];
         exportToCsv("purchase-invoices.csv",
           [t.reportPurchaseInvoiceNumber, t.reportPurchaseDate, t.reportPurchaseDistributor, t.reportPurchasePONumber, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseStatus],
-          rows.map((r) => [r.invoiceNumber, r.invoiceDate, r.distributorName, r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus])
+          rows.map((r) => [r.invoiceNumber, r.invoiceDate, fmt(r.distributorName), r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus])
         );
       } else {
         exportToCsv("purchase-by-distributor.csv",
           [t.reportPurchaseDistributor, t.reportPurchaseInvoiceCount, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseUnpaidAmount],
-          summary.byDistributor.map((r) => [r.distributorName, r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount])
+          summary.byDistributor.map((r) => [fmt(r.distributorName), r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount])
         );
       }
     } finally {
@@ -107,12 +107,12 @@ export function PurchaseReportTab(): JSX.Element {
         {
           name: t.reportPurchaseInvoiceList,
           headers: [t.reportPurchaseInvoiceNumber, t.reportPurchaseDate, t.reportPurchaseDistributor, t.reportPurchasePONumber, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseStatus],
-          rows: rows.map((r) => [r.invoiceNumber, r.invoiceDate, r.distributorName, r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus]),
+          rows: rows.map((r) => [r.invoiceNumber, r.invoiceDate, fmt(r.distributorName), r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus]),
         },
         {
           name: t.reportPurchaseByDistributor,
           headers: [t.reportPurchaseDistributor, t.reportPurchaseInvoiceCount, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseUnpaidAmount],
-          rows: summary.byDistributor.map((r) => [r.distributorName, r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount]),
+          rows: summary.byDistributor.map((r) => [fmt(r.distributorName), r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount]),
         },
       ]);
     } finally {

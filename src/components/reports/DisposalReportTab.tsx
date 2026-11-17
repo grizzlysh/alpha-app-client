@@ -15,10 +15,12 @@ import { ReportSection } from "./ReportSection";
 import { ReportTable } from "./ReportTable";
 import { buildDateParams, formatDate } from "./reportUtils";
 import { exportToCsv, exportToXlsx } from "./reportExport";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 type DetailTab = "list" | "by-reason";
 
 export function DisposalReportTab(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
 
   const [mode, setMode] = useState<ReportFilterMode>("monthly");
@@ -60,7 +62,7 @@ export function DisposalReportTab(): JSX.Element {
         const rows = resp.data ?? [];
         exportToCsv("disposal-list.csv",
           [t.reportDisposalNumber, t.reportDisposalDate, t.reportDisposalMedicine, t.reportDisposalBatch, t.reportDisposalQty, t.reportDisposalReason, t.reportDisposalStatus],
-          rows.map((r) => [r.disposalNumber, r.disposedAt ?? "", r.medicineName, r.batchNumber, r.quantityPieces, r.reason, r.status])
+          rows.map((r) => [r.disposalNumber, r.disposedAt ?? "", fmt(r.medicineName), r.batchNumber, r.quantityPieces, r.reason, r.status])
         );
       } else {
         exportToCsv("disposal-by-reason.csv",
@@ -83,7 +85,7 @@ export function DisposalReportTab(): JSX.Element {
         {
           name: t.reportDisposalList,
           headers: [t.reportDisposalNumber, t.reportDisposalDate, t.reportDisposalMedicine, t.reportDisposalBatch, t.reportDisposalQty, t.reportDisposalReason, t.reportDisposalStatus],
-          rows: rows.map((r) => [r.disposalNumber, r.disposedAt ?? "", r.medicineName, r.batchNumber, r.quantityPieces, r.reason, r.status]),
+          rows: rows.map((r) => [r.disposalNumber, r.disposedAt ?? "", fmt(r.medicineName), r.batchNumber, r.quantityPieces, r.reason, r.status]),
         },
         {
           name: t.reportDisposalByReason,

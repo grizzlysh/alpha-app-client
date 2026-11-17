@@ -76,6 +76,11 @@ export function ReferenceDetailPanel({
             </span>
           </InfoPair>
         )}
+        {item.isControlled !== undefined && labels.controlledLabel && (
+          <InfoPair label={labels.controlledLabel}>
+            <span className="text-sm text-foreground">{item.isControlled ? labels.controlledBadge : "—"}</span>
+          </InfoPair>
+        )}
       </div>
 
       {/* Dates */}

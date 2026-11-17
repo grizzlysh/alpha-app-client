@@ -210,6 +210,7 @@ export default function PosPage(): JSX.Element {
         }
         const newItem: CartItem = {
           stockDetailUuid: detail.uuid,
+          medicineUuid: detail.medicine.uuid,
           quantityPieces: 1,
           discount: 0,
           medicineName: detail.medicine.name,
@@ -458,6 +459,7 @@ export default function PosPage(): JSX.Element {
   function handleContinue(sale: Sale): void {
     const items: CartItem[] = sale.details.map((d) => ({
       stockDetailUuid: d.stockDetail.uuid,
+      medicineUuid: d.medicine.uuid,
       quantityPieces: d.quantityPieces,
       discount: d.discountPercentage,
       medicineName: d.medicine.name,

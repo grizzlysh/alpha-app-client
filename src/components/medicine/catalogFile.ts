@@ -20,6 +20,7 @@ const COLS = {
   class: ["kelas", "class", "kelas terapi"],
   ingredients: ["komposisi", "ingredients", "zat aktif"],
   rx: ["wajib resep", "prescription required", "resep"],
+  controlled: ["terkendali", "controlled", "obat terkendali"],
 };
 
 const norm = (v: unknown): string => String(v ?? "").trim().toLowerCase();
@@ -34,7 +35,10 @@ export function downloadCatalog(catalog: CatalogExport): void {
     ...catalog.medicines.map((m) => [m.name, m.unit, m.shape, m.type, m.class, m.ingredients.join(", ")]),
   ]);
   add("Bentuk", [["Nama"], ...catalog.shapes.map((s) => [s.name])]);
-  add("Golongan", [["Nama", "Wajib Resep"], ...catalog.types.map((t) => [t.name, t.requiredPrescription ? "Ya" : "Tidak"])]);
+  add("Golongan", [
+    ["Nama", "Wajib Resep", "Terkendali"],
+    ...catalog.types.map((t) => [t.name, t.requiredPrescription ? "Ya" : "Tidak", t.isControlled ? "Ya" : "Tidak"]),
+  ]);
   add("Kelas", [["Nama"], ...catalog.classes.map((c) => [c.name])]);
 
   const date = new Date().toISOString().slice(0, 10);
@@ -92,7 +96,11 @@ export async function parseCatalogFile(file: File): Promise<CatalogImportPayload
     shapes: readRows(findSheet(wb, SHEETS.shapes)).filter((r) => r.name).map((r) => ({ name: r.name })),
     types: readRows(findSheet(wb, SHEETS.types))
       .filter((r) => r.name)
-      .map((r) => ({ name: r.name, requiredPrescription: r.rx ? isYes(r.rx) : undefined })),
+      .map((r) => ({
+        name: r.name,
+        requiredPrescription: r.rx ? isYes(r.rx) : undefined,
+        isControlled: r.controlled ? isYes(r.controlled) : undefined,
+      })),
     classes: readRows(findSheet(wb, SHEETS.classes)).filter((r) => r.name).map((r) => ({ name: r.name })),
     medicines,
   };

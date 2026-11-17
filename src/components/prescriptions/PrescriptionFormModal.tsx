@@ -30,6 +30,7 @@ import { getCustomersDropdown } from "@/service/customerService";
 import { getDoctorsDropdown } from "@/service/doctorService";
 import { getMedicinesDropdown } from "@/service/medicineService";
 import { useNameFormat } from "@/hooks/useNameFormat";
+import { AllergyWarning } from "@/components/shared/AllergyWarning";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -475,12 +476,19 @@ export function PrescriptionFormModal({
 
                 {/* Committed items table */}
                 {fields.length > 0 && (
+                  <>
+                  <AllergyWarning
+                    className="mb-3"
+                    customerUuid={form.watch("patientUuid")}
+                    items={(form.watch("items") ?? []).map((i) => ({ medicineName: i.medicineName }))}
+                  />
                   <ItemsTable
                     items={fields}
                     isPending={isPending}
                     t={t}
                     onRemove={remove}
                   />
+                  </>
                 )}
 
                 {/* Item validation error */}

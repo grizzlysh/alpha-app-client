@@ -1,3 +1,4 @@
+import type { AllergyConflict } from "@/types/examination";
 import { axiosInstance } from "@/configs/axiosInstance";
 import type { ApiResponse } from "@/types/api";
 import type {
@@ -73,5 +74,23 @@ export async function getCustomerPurchases(
   params?: { page?: number; limit?: number }
 ): Promise<ApiResponse<CustomerPurchaseHistory>> {
   const response = await axiosInstance.get<ApiResponse<CustomerPurchaseHistory>>(`/customers/${uuid}/purchases`, { params });
+  return response.data;
+}
+
+/** A cart line (medicine id) or a free-text prescription line (name). */
+export interface AllergyCheckItem {
+  medicineUuid?: string;
+  medicineName?: string;
+}
+
+/** Medicines in this list that clash with the customer's recorded allergies (matched on name and ingredients). */
+export async function checkCustomerAllergies(
+  customerUuid: string,
+  items: AllergyCheckItem[]
+): Promise<ApiResponse<AllergyConflict[]>> {
+  const response = await axiosInstance.post<ApiResponse<AllergyConflict[]>>(
+    `/customers/${customerUuid}/allergy-check`,
+    { items }
+  );
   return response.data;
 }
