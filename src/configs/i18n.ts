@@ -2089,6 +2089,24 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  purchaseHistoryTitle: string;
+  purchaseHistoryShort: string;
+  purchaseTab: string;
+  purchaseToday: string;
+  purchaseYesterday: string;
+  purchaseDaysAgo: string;
+  purchaseEmptyTitle: string;
+  purchaseEmptyDesc: string;
+  purchaseTransactions: string;
+  purchaseTotalSpent: string;
+  purchaseLast: string;
+  purchaseCustomerSince: string;
+  purchaseAverage: string;
+  purchaseFrequent: string;
+  purchaseTimesBought: string;
+  purchaseAdd: string;
+  purchaseSales: string;
+  purchaseLoadMore: string;
   examEditVitals: string;
   examAddAllergy: string;
   examEditAllergy: string;
@@ -4186,6 +4204,24 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    purchaseHistoryTitle: "Purchase history",
+    purchaseHistoryShort: "History",
+    purchaseTab: "Purchases",
+    purchaseToday: "Today",
+    purchaseYesterday: "Yesterday",
+    purchaseDaysAgo: "{n} days ago",
+    purchaseEmptyTitle: "No purchases yet",
+    purchaseEmptyDesc: "Sales made for this customer at the till will show up here.",
+    purchaseTransactions: "Transactions",
+    purchaseTotalSpent: "Total spent",
+    purchaseLast: "Last visit",
+    purchaseCustomerSince: "Customer since {date}",
+    purchaseAverage: "average {amount} per visit",
+    purchaseFrequent: "Often bought",
+    purchaseTimesBought: "{n}× bought",
+    purchaseAdd: "Add",
+    purchaseSales: "Transactions",
+    purchaseLoadMore: "Load more",
     examEditVitals: "Edit",
     examAddAllergy: "Add allergy",
     examEditAllergy: "Edit allergy",
@@ -6279,6 +6315,24 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    purchaseHistoryTitle: "Riwayat pembelian",
+    purchaseHistoryShort: "Riwayat",
+    purchaseTab: "Pembelian",
+    purchaseToday: "Hari ini",
+    purchaseYesterday: "Kemarin",
+    purchaseDaysAgo: "{n} hari lalu",
+    purchaseEmptyTitle: "Belum ada pembelian",
+    purchaseEmptyDesc: "Transaksi pelanggan ini di kasir akan muncul di sini.",
+    purchaseTransactions: "Transaksi",
+    purchaseTotalSpent: "Total belanja",
+    purchaseLast: "Terakhir beli",
+    purchaseCustomerSince: "Pelanggan sejak {date}",
+    purchaseAverage: "rata-rata {amount} per transaksi",
+    purchaseFrequent: "Sering dibeli",
+    purchaseTimesBought: "{n}× dibeli",
+    purchaseAdd: "Tambah",
+    purchaseSales: "Transaksi",
+    purchaseLoadMore: "Muat lagi",
     examEditVitals: "Ubah",
     examAddAllergy: "Tambah alergi",
     examEditAllergy: "Ubah alergi",

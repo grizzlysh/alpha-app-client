@@ -23,6 +23,8 @@ export interface StockDetailSearchResult {
 
 export interface StockDetailListParams {
   search?: string;
+  /** Sellable (unexpired) batches of one medicine, earliest expiry first. */
+  medicineUuid?: string;
 }
 
 export interface StockCatalogParams {

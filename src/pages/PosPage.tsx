@@ -30,6 +30,9 @@ import { PosPaymentModal, type PaymentConfirmation } from "@/components/sales/Po
 import { PosHeldSalesModal } from "@/components/sales/PosHeldSalesModal";
 import { PosPrescriptionModal } from "@/components/sales/PosPrescriptionModal";
 import { SaleSuccessModal } from "@/components/sales/SaleSuccessModal";
+import { PurchaseHistory } from "@/components/customers/PurchaseHistory";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import type { PurchaseMedicine } from "@/types/customer";
 
 const PPN_PARAMETER_KEY = "PPN_PERCENTAGE_SELL";
 const MAX_DISCOUNT_PARAMETER_KEY = "MAX_DISCOUNT_PERCENTAGE";
@@ -101,6 +104,7 @@ export default function PosPage(): JSX.Element {
   const [heldModalOpen, setHeldModalOpen] = useState(false);
   const [cancellingUuid, setCancellingUuid] = useState<string | null>(null);
   const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   // Below the lg breakpoint products and cart are two tabs instead of two columns.
   const [mobileTab, setMobileTab] = useState<"products" | "cart">("products");
 
@@ -225,6 +229,32 @@ export default function PosPage(): JSX.Element {
       return added;
     },
     [t]
+  );
+
+  // "Buy again" from the purchase history: the earliest-expiring sellable batch
+  // that still has room (FEFO), same rules as picking it from the grid.
+  const handleBuyAgain = useCallback(
+    async (medicine: PurchaseMedicine): Promise<void> => {
+      try {
+        const res = await getStockDetails({ medicineUuid: medicine.uuid });
+        const batches = res.data ?? [];
+        const batch = batches.find((d) => {
+          const available = d.availablePieces ?? d.quantityPieces;
+          const inCart = cart.find((c) => c.stockDetailUuid === d.uuid)?.quantityPieces ?? 0;
+          return available > inCart;
+        });
+        if (!batch) {
+          toast.error(`${medicine.name.toUpperCase()} — ${t.posOutOfStock}`);
+          return;
+        }
+        if (handleAddToCart(batch)) {
+          toast.success(t.posScanAdded.replace("{name}", medicine.name.toUpperCase()), { duration: 1500 });
+        }
+      } catch (error) {
+        toast.error(getApiErrorMessage(error, language, t.unexpectedError));
+      }
+    },
+    [cart, handleAddToCart, language, t]
   );
 
   function handleQuantityChange(index: number, quantity: number): void {
@@ -584,6 +614,7 @@ export default function PosPage(): JSX.Element {
             customerUuid={customerUuid}
             onCustomerChange={setCustomerUuid}
             customerOptions={customerOptions}
+            onOpenHistory={can("sales.read") ? () => setHistoryOpen(true) : undefined}
             prescriptionUuid={prescriptionUuid}
             onPrescriptionChange={setPrescriptionUuid}
             prescriptionOptions={prescriptionOptions}
@@ -649,6 +680,20 @@ export default function PosPage(): JSX.Element {
           onSuccess={handlePrescriptionCreated}
         />
       )}
+
+      <Sheet open={historyOpen && !!customerUuid} onOpenChange={setHistoryOpen}>
+        <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+          <SheetHeader className="border-b border-border px-5 py-4 text-left">
+            <SheetTitle>{t.purchaseHistoryTitle}</SheetTitle>
+            <p className="truncate text-sm text-muted-foreground">
+              {customerOptions.find((c) => c.value === customerUuid)?.label}
+            </p>
+          </SheetHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+            {customerUuid && <PurchaseHistory customerUuid={customerUuid} onBuyAgain={handleBuyAgain} />}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {completedSale && (
         <SaleSuccessModal sale={completedSale} amountReceived={paidAmount} t={t} onNewSale={resetSale} />

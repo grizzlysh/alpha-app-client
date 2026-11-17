@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
-import { Minus, Plus, Trash2, ShoppingCart, Loader2, PauseCircle, Lock, Wallet } from "lucide-react";
+import { History, Minus, Plus, Trash2, ShoppingCart, Loader2, PauseCircle, Lock, Wallet } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,6 +37,8 @@ export interface PosCartPanelProps {
   customerUuid: string;
   onCustomerChange: (value: string) => void;
   customerOptions: ComboboxOption[];
+  /** Opens the selected customer's purchase history; omitted without sales.read. */
+  onOpenHistory?: () => void;
   prescriptionUuid: string;
   onPrescriptionChange: (value: string) => void;
   prescriptionOptions: ComboboxOption[];
@@ -64,6 +66,7 @@ export function PosCartPanel({
   customerUuid,
   onCustomerChange,
   customerOptions,
+  onOpenHistory,
   prescriptionUuid,
   onPrescriptionChange,
   prescriptionOptions,
@@ -147,7 +150,19 @@ export function PosCartPanel({
       {/* Patient + prescription, side by side when there's room */}
       <div className="grid shrink-0 gap-3 border-b border-border px-4 py-3 sm:grid-cols-2 sm:px-5">
         <div className="min-w-0 space-y-1.5">
-          <Label className="text-xs">{t.posPatientLabel}</Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs">{t.posPatientLabel}</Label>
+            {onOpenHistory && customerUuid && (
+              <button
+                type="button"
+                onClick={onOpenHistory}
+                className="flex items-center gap-1 rounded-md px-1 text-[11px] font-medium text-primary transition-colors hover:bg-primary/10"
+              >
+                <History className="h-3.5 w-3.5" aria-hidden />
+                {t.purchaseHistoryShort}
+              </button>
+            )}
+          </div>
           <Combobox
             value={customerUuid}
             onValueChange={onCustomerChange}

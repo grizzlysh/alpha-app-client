@@ -2,6 +2,7 @@ import { axiosInstance } from "@/configs/axiosInstance";
 import type { ApiResponse } from "@/types/api";
 import type {
   Customer,
+  CustomerPurchaseHistory,
   CustomerDropdownItem,
   CustomerDropdownParams,
   CustomerListParams,
@@ -64,5 +65,13 @@ export async function getCustomersDropdown(
     "/customers/dropdown",
     { params }
   );
+  return response.data;
+}
+
+export async function getCustomerPurchases(
+  uuid: string,
+  params?: { page?: number; limit?: number }
+): Promise<ApiResponse<CustomerPurchaseHistory>> {
+  const response = await axiosInstance.get<ApiResponse<CustomerPurchaseHistory>>(`/customers/${uuid}/purchases`, { params });
   return response.data;
 }

@@ -15,6 +15,7 @@ import {
   ChevronRight,
   FileText,
   ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { PrescriptionFormModal } from "@/components/prescriptions/PrescriptionFo
 import { PrescriptionStatusBadge } from "@/components/prescriptions/PrescriptionTable";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCan } from "@/hooks/usePermission";
+import { PurchaseHistory } from "@/components/customers/PurchaseHistory";
 import { getMedicalRecord, getVisits, removeAllergy, deleteVisit } from "@/service/medicalRecordService";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { cn } from "@/utils/cn";
@@ -278,6 +280,12 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                     {t.medicalRecordAllergiesTab}
                     <CountBadge n={allergies.length} alert={hasSevere} />
                   </TabsTrigger>
+                  {can("sales.read") && (
+                    <TabsTrigger value="purchases" className={TAB_TRIGGER}>
+                      <ShoppingBag className="h-4 w-4" />
+                      {t.purchaseTab}
+                    </TabsTrigger>
+                  )}
                 </TabsList>
               </div>
 
@@ -374,6 +382,13 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                   </ul>
                 )}
               </TabsContent>
+
+              {/* Purchases */}
+              {can("sales.read") && (
+                <TabsContent value="purchases" className="min-h-0 flex-1 overflow-y-auto px-5 py-4 data-[state=inactive]:hidden">
+                  <PurchaseHistory customerUuid={customer.uuid} />
+                </TabsContent>
+              )}
             </Tabs>
           </>
         )}

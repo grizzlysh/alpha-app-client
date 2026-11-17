@@ -59,7 +59,7 @@ const DEPENDENCIES: Record<string, string[]> = {
   "stock-returns": ["stock-returns", "invoice-for-return", "invoices-search-for-return", ...STOCK],
   "stock-disposals": ["stock-disposals", "stock-disposal", ...STOCK],
   "stock-movements": STOCK,
-  sales: ["sales", "sale", ...STOCK, ...PRESCRIPTIONS, "customer-detail"],
+  sales: ["sales", "sale", ...STOCK, ...PRESCRIPTIONS, "customer-detail", "customer-purchases"],
   storage: [
     "storage-cabinets", "storage-shelves", "storage-bins",
     "cabinets-dropdown", "shelves-dropdown", "bins-dropdown", "medicines", ...STOCK,
