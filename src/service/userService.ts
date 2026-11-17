@@ -57,8 +57,8 @@ export async function getUser(uuid: string): Promise<ApiResponse<UserDetail>> {
 
 export async function createUser(
   payload: CreateUserPayload
-): Promise<ApiResponse<UserDetail>> {
-  const response = await axiosInstance.post<ApiResponse<UserDetail>>(
+): Promise<ApiResponse<UserDetail & { temporaryPassword: string }>> {
+  const response = await axiosInstance.post<ApiResponse<UserDetail & { temporaryPassword: string }>>(
     "/users",
     payload
   );

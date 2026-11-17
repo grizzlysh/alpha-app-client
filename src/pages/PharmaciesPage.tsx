@@ -1,4 +1,6 @@
 import type { JSX } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -30,6 +32,8 @@ type ModalState =
 export default function PharmaciesPage(): JSX.Element {
   const { t } = useLanguage();
   const can = useCan();
+  // Only a platform admin opens or closes pharmacies (the server enforces the same).
+  const isPlatformAdmin = useSelector((state: RootState) => state.auth.user?.platformRole === "PLATFORM_ADMIN");
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
@@ -85,7 +89,7 @@ export default function PharmaciesPage(): JSX.Element {
               placeholder={t.pharmaSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
-            {can("pharmacies.create") && (
+            {isPlatformAdmin && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -111,10 +115,10 @@ export default function PharmaciesPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={can("pharmacies.create") ? () => setModal({ mode: "create" }) : undefined}
+          onAdd={isPlatformAdmin ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(p) => setModal({ mode: "detail", pharmacy: p })}
           onEdit={can("pharmacies.update") ? (p) => setModal({ mode: "edit", pharmacy: p }) : undefined}
-          onDelete={can("pharmacies.delete") ? (p) => setModal({ mode: "delete", pharmacy: p }) : undefined}
+          onDelete={isPlatformAdmin ? (p) => setModal({ mode: "delete", pharmacy: p }) : undefined}
         />
       </Card>
 
@@ -124,7 +128,7 @@ export default function PharmaciesPage(): JSX.Element {
           t={t}
           onClose={closeModal}
           onEdit={can("pharmacies.update") ? () => setModal({ mode: "edit", pharmacy: modal.pharmacy }) : undefined}
-          onDelete={can("pharmacies.delete") ? () => setModal({ mode: "delete", pharmacy: modal.pharmacy }) : undefined}
+          onDelete={isPlatformAdmin ? () => setModal({ mode: "delete", pharmacy: modal.pharmacy }) : undefined}
         />
       )}
 

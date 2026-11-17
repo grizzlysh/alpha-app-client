@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 import { useMemo, useRef } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,10 +37,9 @@ function makeSchema(t: Translations, isEdit: boolean) {
     code: z
       .string()
       .trim()
+      .min(1, t.pharmaCodeRequired)
       .max(5, t.pharmaCodeInvalid)
-      .regex(/^[a-zA-Z0-9]*$/, t.pharmaCodeInvalid)
-      .optional()
-      .or(z.literal("")),
+      .regex(/^[a-zA-Z0-9]*$/, t.pharmaCodeInvalid),
     category: z.enum(
       ["APOTEK", "KLINIK", "RUMAH_SAKIT", "PUSKESMAS"] as const,
       { required_error: t.pharmaCategoryRequired }
@@ -46,7 +47,7 @@ function makeSchema(t: Translations, isEdit: boolean) {
     phone: z.string().trim().min(1, t.pharmaPhoneRequired).max(20),
     address: z.string().trim().min(1, t.pharmaAddressRequired).max(500),
     location: z.string().trim().min(1, t.pharmaLocationRequired).max(200),
-    email: z.string().trim().max(200).optional().or(z.literal("")),
+    email: z.string().trim().email(t.pharmaEmailInvalid).max(200).optional().or(z.literal("")),
   });
   if (!isEdit) return base;
   return base.extend({
@@ -56,7 +57,7 @@ function makeSchema(t: Translations, isEdit: boolean) {
 
 interface FormValues {
   name: string;
-  code?: string;
+  code: string;
   category: PharmacyCategory;
   phone: string;
   address: string;
@@ -81,6 +82,8 @@ export function PharmacyFormModal({
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const isEdit = mode === "edit";
+  // Only a platform admin may change the code (it is part of every document number).
+  const canEditCode = useSelector((state: RootState) => state.auth.user?.platformRole === "PLATFORM_ADMIN") || !isEdit;
   const schema = useMemo(() => makeSchema(t, isEdit), [t, isEdit]);
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
@@ -129,7 +132,7 @@ export function PharmacyFormModal({
 
   function onSubmit(values: FormValues): void {
     const email = values.email?.trim() || undefined;
-    const code = values.code?.trim() || undefined;
+    const code = values.code.trim().toUpperCase();
 
     if (!isEdit) {
       createMutation.mutate({
@@ -144,12 +147,13 @@ export function PharmacyFormModal({
     } else if (pharmacy) {
       const payload: UpdatePharmacyPayload = {};
       if (values.name !== pharmacy.name) payload.name = values.name;
-      if (code !== (pharmacy.code ?? undefined)) payload.code = code;
+      if (code !== pharmacy.code) payload.code = code;
       if (values.category !== pharmacy.category) payload.category = values.category;
       if (values.phone !== pharmacy.phone) payload.phone = values.phone;
       if (values.address !== pharmacy.address) payload.address = values.address;
       if (values.location !== pharmacy.location) payload.location = values.location;
-      if (email !== (pharmacy.email ?? undefined)) payload.email = email;
+      // Emptying the field clears the email.
+      if ((email ?? null) !== (pharmacy.email ?? null)) payload.email = email ?? null;
       if (values.status && values.status !== pharmacy.status) payload.status = values.status;
       updateMutation.mutate({ uuid: pharmacy.uuid, payload });
     }
@@ -216,6 +220,7 @@ export function PharmacyFormModal({
                       placeholder={t.pharmaCodePlaceholder}
                       maxLength={5}
                       {...field}
+                      disabled={!canEditCode}
                       onChange={(e) => {
                         const sanitized = e.target.value
                           .replace(/[^a-zA-Z0-9]/g, "")

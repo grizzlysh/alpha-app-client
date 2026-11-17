@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Download, Loader2, Plus, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,6 +25,10 @@ import { MedicineDeleteModal } from "@/components/medicine/MedicineDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Medicine } from "@/types/medicine";
 import { toTitleCase } from "@/utils/stringHelpers";
+import { exportCatalog } from "@/service/catalogService";
+import { getApiErrorMessage } from "@/utils/apiError";
+import { CatalogImportModal } from "@/components/medicine/CatalogImportModal";
+import { downloadCatalog } from "@/components/medicine/catalogFile";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,18 +37,32 @@ type ModalState =
   | { mode: "edit"; medicine: Medicine }
   | { mode: "delete"; medicine: Medicine }
   | { mode: "detail"; medicine: Medicine }
+  | { mode: "import" }
   | null;
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MedicinesPage(): JSX.Element {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport(): Promise<void> {
+    setExporting(true);
+    try {
+      const res = await exportCatalog();
+      if (res.data) downloadCatalog(res.data);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, language, t.unexpectedError));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   // ── Filter state ─────────────────────────────────────────────────────────────
   const [filterShape, setFilterShape] = useState("all");
@@ -220,6 +238,29 @@ export default function MedicinesPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            {/* Export / import the list, e.g. to set up another branch */}
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={exporting}
+              className="shrink-0 gap-2 rounded-xl"
+              title={t.catalogExportHint}
+            >
+              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              <span className="hidden md:inline">{t.catalogExport}</span>
+            </Button>
+            {can("medicines.create") && (
+              <Button
+                variant="outline"
+                onClick={() => setModal({ mode: "import" })}
+                className="shrink-0 gap-2 rounded-xl"
+                title={t.catalogImportDesc}
+              >
+                <Upload className="h-4 w-4" />
+                <span className="hidden md:inline">{t.catalogImport}</span>
+              </Button>
+            )}
+
             {/* Add button */}
             {can("medicines.create") && (
             <Button
@@ -276,6 +317,8 @@ export default function MedicinesPage(): JSX.Element {
           onSuccess={handleSuccess}
         />
       )}
+
+      {modal?.mode === "import" && <CatalogImportModal onClose={closeModal} />}
 
       {/* Delete confirm */}
       {modal?.mode === "delete" && (

@@ -180,15 +180,23 @@ interface Step1FormProps {
   t: Translations;
   defaultValues: Step1Values;
   pharmacies: { uuid: string; name: string; code: string }[];
-  roles: RoleDdlItem[];
   onCancel: () => void;
   onNext: (values: Step1Values, requiresLicense: boolean) => void;
 }
 
-function Step1Form({ t, defaultValues, pharmacies, roles, onCancel, onNext }: Step1FormProps): JSX.Element {
+function Step1Form({ t, defaultValues, pharmacies, onCancel, onNext }: Step1FormProps): JSX.Element {
   const schema = useMemo(() => makeStep1Schema(t), [t]);
   const form = useForm<Step1Values>({ resolver: zodResolver(schema), defaultValues });
   const err = (k: keyof Step1Values) => form.formState.errors[k]?.message;
+
+  // Roles depend on the pharmacy: the global ones plus that pharmacy's own.
+  const pharmacyUuid = form.watch("pharmacyUuid");
+  const { data: rolesData } = useQuery({
+    queryKey: ["roles-ddl", pharmacyUuid],
+    queryFn: () => getRolesDdl(pharmacyUuid),
+    enabled: !!pharmacyUuid,
+  });
+  const roles: RoleDdlItem[] = rolesData?.data ?? [];
 
   const watchedRole = roles.find((r) => r.uuid === form.watch("roleUuid"));
   const headForced = watchedRole?.type === "HEAD_PHARMACIST";
@@ -441,12 +449,7 @@ function PlacementCreateWizard({ userUuid, onClose, onSuccess }: PlacementCreate
     queryKey: ["pharmacies-ddl"],
     queryFn: () => getPharmaciesDdl(),
   });
-  const { data: rolesData } = useQuery({
-    queryKey: ["roles-ddl"],
-    queryFn: () => getRolesDdl(),
-  });
   const pharmacies = pharmaciesData?.data ?? [];
-  const roles: RoleDdlItem[] = rolesData?.data ?? [];
 
   const createMutation = useMutation({
     mutationFn: (payload: CreatePlacementPayload) => createPlacement(userUuid, payload),
@@ -511,7 +514,6 @@ function PlacementCreateWizard({ userUuid, onClose, onSuccess }: PlacementCreate
             t={t}
             defaultValues={step1Data}
             pharmacies={pharmacies}
-            roles={roles}
             onCancel={onClose}
             onNext={handleStep1}
           />
@@ -571,8 +573,8 @@ function PlacementEditForm({ userUuid, placement, onClose, onSuccess }: Placemen
   onSuccessRef.current = onSuccess;
 
   const { data: rolesData } = useQuery({
-    queryKey: ["roles-ddl"],
-    queryFn: () => getRolesDdl(),
+    queryKey: ["roles-ddl", placement.pharmacy.uuid],
+    queryFn: () => getRolesDdl(placement.pharmacy.uuid),
   });
   const roles: RoleDdlItem[] = rolesData?.data ?? [];
 

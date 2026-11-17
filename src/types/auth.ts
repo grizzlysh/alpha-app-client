@@ -21,6 +21,8 @@ export interface LoginUserData {
   name: string;
   email: string;
   platformRole: PlatformRole | null;
+  /** Signed in with a temporary password — must set a new one before working. */
+  mustChangePassword?: boolean;
   accessiblePharmacies: PharmacyItem[];
 }
 

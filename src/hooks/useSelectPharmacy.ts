@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import { isAxiosError } from "axios";
 import { getApiErrorMessage } from "@/utils/apiError";
 
 import { selectPharmacy } from "@/service/authService";
@@ -58,6 +59,8 @@ export function useSelectPharmacy(): UseSelectPharmacyReturn {
     onError: (error) => {
       toast.error(getApiErrorMessage(error, language, FALLBACK_ERROR[language]));
       setSelectingUuid(null);
+      // Password was reset while signed in: sign out so the login page can ask for a new one.
+      if (isAxiosError(error) && error.response?.data?.code === "PASSWORD_CHANGE_REQUIRED") signOut();
     },
   });
 

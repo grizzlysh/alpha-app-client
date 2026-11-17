@@ -2089,6 +2089,89 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  pharmaNoOwner: string;
+  navPharmacyProfile: string;
+  setupTitle: string;
+  setupProgress: string;
+  setupHide: string;
+  setupLicense: string;
+  setupHeadPharmacist: string;
+  setupStaff: string;
+  setupMedicines: string;
+  setupDistributors: string;
+  setupStorage: string;
+  setupStock: string;
+  catalogExport: string;
+  catalogExportHint: string;
+  catalogImport: string;
+  catalogImportTitle: string;
+  catalogImportDesc: string;
+  catalogPickFile: string;
+  catalogPickFileHint: string;
+  catalogFileEmpty: string;
+  catalogFileUnreadable: string;
+  catalogWillAddMedicines: string;
+  catalogWillAddClassifications: string;
+  catalogDoneMedicines: string;
+  catalogDoneClassifications: string;
+  catalogSkippedExisting: string;
+  catalogInvalidRows: string;
+  catalogRow: string;
+  catalogReasonName: string;
+  catalogReasonUnit: string;
+  catalogReasonShape: string;
+  catalogReasonType: string;
+  catalogReasonClass: string;
+  catalogReasonDuplicate: string;
+  catalogNoStockNote: string;
+  catalogImportBtn: string;
+  catalogImported: string;
+  userPickPharmacyFirst: string;
+  forcePwTitle: string;
+  forcePwDesc: string;
+  forcePwSubmit: string;
+  forcePwBack: string;
+  pharmaCodeRequired: string;
+  pharmaEmailInvalid: string;
+  onbCodeHint: string;
+  onbLicenseHint: string;
+  onbLicenseLater: string;
+  onbStepOwner: string;
+  onbOwnerTitle: string;
+  onbOwnerDesc: string;
+  onbOwnerNew: string;
+  onbOwnerNewDesc: string;
+  onbOwnerExisting: string;
+  onbOwnerExistingDesc: string;
+  onbOwnerLater: string;
+  onbOwnerLaterDesc: string;
+  onbOwnerLaterWarn: string;
+  onbOwnerName: string;
+  onbOwnerNameRequired: string;
+  onbOwnerEmail: string;
+  onbOwnerPhone: string;
+  onbSearchUser: string;
+  onbNoUserFound: string;
+  onbPickUser: string;
+  onbChange: string;
+  onbPharmacyCount: string;
+  onbStartTitle: string;
+  onbStartDesc: string;
+  onbStartTemplate: string;
+  onbStartTemplateDesc: string;
+  onbStartCopy: string;
+  onbStartCopyDesc: string;
+  onbPickPharmacy: string;
+  onbCreate: string;
+  onbDoneTitle: string;
+  onbTempPasswordDesc: string;
+  onbExistingOwnerDesc: string;
+  onbCopiedSummary: string;
+  onbNextTitle: string;
+  onbNext1: string;
+  onbNext2: string;
+  onbNext3: string;
+  onbNext4: string;
   purchaseHistoryTitle: string;
   purchaseHistoryShort: string;
   purchaseTab: string;
@@ -4204,6 +4287,89 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    pharmaNoOwner: "No owner yet",
+    navPharmacyProfile: "Pharmacy profile",
+    setupTitle: "Finish setting up this pharmacy",
+    setupProgress: "{done} of {total} done",
+    setupHide: "Hide",
+    setupLicense: "Add the business license (SIA)",
+    setupHeadPharmacist: "Appoint the Head Pharmacist",
+    setupStaff: "Add staff accounts",
+    setupMedicines: "Add medicines (or import from a branch)",
+    setupDistributors: "Add distributors",
+    setupStorage: "Set up storage cabinets",
+    setupStock: "Receive the first stock (invoice)",
+    catalogExport: "Export",
+    catalogExportHint: "Download the medicine list and classifications as Excel — import it at another branch",
+    catalogImport: "Import",
+    catalogImportTitle: "Import medicine list",
+    catalogImportDesc: "From an Excel file exported at another branch. Only medicines and classifications not here yet are added.",
+    catalogPickFile: "Choose an Excel file",
+    catalogPickFileHint: "Sheet \"Obat\": Nama, Satuan, Bentuk, Golongan, Kelas, Komposisi",
+    catalogFileEmpty: "No medicines found in this file",
+    catalogFileUnreadable: "This file can't be read. Use the .xlsx from Export.",
+    catalogWillAddMedicines: "{n} medicines will be added",
+    catalogWillAddClassifications: "{n} new classifications",
+    catalogDoneMedicines: "{n} medicines added",
+    catalogDoneClassifications: "{n} classifications added",
+    catalogSkippedExisting: "{n} already here (skipped)",
+    catalogInvalidRows: "{n} rows skipped",
+    catalogRow: "Row {n}",
+    catalogReasonName: "no name",
+    catalogReasonUnit: "no unit",
+    catalogReasonShape: "no shape",
+    catalogReasonType: "no type",
+    catalogReasonClass: "no class",
+    catalogReasonDuplicate: "duplicate in file",
+    catalogNoStockNote: "Stock, prices and batches are not imported.",
+    catalogImportBtn: "Import",
+    catalogImported: "Medicine list imported",
+    userPickPharmacyFirst: "Choose a pharmacy first",
+    forcePwTitle: "Set your own password",
+    forcePwDesc: "{email} is using a temporary password. Replace it to continue.",
+    forcePwSubmit: "Save and sign in",
+    forcePwBack: "Back to sign in",
+    pharmaCodeRequired: "Code is required",
+    pharmaEmailInvalid: "Invalid email address",
+    onbCodeHint: "Up to 5 letters/digits. Appears on every document number (e.g. INV-APK1-…) and can't be reused.",
+    onbLicenseHint: "The pharmacy's operating license (SIA). You can add it later from the pharmacy detail.",
+    onbLicenseLater: "Add later",
+    onbStepOwner: "Owner & data",
+    onbOwnerTitle: "Owner",
+    onbOwnerDesc: "The owner signs in, appoints the Head Pharmacist and adds the staff.",
+    onbOwnerNew: "New account",
+    onbOwnerNewDesc: "Create the owner's login",
+    onbOwnerExisting: "Existing user",
+    onbOwnerExistingDesc: "e.g. an owner opening another branch",
+    onbOwnerLater: "Later",
+    onbOwnerLaterDesc: "Assign from the Users page",
+    onbOwnerLaterWarn: "Nobody can sign in to this pharmacy until it has an owner. Add one from Users → Placement.",
+    onbOwnerName: "Owner name",
+    onbOwnerNameRequired: "Owner name is required",
+    onbOwnerEmail: "Login email",
+    onbOwnerPhone: "Phone",
+    onbSearchUser: "Search name or email…",
+    onbNoUserFound: "No user found. Choose \"New account\" instead.",
+    onbPickUser: "Choose a user",
+    onbChange: "Change",
+    onbPharmacyCount: "{n} pharmacy(ies)",
+    onbStartTitle: "Starting data",
+    onbStartDesc: "Medicine shapes, types and classes, plus business parameters. Each pharmacy keeps its own copy.",
+    onbStartTemplate: "Standard template",
+    onbStartTemplateDesc: "Common classifications, no medicines yet",
+    onbStartCopy: "Copy from a branch",
+    onbStartCopyDesc: "Medicines, classifications and parameters. Stock and prices are not copied.",
+    onbPickPharmacy: "Choose the source pharmacy",
+    onbCreate: "Create pharmacy",
+    onbDoneTitle: "{name} ({code}) is ready.",
+    onbTempPasswordDesc: "Temporary password — shown only once. Send it to the owner; they must replace it at first sign-in.",
+    onbExistingOwnerDesc: "They can sign in with their current password and will see this pharmacy in their list.",
+    onbCopiedSummary: "Copied {medicines} medicines and {classes} classifications.",
+    onbNextTitle: "Next, the owner:",
+    onbNext1: "Signs in and replaces the temporary password",
+    onbNext2: "Adds the business license (SIA)",
+    onbNext3: "Appoints the Head Pharmacist and adds staff — other staff can't enter until there is one",
+    onbNext4: "Checks business parameters, then adds medicines (or imports them) and distributors",
     purchaseHistoryTitle: "Purchase history",
     purchaseHistoryShort: "History",
     purchaseTab: "Purchases",
@@ -6315,6 +6481,89 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    pharmaNoOwner: "Belum ada pemilik",
+    navPharmacyProfile: "Profil apotek",
+    setupTitle: "Lengkapi pengaturan apotek",
+    setupProgress: "{done} dari {total} selesai",
+    setupHide: "Sembunyikan",
+    setupLicense: "Tambahkan izin usaha (SIA)",
+    setupHeadPharmacist: "Tunjuk Apoteker Penanggung Jawab",
+    setupStaff: "Tambahkan akun staf",
+    setupMedicines: "Tambahkan obat (atau impor dari cabang)",
+    setupDistributors: "Tambahkan distributor",
+    setupStorage: "Atur lemari penyimpanan",
+    setupStock: "Terima stok pertama (faktur)",
+    catalogExport: "Ekspor",
+    catalogExportHint: "Unduh daftar obat & klasifikasi (Excel) — bisa diimpor di cabang lain",
+    catalogImport: "Impor",
+    catalogImportTitle: "Impor daftar obat",
+    catalogImportDesc: "Dari file Excel hasil ekspor cabang lain. Hanya obat & klasifikasi yang belum ada yang ditambahkan.",
+    catalogPickFile: "Pilih file Excel",
+    catalogPickFileHint: "Sheet \"Obat\": Nama, Satuan, Bentuk, Golongan, Kelas, Komposisi",
+    catalogFileEmpty: "Tidak ada data obat di file ini",
+    catalogFileUnreadable: "File tidak bisa dibaca. Gunakan file .xlsx hasil Ekspor.",
+    catalogWillAddMedicines: "{n} obat akan ditambahkan",
+    catalogWillAddClassifications: "{n} klasifikasi baru",
+    catalogDoneMedicines: "{n} obat ditambahkan",
+    catalogDoneClassifications: "{n} klasifikasi ditambahkan",
+    catalogSkippedExisting: "{n} sudah ada (dilewati)",
+    catalogInvalidRows: "{n} baris dilewati",
+    catalogRow: "Baris {n}",
+    catalogReasonName: "nama kosong",
+    catalogReasonUnit: "satuan kosong",
+    catalogReasonShape: "bentuk kosong",
+    catalogReasonType: "golongan kosong",
+    catalogReasonClass: "kelas kosong",
+    catalogReasonDuplicate: "dobel di file",
+    catalogNoStockNote: "Stok, harga, dan batch tidak ikut diimpor.",
+    catalogImportBtn: "Impor sekarang",
+    catalogImported: "Daftar obat berhasil diimpor",
+    userPickPharmacyFirst: "Pilih apotek dulu",
+    forcePwTitle: "Buat kata sandi Anda sendiri",
+    forcePwDesc: "{email} masih memakai kata sandi sementara. Ganti dulu untuk melanjutkan.",
+    forcePwSubmit: "Simpan & masuk",
+    forcePwBack: "Kembali ke halaman masuk",
+    pharmaCodeRequired: "Kode wajib diisi",
+    pharmaEmailInvalid: "Alamat email tidak valid",
+    onbCodeHint: "Maks. 5 huruf/angka. Dipakai di setiap nomor dokumen (mis. INV-APK1-…) dan tidak bisa dipakai ulang.",
+    onbLicenseHint: "Izin operasional apotek (SIA). Bisa juga ditambahkan nanti dari detail apotek.",
+    onbLicenseLater: "Isi nanti",
+    onbStepOwner: "Pemilik & data",
+    onbOwnerTitle: "Pemilik",
+    onbOwnerDesc: "Pemilik yang akan masuk, menunjuk Apoteker Penanggung Jawab, dan menambahkan staf.",
+    onbOwnerNew: "Akun baru",
+    onbOwnerNewDesc: "Buat akun login pemilik",
+    onbOwnerExisting: "Pengguna terdaftar",
+    onbOwnerExistingDesc: "mis. pemilik yang membuka cabang baru",
+    onbOwnerLater: "Nanti",
+    onbOwnerLaterDesc: "Atur dari menu Pengguna",
+    onbOwnerLaterWarn: "Belum ada yang bisa masuk ke apotek ini sampai pemiliknya ditambahkan. Tambahkan dari Pengguna → Penempatan.",
+    onbOwnerName: "Nama pemilik",
+    onbOwnerNameRequired: "Nama pemilik wajib diisi",
+    onbOwnerEmail: "Email login",
+    onbOwnerPhone: "No. telepon",
+    onbSearchUser: "Cari nama atau email…",
+    onbNoUserFound: "Pengguna tidak ditemukan. Pilih \"Akun baru\" saja.",
+    onbPickUser: "Pilih pengguna",
+    onbChange: "Ganti",
+    onbPharmacyCount: "{n} apotek",
+    onbStartTitle: "Data awal",
+    onbStartDesc: "Bentuk, golongan, dan kelas obat, serta parameter bisnis. Setiap apotek punya salinannya sendiri.",
+    onbStartTemplate: "Template standar",
+    onbStartTemplateDesc: "Klasifikasi umum, belum ada daftar obat",
+    onbStartCopy: "Salin dari cabang",
+    onbStartCopyDesc: "Daftar obat, klasifikasi, dan parameter. Stok & harga tidak ikut.",
+    onbPickPharmacy: "Pilih apotek sumber",
+    onbCreate: "Buat apotek",
+    onbDoneTitle: "{name} ({code}) sudah dibuat.",
+    onbTempPasswordDesc: "Kata sandi sementara — hanya ditampilkan sekali. Kirimkan ke pemilik; wajib diganti saat pertama masuk.",
+    onbExistingOwnerDesc: "Pemilik masuk dengan kata sandinya sekarang dan apotek ini langsung muncul di daftarnya.",
+    onbCopiedSummary: "Tersalin {medicines} obat dan {classes} klasifikasi.",
+    onbNextTitle: "Langkah berikutnya untuk pemilik:",
+    onbNext1: "Masuk dan mengganti kata sandi sementara",
+    onbNext2: "Menambahkan izin usaha (SIA)",
+    onbNext3: "Menunjuk Apoteker Penanggung Jawab dan menambah staf — staf lain belum bisa masuk sebelum ada",
+    onbNext4: "Mengecek parameter bisnis, lalu menambah obat (atau impor) dan distributor",
     purchaseHistoryTitle: "Riwayat pembelian",
     purchaseHistoryShort: "Riwayat",
     purchaseTab: "Pembelian",

@@ -3,8 +3,9 @@
 export interface MedicineShape {
   uuid: string;
   name: string;
-  isGlobal: boolean;
   status: "ACTIVE" | "INACTIVE";
+  /** Medicines using it; it can only be deleted at 0. */
+  medicineCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -13,8 +14,9 @@ export interface MedicineType {
   uuid: string;
   name: string;
   requiredPrescription: boolean;
-  isGlobal: boolean;
   status: "ACTIVE" | "INACTIVE";
+  /** Medicines using it; it can only be deleted at 0. */
+  medicineCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -23,14 +25,14 @@ export interface MedicineTypeDropdownItem {
   uuid: string;
   name: string;
   requiredPrescription: boolean;
-  isGlobal: boolean;
 }
 
 export interface MedicineClass {
   uuid: string;
   name: string;
-  isGlobal: boolean;
   status: "ACTIVE" | "INACTIVE";
+  /** Medicines using it; it can only be deleted at 0. */
+  medicineCount: number;
   createdAt: string;
   updatedAt: string;
 }

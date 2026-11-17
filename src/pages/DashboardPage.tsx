@@ -25,6 +25,7 @@ import { DashboardRevenueAndProfitCard } from "@/components/dashboard/DashboardR
 import { DashboardPurchaseSpendCard } from "@/components/dashboard/DashboardPurchaseSpendCard";
 import { DashboardPaymentScheduleCard } from "@/components/dashboard/DashboardPaymentScheduleCard";
 import { DashboardCreditSalesCard } from "@/components/dashboard/DashboardCreditSalesCard";
+import { DashboardSetupChecklist } from "@/components/dashboard/DashboardSetupChecklist";
 
 const MANAGEMENT_ROLES = new Set(["OWNER", "ADMIN", "HEAD_PHARMACIST"]);
 
@@ -34,6 +35,7 @@ export default function DashboardPage(): JSX.Element {
 
   const currentPharmacy = useSelector((state: RootState) => state.auth.currentPharmacy);
   const isManagement = MANAGEMENT_ROLES.has(currentPharmacy?.role?.type ?? "");
+  const isSetupRole = currentPharmacy?.role?.type === "OWNER" || currentPharmacy?.role?.type === "ADMIN";
   const [rangeDays, setRangeDays] = useState<7 | 14 | 30>(7);
 
   const dashboardQuery = useQuery({
@@ -65,6 +67,9 @@ export default function DashboardPage(): JSX.Element {
         </h2>
         <p className="mt-0.5 text-sm text-muted-foreground">{t.dashboardSubtitle}</p>
       </div>
+
+      {/* Onboarding: what this pharmacy still has to set up (owner/admin) */}
+      {isSetupRole && currentPharmacy && <DashboardSetupChecklist pharmacyUuid={currentPharmacy.uuid} />}
 
       {/* Row 1: KPI Cards (4) — all roles */}
       <DashboardKpiCards

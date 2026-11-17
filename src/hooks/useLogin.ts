@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
@@ -8,7 +8,8 @@ import { getApiErrorMessage } from "@/utils/apiError";
 import { login, selectPharmacy } from "@/service/authService";
 import { setLoginCredentials, setFullAuth } from "@/store/authSlice";
 import { useLanguage } from "@/hooks/useLanguage";
-import { storeToken } from "@/utils/tokenStore";
+import { clearToken, storeToken } from "@/utils/tokenStore";
+import { changePassword } from "@/service/meService";
 import type { AppDispatch } from "@/store";
 import type { BilingualMessage } from "@/types/api";
 
@@ -20,6 +21,10 @@ const FALLBACK_ERROR: BilingualMessage = {
 interface UseLoginReturn {
   submit: (email: string, password: string) => void;
   isPending: boolean;
+  /** Set when the account signed in with a temporary password that must be replaced first. */
+  passwordChangeFor: string | null;
+  completePasswordChange: (newPassword: string) => Promise<void>;
+  cancelPasswordChange: () => void;
 }
 
 export function useLogin(): UseLoginReturn {
@@ -27,6 +32,9 @@ export function useLogin(): UseLoginReturn {
   const dispatch = useDispatch<AppDispatch>();
   const { language, t } = useLanguage();
   const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+  const lastPasswordRef = useRef("");
+  const [pendingChange, setPendingChange] = useState<{ email: string; password: string } | null>(null);
+  const [isChanging, setIsChanging] = useState(false);
 
   const mutation = useMutation({
     mutationFn: login,
@@ -37,6 +45,14 @@ export function useLogin(): UseLoginReturn {
       }
 
       const { user, currentPharmacy, accessToken } = response.data;
+
+      // Temporary password: replace it before entering. The token stays in memory
+      // only (no Redux login yet) so the guards don't route anywhere meanwhile.
+      if (user.mustChangePassword) {
+        storeToken(accessToken);
+        setPendingChange({ email: user.email, password: lastPasswordRef.current });
+        return;
+      }
       const pharmacies = user.accessiblePharmacies;
       const isPlatformUser = user.platformRole !== null;
       const isOwner = pharmacies.some((p) => p.role?.type === "OWNER");
@@ -86,11 +102,36 @@ export function useLogin(): UseLoginReturn {
   });
 
   function submit(email: string, password: string): void {
+    lastPasswordRef.current = password;
     mutation.mutate({ email, password });
+  }
+
+  async function completePasswordChange(newPassword: string): Promise<void> {
+    if (!pendingChange) return;
+    setIsChanging(true);
+    try {
+      await changePassword({ currentPassword: pendingChange.password, newPassword });
+      // Changing the password ends every session, so sign in again with the new one.
+      const email = pendingChange.email;
+      setPendingChange(null);
+      submit(email, newPassword);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, language, FALLBACK_ERROR[language]));
+    } finally {
+      setIsChanging(false);
+    }
+  }
+
+  function cancelPasswordChange(): void {
+    clearToken();
+    setPendingChange(null);
   }
 
   return {
     submit,
-    isPending: mutation.isPending || isAutoSelecting,
+    isPending: mutation.isPending || isAutoSelecting || isChanging,
+    passwordChangeFor: pendingChange?.email ?? null,
+    completePasswordChange,
+    cancelPasswordChange,
   };
 }

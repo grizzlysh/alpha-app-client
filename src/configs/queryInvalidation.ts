@@ -39,7 +39,8 @@ const PRESCRIPTIONS = ["prescriptions", "prescription", "prescriptions-queue"];
 // API mount point (first path segment) → query key roots that depend on it.
 const DEPENDENCIES: Record<string, string[]> = {
   users: ["users", "user", "users-dropdown", "users-all", "user-placements", "licenses", "doctors", "doctors-dropdown", "me"],
-  pharmacies: ["pharmacies", "pharmacy", "pharmacies-ddl", "pharmacy-detail", "pharmacy-biz-licenses", "me"],
+  // Creating a pharmacy can also create its owner's account.
+  pharmacies: ["pharmacies", "pharmacy", "pharmacies-ddl", "pharmacy-detail", "pharmacy-biz-licenses", "pharmacy-setup", "me", "users"],
   roles: ["roles", "role", "roles-ddl", "users", "user-placements"],
   permissions: ["permissions-all", "roles", "role"],
   "system-parameters": ["system-parameters"],
@@ -50,6 +51,12 @@ const DEPENDENCIES: Record<string, string[]> = {
   "medicine-shapes": ["medicine-shapes-dropdown", "medicines", "medicines-dropdown"],
   "medicine-types": ["medicine-types-dropdown", "medicines", "medicines-dropdown", "stock-catalog"],
   "medicine-classes": ["medicine-classes-dropdown", "medicines", "medicines-dropdown"],
+  // Import adds medicines and any missing classifications.
+  catalog: [
+    "medicines", "medicines-dropdown", "pharmacy-setup",
+    "medicine-shapes", "medicine-shapes-dropdown", "medicine-types", "medicine-types-dropdown",
+    "medicine-classes", "medicine-classes-dropdown", "stock-catalog",
+  ],
   "purchase-orders": ["purchase-orders", "purchase-orders-dropdown", "purchase-order-print"],
   invoices: [
     "invoices", "invoice", "invoice-payment", "invoices-search-for-return", "invoice-for-return",
