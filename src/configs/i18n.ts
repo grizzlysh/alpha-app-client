@@ -178,6 +178,16 @@ export interface Translations {
   navSettings: string;
   searchPlaceholder: string;
   notifications: string;
+  notificationsEmpty: string;
+  notificationsEmptyDesc: string;
+  notificationsMarkAllRead: string;
+  notificationsLoadError: string;
+  notificationExpiringBatches: string;
+  notificationExpiredBatches: string;
+  notificationLowStock: string;
+  notificationOverduePayables: string;
+  notificationOverdueReceivables: string;
+  notificationLicenseExpiring: string;
   sidebarCollapse: string;
   sidebarExpand: string;
   branchSingular: string;
@@ -2465,6 +2475,16 @@ export const translations: Record<Language, Translations> = {
     navSettings: "Settings",
     searchPlaceholder: "Search...",
     notifications: "Notifications",
+    notificationsEmpty: "You're all caught up",
+    notificationsEmptyDesc: "Daily alerts about stock, payments and licenses appear here.",
+    notificationsMarkAllRead: "Mark all as read",
+    notificationsLoadError: "Couldn't load notifications",
+    notificationExpiringBatches: "{n} batch(es) expire within {days} days",
+    notificationExpiredBatches: "{n} expired batch(es) still in stock",
+    notificationLowStock: "{n} medicine(s) at or below reorder level",
+    notificationOverduePayables: "{n} supplier invoice(s) overdue · {amount}",
+    notificationOverdueReceivables: "{n} customer credit sale(s) overdue · {amount}",
+    notificationLicenseExpiring: "{n} license(s) expire within {days} days or have expired",
     sidebarCollapse: "Collapse sidebar",
     sidebarExpand: "Expand sidebar",
     branchSingular: "branch",
@@ -4708,6 +4728,16 @@ export const translations: Record<Language, Translations> = {
     navSettings: "Pengaturan",
     searchPlaceholder: "Cari...",
     notifications: "Notifikasi",
+    notificationsEmpty: "Tidak ada notifikasi baru",
+    notificationsEmptyDesc: "Peringatan harian soal stok, pembayaran dan izin akan muncul di sini.",
+    notificationsMarkAllRead: "Tandai semua dibaca",
+    notificationsLoadError: "Gagal memuat notifikasi",
+    notificationExpiringBatches: "{n} batch akan kedaluwarsa dalam {days} hari",
+    notificationExpiredBatches: "{n} batch kedaluwarsa masih ada di stok",
+    notificationLowStock: "{n} obat berada di bawah batas pemesanan ulang",
+    notificationOverduePayables: "{n} faktur distributor lewat jatuh tempo · {amount}",
+    notificationOverdueReceivables: "{n} penjualan kredit pelanggan lewat jatuh tempo · {amount}",
+    notificationLicenseExpiring: "{n} izin akan habis dalam {days} hari atau sudah habis",
     sidebarCollapse: "Ciutkan sidebar",
     sidebarExpand: "Perluas sidebar",
     branchSingular: "cabang",

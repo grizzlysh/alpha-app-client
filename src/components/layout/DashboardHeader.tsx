@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, Moon, Sun, Languages, Menu, WifiOff } from "lucide-react";
+import { Search, Moon, Sun, Languages, Menu, WifiOff } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { cn } from "@/utils/cn";
@@ -11,6 +11,7 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { useLogout } from "@/hooks/useLogout";
 import { toggleMobileSidebar } from "@/store/uiSlice";
 import { UserMenu } from "@/components/shared/UserMenu";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 import type { AppDispatch, RootState } from "@/store";
 
 function formatHeaderDate(date: Date, language: string): string {
@@ -170,18 +171,7 @@ export function DashboardHeader({ pageTitle }: DashboardHeaderProps): JSX.Elemen
         <div className="h-4 w-px bg-border" />
 
         {/* Notification bell */}
-        <button
-          type="button"
-          aria-label={t.notifications}
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-xl",
-            "text-muted-foreground transition-all duration-150",
-            "hover:bg-accent hover:text-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-          )}
-        >
-          <Bell className="h-4 w-4" />
-        </button>
+        <NotificationBell />
 
         <div className="h-4 w-px bg-border" />
 
