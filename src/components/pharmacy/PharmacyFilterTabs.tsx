@@ -22,7 +22,7 @@ export function PharmacyFilterTabs({
   onChange,
 }: PharmacyFilterTabsProps): JSX.Element {
   return (
-    <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card p-1 shadow-sm">
+    <div className="flex max-w-full items-center gap-1.5 overflow-x-auto rounded-xl border border-border bg-card p-1 shadow-sm">
       {tabs.map((tab) => (
         <button
           key={tab.key}

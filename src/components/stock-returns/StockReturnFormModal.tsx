@@ -801,7 +801,7 @@ export function StockReturnFormModal({
       }}
     >
       <DialogContent
-        className="flex h-[90vh] max-w-5xl flex-col gap-0 p-0"
+        className="flex h-[calc(100dvh-1.5rem)] sm:h-[90vh] max-w-5xl flex-col gap-0 p-0"
         onInteractOutside={(e) => {
           if (isPending) e.preventDefault();
         }}
@@ -827,15 +827,15 @@ export function StockReturnFormModal({
           <form
             id="sr-create-form"
             onSubmit={handleCreateSubmit}
-            className="flex-1 min-h-0 overflow-hidden"
+            className="min-h-0 flex-1 overflow-y-auto md:overflow-hidden"
           >
-            <div className="grid h-full grid-cols-[1fr,320px]">
+            <div className="grid grid-cols-1 md:h-full md:grid-cols-[1fr,320px]">
 
               {/* Left — invoice + items */}
-              <div className="flex flex-col overflow-hidden border-r border-border">
+              <div className="flex flex-col border-b border-border md:overflow-hidden md:border-b-0 md:border-r">
 
                 {/* ── Invoice header (always visible) ── */}
-                <div className="shrink-0 space-y-1.5 border-b border-border px-6 py-4">
+                <div className="shrink-0 space-y-1.5 border-b border-border px-4 py-4 sm:px-6">
                   <Label>
                     {t.srInvoice}
                     <span className="ml-1 text-destructive">*</span>
@@ -911,7 +911,7 @@ export function StockReturnFormModal({
                 </div>
 
                 {/* ── Scrollable items body ── */}
-                <div className="flex-1 overflow-y-auto px-6 py-5">
+                <div className="px-4 py-5 sm:px-6 md:flex-1 md:overflow-y-auto">
                   {selectedInvoice ? (
                     <div className="space-y-3">
                       <p className="text-sm font-semibold text-foreground">
@@ -976,7 +976,7 @@ export function StockReturnFormModal({
                   }, 0);
                   if (total <= 0 && !itemsError) return null;
                   return (
-                    <div className="shrink-0 space-y-2 border-t border-border px-6 py-4">
+                    <div className="shrink-0 space-y-2 border-t border-border px-4 py-4 sm:px-6">
                       {total > 0 && (
                         <div className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5">
                           <span className="text-sm font-medium text-muted-foreground">
@@ -1004,7 +1004,7 @@ export function StockReturnFormModal({
               </div>
 
               {/* Right — signed by + notes */}
-              <div className="overflow-y-auto px-6 py-5">
+              <div className="px-4 py-5 sm:px-6 md:overflow-y-auto">
                 {rightPanel}
               </div>
             </div>
@@ -1016,12 +1016,12 @@ export function StockReturnFormModal({
           <form
             id="sr-edit-form"
             onSubmit={handleEditSubmit(onEditSubmit)}
-            className="flex-1 min-h-0 overflow-hidden"
+            className="min-h-0 flex-1 overflow-y-auto md:overflow-hidden"
           >
-            <div className="grid h-full grid-cols-[1fr,320px]">
+            <div className="grid grid-cols-1 md:h-full md:grid-cols-[1fr,320px]">
 
               {/* Left — items */}
-              <div className="overflow-y-auto border-r border-border px-6 py-5 space-y-3">
+              <div className="space-y-3 border-b border-border px-4 py-5 sm:px-6 md:overflow-y-auto md:border-b-0 md:border-r">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-foreground">
                     {t.srItemsSection}
@@ -1064,7 +1064,7 @@ export function StockReturnFormModal({
               </div>
 
               {/* Right — signed by + notes */}
-              <div className="overflow-y-auto px-6 py-5">
+              <div className="px-4 py-5 sm:px-6 md:overflow-y-auto">
                 {rightPanel}
               </div>
             </div>

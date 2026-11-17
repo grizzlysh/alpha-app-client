@@ -104,7 +104,7 @@ export function MedicalRecordEditModal({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="bloodType"
@@ -127,7 +127,7 @@ export function MedicalRecordEditModal({
             {/* Emergency contact: a plain section label, fields on the same grid as above */}
             <div className="space-y-3 pt-1">
               <FormSectionLabel>{t.medicalRecordEmergencyContact}</FormSectionLabel>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="emergencyContactName"

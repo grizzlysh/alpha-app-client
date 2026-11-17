@@ -229,3 +229,43 @@
     text-transform: var(--name-case, uppercase);
   }
 }
+
+/* List-page toolbar (filters · search · actions above a table).
+   Desktop: one row that scrolls sideways if it runs out of room.
+   Phone: wraps — search and action buttons on the first row, filters two per row. */
+@layer components {
+  .table-toolbar {
+    @apply flex flex-wrap items-center gap-2 px-4 py-3 sm:px-5 md:w-max md:min-w-full md:flex-nowrap;
+  }
+
+  @media (max-width: 767px) {
+    .table-toolbar > [data-slot="search"] {
+      order: -1;
+      flex: 1 1 9rem;
+      min-width: 0;
+    }
+
+    /* Breadcrumbs get a row of their own, above everything else. */
+    .table-toolbar > nav {
+      order: -2;
+      flex-basis: 100%;
+    }
+
+    /* Desktop-only spacers. */
+    .table-toolbar > div:empty {
+      display: none;
+    }
+
+    /* Action buttons (add / import / export) sit on the search row. */
+    .table-toolbar > button:not([role="combobox"]) {
+      order: -1;
+    }
+
+    .table-toolbar > [role="combobox"],
+    .table-toolbar > [data-slot="filter"] {
+      flex: 1 1 calc(50% - 0.25rem);
+      width: auto;
+      min-width: 0;
+    }
+  }
+}

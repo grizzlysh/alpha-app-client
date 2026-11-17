@@ -296,7 +296,7 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
 
         {/* ── 1. Waiting: triage + call in ── */}
         {isWaiting && (
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
             <TriagePanel exam={exam} canEdit={canTriage} />
             <div className="space-y-5">
               {canPerform && (
@@ -340,7 +340,7 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
               )}
             </section>
 
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <section className="space-y-4">
                 <FormSectionLabel>{t.examResultTitle}</FormSectionLabel>
                 {editable ? (

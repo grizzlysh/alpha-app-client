@@ -145,7 +145,7 @@ export function StockMovementReportTab(): JSX.Element {
         <div className="space-y-6">
           {/* Summary — always visible */}
           <ReportSection title={t.reportSummaryTitle}>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <StatCard label={t.reportSMTotalMovements} value={String(summary.totalMovements)} />
               <StatCard label={t.reportSMTotalIn} value={summary.totalInQty.toLocaleString("id-ID")} />
               <StatCard label={t.reportSMTotalOut} value={summary.totalOutQty.toLocaleString("id-ID")} />

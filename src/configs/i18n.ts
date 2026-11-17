@@ -1977,6 +1977,7 @@ export interface Translations {
   notFoundTitle: string;
   notFoundDesc: string;
   backToHome: string;
+  backToList: string;
   posQtyLabel: string;
   posAddBox: string;
   posBoxUnit: string;
@@ -4223,6 +4224,7 @@ export const translations: Record<Language, Translations> = {
     notFoundTitle: "Page not found",
     notFoundDesc: "The page you opened doesn't exist or has moved.",
     backToHome: "Back to home",
+    backToList: "Back",
     posQtyLabel: "Qty",
     posAddBox: "+1 box",
     posBoxUnit: "box",
@@ -6465,6 +6467,7 @@ export const translations: Record<Language, Translations> = {
     notFoundTitle: "Halaman tidak ditemukan",
     notFoundDesc: "Halaman yang Anda buka tidak ada atau sudah dipindahkan.",
     backToHome: "Kembali ke beranda",
+    backToList: "Kembali",
     posQtyLabel: "Jml",
     posAddBox: "+1 box",
     posBoxUnit: "box",

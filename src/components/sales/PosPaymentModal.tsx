@@ -124,7 +124,7 @@ export function PosPaymentModal({
 
   return (
     <Dialog open onOpenChange={(open) => !open && !isSubmitting && onCancel()}>
-      <DialogContent className="grid max-h-[92vh] max-w-4xl grid-cols-1 gap-0 overflow-y-auto p-0 md:grid-cols-[1fr,360px] lg:grid-cols-[1fr,400px]">
+      <DialogContent className="grid sm:max-h-[92vh] max-w-4xl grid-cols-1 gap-0 overflow-y-auto p-0 md:grid-cols-[1fr,360px] lg:grid-cols-[1fr,400px]">
         {/* ── Left panel ── */}
         <div className="flex flex-col">
           <div className="border-b border-border px-6 py-4">

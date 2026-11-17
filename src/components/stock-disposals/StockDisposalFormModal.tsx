@@ -371,7 +371,7 @@ export function StockDisposalFormModal({
       }}
     >
       <DialogContent
-        className="flex h-[90vh] max-w-5xl flex-col gap-0 p-0"
+        className="flex h-[calc(100dvh-1.5rem)] sm:h-[90vh] max-w-5xl flex-col gap-0 p-0"
         onInteractOutside={(e) => {
           if (isPending) e.preventDefault();
         }}
@@ -395,15 +395,15 @@ export function StockDisposalFormModal({
         <form
           id="sd-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="min-h-0 flex-1 overflow-hidden"
+          className="min-h-0 flex-1 overflow-y-auto md:overflow-hidden"
         >
-          <div className="grid h-full grid-cols-[1fr,320px]">
+          <div className="grid grid-cols-1 md:h-full md:grid-cols-[1fr,320px]">
 
             {/* ── LEFT: search + items ──────────────────────────────── */}
-            <div className="flex flex-col overflow-hidden border-r border-border">
+            <div className="flex flex-col border-b border-border md:overflow-hidden md:border-b-0 md:border-r">
 
               {/* Sticky search header */}
-              <div className="shrink-0 space-y-1.5 border-b border-border px-6 py-4">
+              <div className="shrink-0 space-y-1.5 border-b border-border px-4 py-4 sm:px-6">
                 <Label>{t.sdBarcodeOrBatch}</Label>
 
                 {selectedDetail ? (
@@ -476,7 +476,7 @@ export function StockDisposalFormModal({
               </div>
 
               {/* Scrollable body */}
-              <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
+              <div className="space-y-5 px-4 py-5 sm:px-6 md:flex-1 md:overflow-y-auto">
 
                 {/* Add form — always visible */}
                 <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-4">
@@ -622,7 +622,7 @@ export function StockDisposalFormModal({
             </div>
 
             {/* ── RIGHT: signed by + description ────────────────────── */}
-            <div className="flex flex-col gap-5 overflow-y-auto px-6 py-5">
+            <div className="flex flex-col gap-5 px-4 py-5 sm:px-6 md:overflow-y-auto">
               <div className="space-y-1.5">
                 <Label>{t.sdSignedBy}</Label>
                 <Controller

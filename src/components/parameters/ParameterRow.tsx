@@ -27,7 +27,7 @@ export function ParameterRow({
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Key — sticky left */}
-      <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky left-0 z-[1] min-w-[160px] sm:min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <p className="truncate font-mono text-sm font-medium text-foreground">
           {parameter.key}
         </p>
@@ -61,7 +61,7 @@ export function ParameterRow({
       </td>
 
       {/* Actions — sticky right */}
-      <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

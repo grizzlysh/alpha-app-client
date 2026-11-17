@@ -181,7 +181,7 @@ export default function ProfileSettingsPage(): JSX.Element {
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[1fr,360px]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr,360px]">
           <div className="space-y-6">
             {/* Profile information */}
             <Card>

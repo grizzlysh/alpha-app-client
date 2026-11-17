@@ -32,7 +32,7 @@ export default function ReportsPage(): JSX.Element {
       <OfflineGate message="Reports require a live connection to the server. Please reconnect to view analytics.">
       {/* Tabs */}
       <Tabs defaultValue="sales">
-        <TabsList className="h-auto flex-wrap gap-1 p-1">
+        <TabsList className="h-auto gap-1 p-1">
           <TabsTrigger value="sales">{t.reportsSalesTab}</TabsTrigger>
           <TabsTrigger value="purchase">{t.reportsPurchaseTab}</TabsTrigger>
           <TabsTrigger value="inventory">{t.reportsInventoryTab}</TabsTrigger>

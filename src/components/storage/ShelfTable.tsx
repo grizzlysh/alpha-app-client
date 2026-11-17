@@ -98,7 +98,7 @@ export function ShelfTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    name: "min-w-[220px]",
+    name: "min-w-[160px] sm:min-w-[220px]",
     description: "min-w-[200px]",
     status: "min-w-[110px]",
     bins: "min-w-[140px]",
@@ -121,7 +121,7 @@ export function ShelfTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -131,7 +131,7 @@ export function ShelfTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 border-r border-border/40"
+                          ? "sticky left-0 z-10 border-r border-border/40"
                           : (colVisibility[header.column.id] ?? ""),
                         colMinWidth[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",

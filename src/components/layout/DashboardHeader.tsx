@@ -91,9 +91,9 @@ export function DashboardHeader({ pageTitle }: DashboardHeaderProps): JSX.Elemen
             <h1 className="text-sm font-bold text-foreground sm:text-base">
               {pageTitle}
             </h1>
-            <span className="hidden text-muted-foreground/40 sm:inline">·</span>
+            <span className="hidden text-muted-foreground/40 lg:inline">·</span>
           </div>
-          <span className="hidden text-sm text-muted-foreground sm:inline">
+          <span className="hidden whitespace-nowrap text-sm text-muted-foreground lg:inline">
             {dateLabel}
           </span>
           {!isOnline && (
@@ -110,7 +110,7 @@ export function DashboardHeader({ pageTitle }: DashboardHeaderProps): JSX.Elemen
         {/* Search — hidden on mobile */}
         <div
           className={cn(
-            "hidden items-center gap-2 rounded-xl border bg-background px-3 py-1.5 sm:flex",
+            "hidden items-center gap-2 rounded-xl border bg-background px-3 py-1.5 lg:flex",
             "transition-all duration-150",
             searchFocused
               ? "border-primary ring-2 ring-primary/20"
@@ -128,7 +128,7 @@ export function DashboardHeader({ pageTitle }: DashboardHeaderProps): JSX.Elemen
           />
         </div>
 
-        <div className="hidden h-4 w-px bg-border sm:block" />
+        <div className="hidden h-4 w-px bg-border lg:block" />
 
         {/* Language toggle — hidden on mobile */}
         <button

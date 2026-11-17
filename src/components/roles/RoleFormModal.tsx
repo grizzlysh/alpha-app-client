@@ -438,7 +438,7 @@ export function RoleFormModal({
       }}
     >
       <DialogContent
-        className="flex max-h-[90vh] max-w-xl flex-col overflow-hidden p-0"
+        className="flex sm:max-h-[90vh] max-w-xl flex-col overflow-hidden p-0"
         onInteractOutside={(e) => {
           if (isPending) e.preventDefault();
         }}

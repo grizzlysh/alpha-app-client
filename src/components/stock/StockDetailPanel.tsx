@@ -264,7 +264,7 @@ export function StockDetailPanel({
       title={t.stockDetailsTitle}
       onClose={onClose}
       className="max-w-5xl sm:max-w-5xl"
-      bodyClassName="flex flex-1 flex-row overflow-hidden"
+      bodyClassName="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden"
     >
       {/* Left: batch table */}
       <BatchTable
@@ -277,10 +277,10 @@ export function StockDetailPanel({
       />
 
       {/* Divider */}
-      <div className="w-px flex-shrink-0 bg-border" />
+      <div className="-order-1 h-px w-full flex-shrink-0 bg-border md:order-none md:h-auto md:w-px" />
 
       {/* Right: medicine info */}
-      <div className="flex w-96 flex-shrink-0 flex-col">
+      <div className="order-first flex w-full flex-shrink-0 flex-col md:order-none md:w-96">
         <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Hero */}
           <div className="flex items-center gap-4 px-5 py-6">
@@ -353,7 +353,7 @@ export function StockDetailPanel({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 border-t border-border p-5">
+        <div className="flex flex-wrap gap-3 border-t border-border p-5">
           {onSetPrice && (
           <Button
             variant="outline"

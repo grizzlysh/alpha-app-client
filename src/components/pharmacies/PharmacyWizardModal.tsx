@@ -331,7 +331,7 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
             <FieldError message={err("licenseNumber")} />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>
                 {t.bizLicenseValidFrom}<span className="ml-0.5 text-destructive">*</span>
@@ -553,7 +553,7 @@ function Step3Form({ t, isSubmitting, onBack, onSubmit }: Step3FormProps): JSX.E
           </div>
 
           {state.ownerMode === "new" && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="w-owner-name">
                   {t.onbOwnerName}<span className="ml-0.5 text-destructive">*</span>

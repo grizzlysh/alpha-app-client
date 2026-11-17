@@ -248,10 +248,10 @@ function ItemForm({
 
   return (
     <div className="rounded-xl border border-border bg-muted/20 p-4">
-      <div className="grid grid-cols-[2fr_1fr_1fr] gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[2fr_1fr_1fr]">
 
         {/* Row 1 — Medicine | Qty Box | Qty Per Box */}
-        <div className="space-y-1">
+        <div className="col-span-2 space-y-1 sm:col-span-1">
           <Label className="text-xs">{t.invoiceItemMedicine}</Label>
           <Combobox
             value={value.medicineUuid}
@@ -305,7 +305,7 @@ function ItemForm({
         </div>
 
         {/* Row 2 — Batch | Qty Pieces (readonly) | Price/Box */}
-        <div className="space-y-1">
+        <div className="col-span-2 space-y-1 sm:col-span-1">
           <Label className="text-xs">{t.invoiceItemBatchNumber}</Label>
           <Input
             value={value.batchNumber}
@@ -354,7 +354,7 @@ function ItemForm({
         </div>
 
         {/* Row 3 — Expiry Date | Disc% | Disc Nominal */}
-        <div className="space-y-1">
+        <div className="col-span-2 space-y-1 sm:col-span-1">
           <Label className="text-xs">{t.invoiceItemExpiryDate}</Label>
           <DateInput
             value={value.expiryDate}
@@ -411,7 +411,7 @@ function ItemForm({
         </div>
 
         {/* Row 4 — Storage Location (required) */}
-        <div className="col-span-3 grid grid-cols-3 gap-3">
+        <div className="col-span-2 grid grid-cols-1 gap-3 sm:col-span-3 sm:grid-cols-3">
           <div className="space-y-1">
             <Label className="text-xs">{t.invoiceItemCabinet}</Label>
             <Combobox
@@ -473,7 +473,7 @@ function ItemForm({
         </div>
 
         {/* Row 5 — Add button + Item Total */}
-        <div className="col-span-3 flex items-center gap-3">
+        <div className="col-span-2 flex flex-wrap items-center gap-3 sm:col-span-3">
           <Button
             type="button"
             size="sm"
@@ -531,8 +531,8 @@ function ItemsTable({
   onRemove,
 }: ItemsTableProps): JSX.Element {
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto rounded-xl border border-border">
+      <table className="w-full min-w-[520px] text-sm">
         <thead>
           <tr className="border-b border-border bg-muted">
             <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">#</th>
@@ -943,7 +943,7 @@ export function InvoiceFormModal({
       }}
     >
       <DialogContent
-        className="flex max-h-[90vh] max-w-6xl flex-col gap-0 p-0"
+        className="flex sm:max-h-[90vh] max-w-6xl flex-col gap-0 p-0"
         onInteractOutside={(e) => e.preventDefault()}
       >
         {/* Header */}
@@ -958,10 +958,10 @@ export function InvoiceFormModal({
         <form
           id="invoice-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden"
         >
           {/* ── Left panel — header fields ─────────────────────────────── */}
-          <div className="space-y-4 overflow-y-auto px-6 py-5 lg:w-[360px] lg:flex-shrink-0 lg:border-r lg:border-border">
+          <div className="space-y-4 border-b border-border px-4 py-5 sm:px-6 lg:w-[360px] lg:flex-shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
             {/* Invoice number */}
             <div className="space-y-1.5">
               <Label>{t.invoiceNumber}</Label>
@@ -1145,7 +1145,7 @@ export function InvoiceFormModal({
           </div>
 
           {/* ── Right panel — items ────────────────────────────────────── */}
-          <div className="flex-1 space-y-3 overflow-y-auto px-6 py-5">
+          <div className="space-y-3 px-4 py-5 sm:px-6 lg:flex-1 lg:overflow-y-auto">
             <div className="flex items-center justify-between">
               <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 {t.invoiceItemsSection}

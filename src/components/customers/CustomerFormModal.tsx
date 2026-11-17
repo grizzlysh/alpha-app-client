@@ -93,7 +93,7 @@ function ToggleButton({ label, selected, onClick, disabled }: ToggleButtonProps)
 
 function SectionDivider({ title }: { title: string }): JSX.Element {
   return (
-    <div className="col-span-2 flex items-center gap-3 pt-2">
+    <div className="flex items-center gap-3 pt-2 sm:col-span-2">
       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {title}
       </span>
@@ -261,7 +261,7 @@ export function CustomerFormModal({
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="max-h-[65vh] overflow-y-auto px-6 py-5">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* Customer type — create only */}
               {mode === "create" && (
                 <div className="space-y-1.5 sm:col-span-2">

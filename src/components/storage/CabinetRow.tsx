@@ -32,7 +32,7 @@ export function CabinetRow({
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: code + name */}
-      <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky left-0 z-[1] min-w-[160px] sm:min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="min-w-0">
           <p className="truncate font-medium uppercase text-foreground">
             {cabinet.name}
@@ -69,7 +69,7 @@ export function CabinetRow({
       </td>
 
       {/* Sticky right: action menu */}
-      <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

@@ -167,8 +167,8 @@ export default function PurchaseOrdersPage(): JSX.Element {
       {/* Main card */}
       <Card className="overflow-hidden">
         {/* Toolbar */}
-        <div className="overflow-x-auto border-b border-border">
-          <div className="flex w-max min-w-full items-center gap-2 px-5 py-3">
+        <div className="border-b border-border md:overflow-x-auto">
+          <div className="table-toolbar">
             {/* Status filter */}
             <Combobox
               value={filterStatus}
