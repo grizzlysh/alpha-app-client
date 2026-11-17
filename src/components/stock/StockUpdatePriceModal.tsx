@@ -113,7 +113,7 @@ export function StockUpdatePriceModal({
           <div className="px-6 py-5">
             {/* Medicine context */}
             <div className="mb-5 rounded-xl bg-muted/50 px-4 py-3">
-              <p className="text-sm font-medium uppercase text-foreground">
+              <p className="text-sm font-medium name-case text-foreground">
                 {stock.medicine.name}
               </p>
               <div className="mt-1.5 flex gap-3 text-xs text-muted-foreground">

@@ -13,7 +13,7 @@ import type { Translations } from "@/configs/i18n";
 import type { Medicine } from "@/types/medicine";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getInitials, getAvatarColor } from "./medicineUtils";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface MedicineRowProps {
   medicine: Medicine;
@@ -30,6 +30,7 @@ export function MedicineRow({
   onEdit,
   onDelete,
 }: MedicineRowProps): JSX.Element {
+  const fmt = useNameFormat();
   const isActive = medicine.status.toUpperCase() === "ACTIVE";
 
   return (
@@ -46,7 +47,7 @@ export function MedicineRow({
             {getInitials(medicine.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium uppercase text-foreground">
+            <p className="truncate font-medium name-case text-foreground">
               {medicine.name}
             </p>
             {medicine.ingredients.length > 0 && (
@@ -60,12 +61,12 @@ export function MedicineRow({
 
       {/* Shape — md+ */}
       <td className="hidden min-w-[120px] px-5 py-4 md:table-cell">
-        <span className="text-sm text-foreground">{toTitleCase(medicine.medicineShape.name)}</span>
+        <span className="text-sm text-foreground">{fmt(medicine.medicineShape.name)}</span>
       </td>
 
       {/* Type — lg+ */}
       <td className="hidden min-w-[120px] px-5 py-4 lg:table-cell">
-        <span className="text-sm text-foreground">{toTitleCase(medicine.medicineType.name)}</span>
+        <span className="text-sm text-foreground">{fmt(medicine.medicineType.name)}</span>
       </td>
 
       {/* Unit — sm+ */}

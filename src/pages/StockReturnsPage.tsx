@@ -25,6 +25,7 @@ import { StockReturnCompleteModal } from "@/components/stock-returns/StockReturn
 import { StockReturnRejectModal } from "@/components/stock-returns/StockReturnRejectModal";
 import { StockReturnCancelModal } from "@/components/stock-returns/StockReturnCancelModal";
 import { StockReturnDeleteModal } from "@/components/stock-returns/StockReturnDeleteModal";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Modal state ───────────────────────────────────────────────────────────────
 
@@ -41,6 +42,7 @@ type ModalState =
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function StockReturnsPage(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
@@ -121,7 +123,7 @@ export default function StockReturnsPage(): JSX.Element {
 
   const distributorFilterOptions = [
     { value: "all", label: `${t.srFilterDistributor}: ${t.filterAll}` },
-    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name.toUpperCase() })),
+    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: fmt(d.name) })),
   ];
 
   return (

@@ -151,7 +151,7 @@ export function PatientRow({
             {getInitials(patient.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium uppercase text-foreground">{patient.name}</p>
+            <p className="truncate font-medium name-case text-foreground">{patient.name}</p>
             {patient.phone && (
               <p className="truncate text-xs text-muted-foreground sm:hidden">
                 {patient.phone}

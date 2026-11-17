@@ -1,3 +1,4 @@
+import type { NameCase } from "@/utils/nameFormat";
 import type { PharmacyRole } from "@/types/role";
 
 export type PlatformRole = "PLATFORM_ADMIN" | "PLATFORM_VIEWER" | "PLATFORM_SUPPORT";
@@ -47,6 +48,8 @@ export interface CurrentPharmacyData {
   name: string;
   role: PharmacyRoleItem | null;
   permissions: Record<string, PermissionSet>;
+  /** How names are shown and printed at this pharmacy. */
+  nameCase?: NameCase;
 }
 
 export interface LoginPayload {

@@ -86,7 +86,7 @@ export function PatientDetailPanel({
           {getInitials(patient.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold uppercase text-foreground">{patient.name}</p>
+          <p className="text-lg font-bold name-case text-foreground">{patient.name}</p>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <StatusBadge
               status={patient.status}

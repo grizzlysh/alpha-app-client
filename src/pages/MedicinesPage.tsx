@@ -24,11 +24,11 @@ import { MedicineFormModal } from "@/components/medicine/MedicineFormModal";
 import { MedicineDeleteModal } from "@/components/medicine/MedicineDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Medicine } from "@/types/medicine";
-import { toTitleCase } from "@/utils/stringHelpers";
 import { exportCatalog } from "@/service/catalogService";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { CatalogImportModal } from "@/components/medicine/CatalogImportModal";
 import { downloadCatalog } from "@/components/medicine/catalogFile";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -43,6 +43,7 @@ type ModalState =
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MedicinesPage(): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
@@ -187,7 +188,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterShape}
               options={[
                 { value: "all", label: `${t.medicineShapeLabel}: ${t.filterAll}` },
-                ...shapes.map((s) => ({ value: s.uuid, label: toTitleCase(s.name) })),
+                ...shapes.map((s) => ({ value: s.uuid, label: fmt(s.name) })),
               ]}
               placeholder={t.medicineShapeLabel}
               className="h-10 w-[11rem] shrink-0 rounded-xl text-sm"
@@ -199,7 +200,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterType}
               options={[
                 { value: "all", label: `${t.medicineTypeLabel}: ${t.filterAll}` },
-                ...types.map((tp) => ({ value: tp.uuid, label: toTitleCase(tp.name) })),
+                ...types.map((tp) => ({ value: tp.uuid, label: fmt(tp.name) })),
               ]}
               placeholder={t.medicineTypeLabel}
               className="h-10 w-[10rem] shrink-0 rounded-xl text-sm"
@@ -211,7 +212,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterClass}
               options={[
                 { value: "all", label: `${t.medicineClassLabel}: ${t.filterAll}` },
-                ...classes.map((cl) => ({ value: cl.uuid, label: toTitleCase(cl.name) })),
+                ...classes.map((cl) => ({ value: cl.uuid, label: fmt(cl.name) })),
               ]}
               placeholder={t.medicineClassLabel}
               className="h-10 w-[13rem] shrink-0 rounded-xl text-sm"

@@ -80,7 +80,7 @@ export function StockReturnCompleteModal({
           <div className="mt-3 rounded-lg bg-muted px-3 py-2 text-sm">
             <p className="font-medium text-foreground">{stockReturn.returnNumber}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              <span className="uppercase">{stockReturn.distributor.name}</span>
+              <span className="name-case">{stockReturn.distributor.name}</span>
             </p>
             {stockReturn.details.length > 0 && (
               <p className="mt-0.5 text-xs text-muted-foreground">

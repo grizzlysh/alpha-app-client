@@ -206,7 +206,7 @@ export function InventoryReportTab(): JSX.Element {
                     keyExtractor={(r) => r.medicineUuid}
                     emptyLabel={t.reportNoData}
                     columns={[
-                      { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                      { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                       { key: "unit", header: t.reportInventoryUnit, sortValue: (r) => r.unit, render: (r) => r.unit },
                       { key: "pieces", header: t.reportInventoryPieces, sortValue: (r) => r.totalPieces, render: (r) => r.totalPieces.toLocaleString("id-ID") },
                       { key: "reorder", header: t.reportInventoryReorderLevel, sortValue: (r) => r.reorderLevel, render: (r) => r.reorderLevel },
@@ -249,7 +249,7 @@ export function InventoryReportTab(): JSX.Element {
                     keyExtractor={(r) => r.medicineUuid + "-low"}
                     emptyLabel={t.reportNoData}
                     columns={[
-                      { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                      { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                       { key: "unit", header: t.reportInventoryUnit, sortValue: (r) => r.unit, render: (r) => r.unit },
                       {
                         key: "pieces",
@@ -281,7 +281,7 @@ export function InventoryReportTab(): JSX.Element {
                 keyExtractor={(r) => r.medicineUuid + r.batchNumber + "-soon"}
                 emptyLabel={t.reportNoData}
                 columns={[
-                  { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                  { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                   { key: "batch", header: t.reportInventoryBatch, sortValue: (r) => r.batchNumber, render: (r) => <span className="uppercase">{r.batchNumber}</span> },
                   { key: "expiry", header: t.reportInventoryExpiryDate, sortValue: (r) => r.expiryDate, render: (r) => formatDate(r.expiryDate) },
                   {
@@ -295,7 +295,7 @@ export function InventoryReportTab(): JSX.Element {
                     ),
                   },
                   { key: "qty", header: t.reportInventoryPieces, sortValue: (r) => r.quantityPieces, render: (r) => r.quantityPieces.toLocaleString("id-ID") },
-                  { key: "distributor", header: t.reportInventoryDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="uppercase">{r.distributorName}</span> },
+                  { key: "distributor", header: t.reportInventoryDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="name-case">{r.distributorName}</span> },
                 ]}
               />
             </TabsContent>
@@ -306,7 +306,7 @@ export function InventoryReportTab(): JSX.Element {
                 keyExtractor={(r) => r.medicineUuid + r.batchNumber + "-exp"}
                 emptyLabel={t.reportNoData}
                 columns={[
-                  { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                  { key: "name", header: t.reportInventoryMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                   { key: "batch", header: t.reportInventoryBatch, sortValue: (r) => r.batchNumber, render: (r) => <span className="uppercase">{r.batchNumber}</span> },
                   {
                     key: "expiry",
@@ -315,7 +315,7 @@ export function InventoryReportTab(): JSX.Element {
                     render: (r) => <span className="text-destructive">{formatDate(r.expiryDate)}</span>,
                   },
                   { key: "qty", header: t.reportInventoryPieces, sortValue: (r) => r.quantityPieces, render: (r) => r.quantityPieces.toLocaleString("id-ID") },
-                  { key: "distributor", header: t.reportInventoryDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="uppercase">{r.distributorName}</span> },
+                  { key: "distributor", header: t.reportInventoryDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="name-case">{r.distributorName}</span> },
                 ]}
               />
             </TabsContent>

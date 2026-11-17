@@ -19,8 +19,8 @@ import { PrescriptionStatusBadge } from "./PrescriptionTable";
 import { getPrescription, cancelPrescription } from "@/service/prescriptionService";
 import { useLanguage } from "@/hooks/useLanguage";
 import { formatDate } from "@/utils/dateHelpers";
-import { toDoctorName } from "@/utils/stringHelpers";
 import { getApiErrorMessage } from "@/utils/apiError";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Item progress bar ─────────────────────────────────────────────────────────
 
@@ -100,6 +100,7 @@ export function PrescriptionDetailsPanel({
   onCancelRequest,
   onCancelClose,
 }: PrescriptionDetailsPanelProps): JSX.Element {
+  const fmt = useNameFormat();
   const { language } = useLanguage();
   const queryClient = useQueryClient();
 
@@ -167,7 +168,7 @@ export function PrescriptionDetailsPanel({
         <div className="px-5 py-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-lg font-bold uppercase text-foreground">{prescription.customer.name}</p>
+              <p className="text-lg font-bold name-case text-foreground">{prescription.customer.name}</p>
               {prescription.prescriptionNumber && (
                 <p className="mt-0.5 text-sm text-muted-foreground">{prescription.prescriptionNumber}</p>
               )}
@@ -182,7 +183,7 @@ export function PrescriptionDetailsPanel({
         <div className="divide-y divide-border px-5">
           <InfoPair
             label={t.prescriptionDoctor}
-            value={prescription.doctor != null ? toDoctorName(prescription.doctor.name) : undefined}
+            value={prescription.doctor != null ? fmt(prescription.doctor.name, { doctor: true }) : undefined}
           />
           <InfoPair label={t.prescriptionPrescribedAt} value={formatDate(prescription.prescribedAt)} />
           {full?.medicalVisit && (
@@ -218,7 +219,7 @@ export function PrescriptionDetailsPanel({
               {full.details.map((item) => (
                 <div key={item.uuid} className="rounded-xl border border-border bg-muted/20 p-3">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="font-medium text-sm text-foreground">{item.medicineName}</p>
+                    <p className="name-case font-medium text-sm text-foreground">{item.medicineName}</p>
                     <span className="shrink-0 text-xs font-semibold text-muted-foreground">
                       {item.dispensedQty} / {item.qty}
                     </span>

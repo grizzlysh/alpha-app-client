@@ -13,8 +13,8 @@ import type { Translations } from "@/configs/i18n";
 import type { StockDetailSearchResult } from "@/types/stock";
 import { getStockCatalog, getStockDetails } from "@/service/stockService";
 import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
-import { toTitleCase } from "@/utils/stringHelpers";
 import { formatCurrency } from "./salesUtils";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 const LOW_STOCK_THRESHOLD = 10;
 const PAGE_LIMIT = 20;
@@ -38,6 +38,7 @@ export function PosProductGrid({
   onSearchEnter,
   searchInputRef,
 }: PosProductGridProps): JSX.Element {
+  const fmt = useNameFormat();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const [search, setSearch] = useState("");
@@ -203,7 +204,7 @@ export function PosProductGrid({
                     : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}
               >
-                {toTitleCase(type.name)}
+                {fmt(type.name)}
               </button>
             ))}
           </div>
@@ -247,7 +248,7 @@ export function PosProductGrid({
                     className="flex flex-col items-start gap-1.5 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <div className="flex w-full items-start justify-between gap-1">
-                      <p className="line-clamp-2 text-sm font-medium uppercase text-foreground">
+                      <p className="line-clamp-2 text-sm font-medium name-case text-foreground">
                         {detail.medicine.name}
                       </p>
                       {requiresPrescription && (

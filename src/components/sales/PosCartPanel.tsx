@@ -362,7 +362,7 @@ function CartRow({
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <p className="truncate text-sm font-medium uppercase text-foreground">{item.medicineName}</p>
+            <p className="truncate text-sm font-medium name-case text-foreground">{item.medicineName}</p>
             {item.requiresPrescription && (
               <span
                 title={t.posRxRequiredBadge}

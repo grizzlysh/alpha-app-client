@@ -5,6 +5,11 @@ import type { Pharmacy } from "@/types/pharmacy";
 import { translations } from "@/configs/i18n";
 import { sl } from "@/utils/bilingualDoc";
 import { formatCurrency } from "./salesUtils";
+import { formatName } from "@/utils/nameFormat";
+import { currentNameCase } from "@/hooks/useNameFormat";
+
+/** Names follow the pharmacy's display setting; read at render (this may print outside the app tree). */
+const nm = (name: string): string => formatName(name, currentNameCase());
 
 const EN = translations.en;
 const ID = translations.id;
@@ -104,8 +109,8 @@ export function SaleReceiptDoc({
       <div style={{ marginBottom: "4px" }}>
         {sale.details.map((item) => (
           <div key={item.uuid} style={{ marginBottom: "6px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase" }}>
-              {item.medicine.name}
+            <div style={{ fontSize: "12px", fontWeight: 700 }}>
+              {nm(item.medicine.name)}
             </div>
             <div style={{ ...row, color: "#555", fontSize: "12px" }}>
               <span>{item.quantityPieces} x {formatCurrency(item.sellingPrice)}</span>

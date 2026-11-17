@@ -48,6 +48,7 @@ import { getInvoices, getInvoice } from "@/service/invoiceService";
 import { getStocks } from "@/service/stockService";
 import { getSigners } from "@/service/userService";
 import { formatDate } from "./stockReturnUtils";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Edit-mode schema (existing items) ────────────────────────────────────────
 
@@ -353,7 +354,7 @@ function InvoiceItemRow({
         <div className="min-w-0 flex-1 space-y-1.5">
           {/* Medicine name + batch */}
           <div>
-            <p className="truncate font-medium uppercase text-foreground">{detail.medicine.name}</p>
+            <p className="truncate font-medium name-case text-foreground">{detail.medicine.name}</p>
             <p className="text-xs text-muted-foreground">
               {t.srBatchLabel}: <span className="font-mono uppercase">{detail.batchNumber}</span>
               {" · "}
@@ -471,6 +472,7 @@ export function StockReturnFormModal({
   onClose,
   onSuccess,
 }: StockReturnFormModalProps): JSX.Element {
+  const fmt = useNameFormat();
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const onSuccessRef = useRef(onSuccess);
@@ -558,11 +560,11 @@ export function StockReturnFormModal({
       (stocksData?.data ?? []).flatMap((stock) =>
         stock.details.map((d) => ({
           value: d.uuid,
-          label: `${stock.medicine.name.toUpperCase()} · ${d.batchNumber.toUpperCase()} (${d.quantityPieces} ${stock.medicine.unit}, exp: ${formatDate(d.expiryDate)})`,
+          label: `${fmt(stock.medicine.name)} · ${d.batchNumber.toUpperCase()} (${d.quantityPieces} ${stock.medicine.unit}, exp: ${formatDate(d.expiryDate)})`,
           quantityPieces: d.quantityPieces,
         }))
       ),
-    [stocksData?.data]
+    [fmt, stocksData?.data]
   );
 
   const signerOptions = useMemo(
@@ -847,7 +849,7 @@ export function StockReturnFormModal({
                           {selectedInvoice.invoiceNumber}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          <span className="uppercase">{selectedInvoice.distributor.name}</span>
+                          <span className="name-case">{selectedInvoice.distributor.name}</span>
                           {" · "}
                           {formatDate(selectedInvoice.invoiceDate)}
                         </p>
@@ -889,7 +891,7 @@ export function StockReturnFormModal({
                                 {inv.invoiceNumber}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                <span className="uppercase">{inv.distributor.name}</span>
+                                <span className="name-case">{inv.distributor.name}</span>
                                 {" · "}
                                 {formatDate(inv.invoiceDate)}
                               </p>

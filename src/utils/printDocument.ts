@@ -3,6 +3,8 @@ import type { Pharmacy } from "@/types/pharmacy";
 import type { Customer } from "@/types/customer";
 import { translations } from "@/configs/i18n";
 import { formatCurrency } from "@/components/sales/salesUtils";
+import { formatName } from "@/utils/nameFormat";
+import { currentNameCase } from "@/hooks/useNameFormat";
 
 const ID = translations.id;
 
@@ -43,6 +45,9 @@ function slHtml(idText: string, enText: string): string {
   if (idText === enText) return escapeHtml(idText);
   return `${escapeHtml(idText)} / ${escapeHtml(enText)}`;
 }
+
+/** Names follow the pharmacy's display setting (see NAME_DISPLAY_CASE). */
+const nm = (name: string): string => formatName(name, currentNameCase());
 
 function escapeHtml(value: string): string {
   return value
@@ -99,7 +104,7 @@ export function printReceipt({
   const rows = sale.details
     .map(
       (item) => `<tr>
-        <td colspan="2" style="text-transform:uppercase">${escapeHtml(item.medicine.name)}</td>
+        <td colspan="2">${escapeHtml(nm(item.medicine.name))}</td>
       </tr>
       <tr>
         <td class="muted">${item.quantityPieces} x ${formatCurrency(item.sellingPrice)}</td>
@@ -142,7 +147,7 @@ export function printReceipt({
       ${change > 0 ? `<tr><td>${slHtml("Kembalian", "Change")}</td><td class="right">${formatCurrency(change)}</td></tr>` : ""}
     </table>
     <div class="divider"></div>
-    <p class="center muted">${slHtml("Pasien", "Patient")}: <span style="text-transform:uppercase">${escapeHtml(sale.customer.name)}</span></p>
+    <p class="center muted">${slHtml("Pasien", "Patient")}: <span>${escapeHtml(nm(sale.customer.name))}</span></p>
     <p class="center muted">${slHtml("Kasir", "Cashier")}: ${escapeHtml(cashierName)}</p>
     <p class="center muted">Terima kasih atas kunjungan Anda</p>
     <p class="center muted" style="font-style:italic;font-size:0.9em;opacity:0.7">Thank you for your visit</p>
@@ -170,7 +175,7 @@ export function printInvoice({
       (item, index) => `<tr>
         <td class="muted">${index + 1}</td>
         <td>
-          <div class="item-name" style="text-transform:uppercase">${escapeHtml(item.medicine.name)}</div>
+          <div class="item-name">${escapeHtml(nm(item.medicine.name))}</div>
           <div class="item-meta"><span style="text-transform:uppercase">${escapeHtml(item.stockDetail.batchNumber)}</span> · ${item.quantityPieces} ${escapeHtml(item.medicine.unit)}</div>
         </td>
         <td class="right">${item.quantityPieces}</td>
@@ -249,7 +254,7 @@ export function printInvoice({
       <div class="row">
         <div>
           <p class="label">${bil("Ditagihkan kepada", "Billed to")}</p>
-          <p class="patient-name" style="text-transform:uppercase">${escapeHtml(customerDisplayName)}</p>
+          <p class="patient-name">${escapeHtml(nm(customerDisplayName))}</p>
           ${customer?.phone ? `<p class="mono">${escapeHtml(customer.phone)}</p>` : ""}
           ${customer?.address ? `<p class="muted">${escapeHtml(customer.address)}</p>` : ""}
         </div>

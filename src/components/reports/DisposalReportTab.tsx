@@ -145,7 +145,7 @@ export function DisposalReportTab(): JSX.Element {
                     columns={[
                       { key: "number", header: t.reportDisposalNumber, sortValue: (r) => r.disposalNumber, render: (r) => r.disposalNumber },
                       { key: "date", header: t.reportDisposalDate, sortValue: (r) => r.disposedAt ?? "", render: (r) => formatDate(r.disposedAt) },
-                      { key: "medicine", header: t.reportDisposalMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                      { key: "medicine", header: t.reportDisposalMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                       { key: "batch", header: t.reportDisposalBatch, sortValue: (r) => r.batchNumber, render: (r) => <span className="uppercase">{r.batchNumber}</span> },
                       { key: "qty", header: t.reportDisposalQty, sortValue: (r) => r.quantityPieces, render: (r) => r.quantityPieces.toLocaleString("id-ID") },
                       { key: "reason", header: t.reportDisposalReason, sortValue: (r) => r.reason, render: (r) => r.reason },

@@ -41,7 +41,7 @@ function BinItemCard({ item }: BinItemCardProps): JSX.Element {
     <div className="rounded-lg border bg-card p-3 flex flex-col gap-2">
       {/* Header: name + expiry badge */}
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold leading-tight">{item.medicine.name}</p>
+        <p className="name-case text-sm font-semibold leading-tight">{item.medicine.name}</p>
         <span
           className={cn(
             "text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap",
@@ -66,7 +66,7 @@ function BinItemCard({ item }: BinItemCardProps): JSX.Element {
         </span>
 
         <span className="text-muted-foreground">{t.inventoryDistributorLabel}</span>
-        <span className="truncate">{item.distributor.name}</span>
+        <span className="name-case truncate">{item.distributor.name}</span>
       </div>
     </div>
   );

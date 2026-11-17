@@ -63,7 +63,7 @@ export function DoctorDeleteModal({
         <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
           <div className="flex items-center gap-2">
             <Stethoscope className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <p className="truncate font-medium text-foreground">{doctor.name}</p>
+            <p className="name-case truncate font-medium text-foreground">{doctor.name}</p>
           </div>
           {doctor.licenseNumber && (
             <p className="mt-0.5 text-xs text-muted-foreground">{doctor.licenseNumber}</p>

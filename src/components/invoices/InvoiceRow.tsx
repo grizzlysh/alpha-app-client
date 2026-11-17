@@ -48,7 +48,7 @@ export function InvoiceRow({
               {invoice.invoiceNumber}
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              <span className="uppercase">{invoice.distributor.name}</span>
+              <span className="name-case">{invoice.distributor.name}</span>
             </p>
           </div>
         </div>

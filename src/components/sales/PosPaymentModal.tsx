@@ -316,7 +316,7 @@ export function PosPaymentModal({
             {items.map((item) => (
               <div key={item.stockDetailUuid} className="flex items-center justify-between gap-2 text-sm">
                 <span className="min-w-0 flex-1 truncate text-foreground">
-                  {item.quantityPieces}× <span className="uppercase">{item.medicineName}</span>
+                  {item.quantityPieces}× <span className="name-case">{item.medicineName}</span>
                 </span>
                 <span className="shrink-0 text-foreground">
                   {formatCurrency(computeTotals([item], 0, 0).subtotal)}

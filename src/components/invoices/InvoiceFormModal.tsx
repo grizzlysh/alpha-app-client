@@ -46,6 +46,7 @@ import { getPurchaseOrder, getPurchaseOrdersDropdown } from "@/service/purchaseO
 import { getBusinessParameters } from "@/service/businessParameterService";
 import { getCabinetsDropdown, getShelvesDropdown, getBinsDropdown } from "@/service/storageService";
 import { formatCurrency, formatCurrencyDecimal } from "./invoiceUtils";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -571,7 +572,7 @@ function ItemsTable({
                 <tr key={index} className={cn("transition-colors hover:bg-accent/40", isIncomplete && "bg-amber-50/60 dark:bg-amber-950/20")}>
                   <td className="px-3 py-2.5 text-xs text-muted-foreground">{index + 1}</td>
                   <td className="px-3 py-2.5">
-                    <p className="font-medium uppercase text-foreground">{med?.name ?? item.medicineUuid}</p>
+                    <p className="font-medium name-case text-foreground">{med?.name ?? item.medicineUuid}</p>
                     <div className="flex items-center gap-1.5">
                       <p className="text-xs uppercase text-muted-foreground">{item.batchNumber || "—"}</p>
                       {isIncomplete && (
@@ -636,6 +637,7 @@ export function InvoiceFormModal({
   onClose,
   onSuccess,
 }: InvoiceFormModalProps): JSX.Element {
+  const fmt = useNameFormat();
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
@@ -781,8 +783,8 @@ export function InvoiceFormModal({
   );
 
   const distributorOptions = useMemo(
-    () => (distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name?.toUpperCase() ?? d.name })),
-    [distributorsData?.data]
+    () => (distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: fmt(d.name) })),
+    [fmt, distributorsData?.data]
   );
 
   const medicines = useMemo(
@@ -791,8 +793,8 @@ export function InvoiceFormModal({
   );
 
   const medicineOptions = useMemo(
-    () => medicines.map((m) => ({ value: m.uuid, label: m.name?.toUpperCase() ?? m.name })),
-    [medicines]
+    () => medicines.map((m) => ({ value: m.uuid, label: fmt(m.name) })),
+    [fmt, medicines]
   );
 
   const signerOptions = useMemo(
@@ -808,9 +810,9 @@ export function InvoiceFormModal({
       { value: "", label: t.invoiceSelectPurchaseOrder },
       ...(purchaseOrdersData?.data ?? [])
         .filter((po) => po.status === "SENT")
-        .map((po) => ({ value: po.uuid, label: `${po.orderNumber} · ${po.distributorName.toUpperCase()}` })),
+        .map((po) => ({ value: po.uuid, label: `${po.orderNumber} · ${fmt(po.distributorName)}` })),
     ],
-    [purchaseOrdersData?.data, t.invoiceSelectPurchaseOrder]
+    [fmt, purchaseOrdersData?.data, t.invoiceSelectPurchaseOrder]
   );
 
   // ── Item sub-form handlers ──────────────────────────────────────────────────

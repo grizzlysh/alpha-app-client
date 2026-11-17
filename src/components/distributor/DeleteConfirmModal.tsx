@@ -61,7 +61,7 @@ export function DeleteConfirmModal({
         </DialogHeader>
 
         <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-          <p className="truncate font-medium uppercase text-foreground">
+          <p className="truncate font-medium name-case text-foreground">
             {distributor.name}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">

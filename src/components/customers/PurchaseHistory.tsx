@@ -10,6 +10,7 @@ import { getCustomerPurchases } from "@/service/customerService";
 import { cn } from "@/utils/cn";
 import type { Translations } from "@/configs/i18n";
 import type { CustomerPurchaseHistory, PurchaseMedicine } from "@/types/customer";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 const PAGE_SIZE = 10;
 
@@ -36,6 +37,7 @@ export interface PurchaseHistoryProps {
  * most (with "add" at the POS) and their sales, newest first.
  */
 export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryProps): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const locale = language === "id" ? "id-ID" : "en-US";
   const [adding, setAdding] = useState<string | null>(null);
@@ -123,7 +125,7 @@ export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryPro
             {first.frequentItems.map((f) => (
               <li key={f.medicine.uuid} className="flex items-center gap-3 px-3 py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">{f.medicine.name.toUpperCase()}</p>
+                  <p className="truncate text-sm font-medium text-foreground">{fmt(f.medicine.name)}</p>
                   <p className="text-xs text-muted-foreground">
                     {t.purchaseTimesBought.replace("{n}", String(f.timesBought))}
                     {" · "}
@@ -231,7 +233,7 @@ function SaleRow({ sale, t, locale }: { sale: Sale; t: Translations; locale: str
               </span>
             )}
           </span>
-          {!open && <span className="mt-0.5 block truncate text-xs text-muted-foreground">{summary}</span>}
+          {!open && <span className="name-case mt-0.5 block truncate text-xs text-muted-foreground">{summary}</span>}
         </span>
         <span className="flex shrink-0 items-center gap-1.5">
           <span className={cn("text-sm font-semibold tabular-nums", voided ? "text-muted-foreground line-through" : "text-foreground")}>
@@ -256,7 +258,7 @@ function SaleRow({ sale, t, locale }: { sale: Sale; t: Translations; locale: str
             {sale.items.map((i, idx) => (
               <li key={idx} className="flex items-baseline justify-between gap-3">
                 <span className="min-w-0 truncate text-foreground">
-                  {i.medicine.name}
+                  <span className="name-case">{i.medicine.name}</span>
                   <span className="ml-1.5 text-muted-foreground">
                     × {i.quantityPieces} {i.medicine.unit.toLowerCase()}
                   </span>

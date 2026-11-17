@@ -38,6 +38,7 @@ import { AllergyFormModal } from "./AllergyFormModal";
 import { VisitFormModal } from "./VisitFormModal";
 import { SEVERITY_DOT, SEVERITY_TEXT, sortBySeverity } from "./severity";
 import { ExamStatusBadge } from "@/components/examinations/examStatus";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 const VISIT_LIMIT = 10;
 
@@ -119,6 +120,7 @@ export interface MedicalRecordPanelProps {
 }
 
 export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const can = useCan();
   const navigate = useNavigate();
@@ -188,7 +190,7 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
             {getInitials(customer.name)}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-foreground">{customer.name.toUpperCase()}</p>
+            <p className="truncate font-semibold text-foreground">{fmt(customer.name)}</p>
             <p className="truncate text-xs text-muted-foreground">
               <span className="font-mono">{record?.number ?? "—"}</span>
               {customer.phone && <> · {customer.phone}</>}
@@ -696,7 +698,7 @@ function VisitCard({
             {visit.doctor && (
               <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <Stethoscope className="h-3 w-3" aria-hidden />
-                {visit.doctor.name}
+                <span className="name-case">{visit.doctor.name}</span>
               </p>
             )}
           </div>

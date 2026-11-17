@@ -40,7 +40,7 @@ export function StockMovementRow({
             {getSMInitials(movement.medicine.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium uppercase text-foreground">
+            <p className="truncate font-medium name-case text-foreground">
               {movement.medicine.name}
             </p>
             <p className="truncate text-xs text-muted-foreground">

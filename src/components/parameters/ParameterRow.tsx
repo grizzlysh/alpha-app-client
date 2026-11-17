@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Translations } from "@/configs/i18n";
 import type { Parameter } from "@/types/parameters";
+import { displayParamValue } from "./parameterUtils";
 
 export interface ParameterRowProps {
   parameter: Parameter;
@@ -34,7 +35,7 @@ export function ParameterRow({
 
       {/* Value — always */}
       <td className="min-w-[180px] px-5 py-4">
-        <p className="truncate text-sm text-foreground">{parameter.value}</p>
+        <p className="truncate text-sm text-foreground">{displayParamValue(parameter.key, parameter.value, t)}</p>
       </td>
 
       {/* Description — sm+ */}

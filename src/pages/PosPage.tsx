@@ -14,7 +14,6 @@ import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useBarcodeScanner } from "@/hooks/useBarcodeScanner";
 import { getApiErrorMessage } from "@/utils/apiError";
-import { toDoctorName } from "@/utils/stringHelpers";
 import { computeTotals } from "@/utils/saleMath";
 import type { StockDetailSearchResult } from "@/types/stock";
 import { getCustomersDropdown } from "@/service/customerService";
@@ -33,6 +32,7 @@ import { SaleSuccessModal } from "@/components/sales/SaleSuccessModal";
 import { PurchaseHistory } from "@/components/customers/PurchaseHistory";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { PurchaseMedicine } from "@/types/customer";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 const PPN_PARAMETER_KEY = "PPN_PERCENTAGE_SELL";
 const MAX_DISCOUNT_PARAMETER_KEY = "MAX_DISCOUNT_PERCENTAGE";
@@ -82,6 +82,7 @@ function newIdempotencyKey(): string {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function PosPage(): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const can = useCan();
   const canOverridePrice = can("sales.override_price");
@@ -148,9 +149,9 @@ export default function PosPage(): JSX.Element {
       { value: "", label: t.posWalkInPatient },
       ...(customersData?.data ?? [])
         .filter((c) => !c.isWalkIn)
-        .map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
+        .map((c) => ({ value: c.uuid, label: fmt(c.name) })),
     ],
-    [customersData?.data, t.posWalkInPatient]
+    [fmt, customersData?.data, t.posWalkInPatient]
   );
 
   const prescriptionOptions = useMemo(
@@ -161,14 +162,14 @@ export default function PosPage(): JSX.Element {
         label: [
           p.prescriptionNumber ?? "No #",
           "·",
-          p.customer.name.toUpperCase(),
-          p.doctor ? `(${toDoctorName(p.doctor.name)})` : "",
+          fmt(p.customer.name),
+          p.doctor ? `(${fmt(p.doctor.name, { doctor: true })})` : "",
         ]
           .filter(Boolean)
           .join(" "),
       })),
     ],
-    [prescriptionsQueueData?.data]
+    [fmt, prescriptionsQueueData?.data]
   );
 
   const numericParam = useCallback(
@@ -191,7 +192,7 @@ export default function PosPage(): JSX.Element {
     (detail: StockDetailSearchResult): boolean => {
       const available = detail.availablePieces ?? detail.quantityPieces;
       if (available <= 0) {
-        toast.error(`${detail.medicine.name.toUpperCase()} — ${t.posOutOfStock}`);
+        toast.error(`${fmt(detail.medicine.name)} — ${t.posOutOfStock}`);
         return false;
       }
       let added = true;
@@ -224,11 +225,11 @@ export default function PosPage(): JSX.Element {
         return [...prev, newItem];
       });
       if (!added) {
-        toast.error(`${t.posStockInsufficient} — ${detail.medicine.name.toUpperCase()}`);
+        toast.error(`${t.posStockInsufficient} — ${fmt(detail.medicine.name)}`);
       }
       return added;
     },
-    [t]
+    [fmt, t]
   );
 
   // "Buy again" from the purchase history: the earliest-expiring sellable batch
@@ -244,17 +245,17 @@ export default function PosPage(): JSX.Element {
           return available > inCart;
         });
         if (!batch) {
-          toast.error(`${medicine.name.toUpperCase()} — ${t.posOutOfStock}`);
+          toast.error(`${fmt(medicine.name)} — ${t.posOutOfStock}`);
           return;
         }
         if (handleAddToCart(batch)) {
-          toast.success(t.posScanAdded.replace("{name}", medicine.name.toUpperCase()), { duration: 1500 });
+          toast.success(t.posScanAdded.replace("{name}", fmt(medicine.name)), { duration: 1500 });
         }
       } catch (error) {
         toast.error(getApiErrorMessage(error, language, t.unexpectedError));
       }
     },
-    [cart, handleAddToCart, language, t]
+    [fmt, cart, handleAddToCart, language, t]
   );
 
   function handleQuantityChange(index: number, quantity: number): void {
@@ -301,7 +302,7 @@ export default function PosPage(): JSX.Element {
         const match = res.data?.find((item) => item.barcode === code);
         if (!match) return false;
         if (handleAddToCart(match)) {
-          toast.success(t.posScanAdded.replace("{name}", match.medicine.name.toUpperCase()), { duration: 1500 });
+          toast.success(t.posScanAdded.replace("{name}", fmt(match.medicine.name)), { duration: 1500 });
         }
         return true;
       } catch (error) {
@@ -309,7 +310,7 @@ export default function PosPage(): JSX.Element {
         return true;
       }
     },
-    [handleAddToCart, language, t]
+    [fmt, handleAddToCart, language, t]
   );
 
   const anyModalOpen = paymentModalOpen || heldModalOpen || scannerOpen || prescriptionModalOpen || !!completedSale;

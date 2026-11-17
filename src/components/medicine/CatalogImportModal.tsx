@@ -136,7 +136,7 @@ export function CatalogImportModal({ onClose }: { onClose: () => void }): JSX.El
                     {result.medicines.invalid.slice(0, 50).map((r) => (
                       <li key={r.row} className="flex gap-2">
                         <span className="w-14 shrink-0 tabular-nums text-muted-foreground">{t.catalogRow.replace("{n}", String(r.row + 1))}</span>
-                        <span className="min-w-0 truncate uppercase text-foreground">{r.name || "—"}</span>
+                        <span className="min-w-0 truncate name-case text-foreground">{r.name || "—"}</span>
                         <span className="ml-auto shrink-0 text-muted-foreground">{reasonLabel(r.reason, t)}</span>
                       </li>
                     ))}

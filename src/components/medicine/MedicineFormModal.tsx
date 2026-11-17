@@ -25,7 +25,7 @@ import { createMedicine, updateMedicine } from "@/service/medicineService";
 import { getMedicineShapesDropdown } from "@/service/medicineShapeService";
 import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
 import { getMedicineClassesDropdown } from "@/service/medicineClassService";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -66,6 +66,7 @@ export function MedicineFormModal({
   onClose,
   onSuccess,
 }: MedicineFormModalProps): JSX.Element {
+  const fmt = useNameFormat();
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const schema = useMemo(() => makeSchema(t), [t]);
@@ -243,7 +244,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={shapes.map((s) => ({ value: s.uuid, label: toTitleCase(s.name) }))}
+                      options={shapes.map((s) => ({ value: s.uuid, label: fmt(s.name) }))}
                       placeholder={t.medicineSelectShape}
                       className={cn(
                         fieldError("medicineShapeUuid") &&
@@ -273,7 +274,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={types.map((tp) => ({ value: tp.uuid, label: toTitleCase(tp.name) }))}
+                      options={types.map((tp) => ({ value: tp.uuid, label: fmt(tp.name) }))}
                       placeholder={t.medicineSelectType}
                       className={cn(
                         fieldError("medicineTypeUuid") &&
@@ -303,7 +304,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={classes.map((cl) => ({ value: cl.uuid, label: toTitleCase(cl.name) }))}
+                      options={classes.map((cl) => ({ value: cl.uuid, label: fmt(cl.name) }))}
                       placeholder={t.medicineSelectClass}
                       className={cn(
                         fieldError("medicineClassUuid") &&

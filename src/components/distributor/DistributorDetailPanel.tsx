@@ -41,7 +41,7 @@ export function DistributorDetailPanel({
           {getInitials(distributor.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold uppercase text-foreground">
+          <p className="text-lg font-bold name-case text-foreground">
             {distributor.name}
           </p>
         </div>

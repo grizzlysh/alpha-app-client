@@ -171,7 +171,7 @@ export function SalePaymentAddModal({
           <div className="space-y-4 px-6 py-5">
             {/* Sale reference */}
             <div className="rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
-              {sale.saleNumber} · <span className="uppercase">{sale.customer.name}</span>
+              {sale.saleNumber} · <span className="name-case">{sale.customer.name}</span>
             </div>
 
             {/* Payment method */}

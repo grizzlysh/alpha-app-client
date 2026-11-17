@@ -6,6 +6,11 @@ import type { Customer } from "@/types/customer";
 import { translations } from "@/configs/i18n";
 import { BiLabel, sl } from "@/utils/bilingualDoc";
 import { formatCurrency } from "./salesUtils";
+import { formatName } from "@/utils/nameFormat";
+import { currentNameCase } from "@/hooks/useNameFormat";
+
+/** Names follow the pharmacy's display setting; read at render (this may print outside the app tree). */
+const nm = (name: string): string => formatName(name, currentNameCase());
 
 const EN = translations.en;
 const ID = translations.id;
@@ -174,8 +179,8 @@ export function SaleInvoiceDoc({
             <div style={sectionLabel}>
               <BiLabel id={ID.saleDocBilledTo} en={EN.saleDocBilledTo} />
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>
-              {customerDisplayName}
+            <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "4px" }}>
+              {nm(customerDisplayName)}
             </div>
             {customer?.phone && (
               <div style={{ fontSize: "12px", color: COLOR.muted, fontFamily: "'Courier New', monospace" }}>
@@ -233,8 +238,8 @@ export function SaleInvoiceDoc({
                     {index + 1}
                   </td>
                   <td style={{ padding: "12px 8px 12px 0", verticalAlign: "top" }}>
-                    <div style={{ fontSize: "13px", fontWeight: 600, textTransform: "uppercase" }}>
-                      {item.medicine.name}
+                    <div style={{ fontSize: "13px", fontWeight: 600 }}>
+                      {nm(item.medicine.name)}
                     </div>
                     <div style={{ fontSize: "11px", color: COLOR.faint, fontFamily: "'Courier New', monospace", marginTop: "2px" }}>
                       {item.stockDetail.batchNumber} · {item.quantityPieces} {item.medicine.unit}

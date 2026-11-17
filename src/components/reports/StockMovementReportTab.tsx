@@ -169,7 +169,7 @@ export function StockMovementReportTab(): JSX.Element {
                     emptyLabel={t.reportNoData}
                     columns={[
                       { key: "date", header: t.reportSMDate, sortValue: (r) => r.createdAt, render: (r) => formatDate(r.createdAt) },
-                      { key: "medicine", header: t.reportSMMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                      { key: "medicine", header: t.reportSMMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                       { key: "batch", header: t.reportSMBatch, sortValue: (r) => r.batchNumber, render: (r) => <span className="uppercase">{r.batchNumber}</span> },
                       {
                         key: "type",

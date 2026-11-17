@@ -22,6 +22,10 @@ import type { Translations } from "@/configs/i18n";
 import { getApiErrorMessage } from "@/utils/apiError";
 import type { ApiResponse } from "@/types/api";
 import type { Parameter, UpdateParameterPayload } from "@/types/parameters";
+import { useDispatch } from "react-redux";
+import { setNameCase } from "@/store/authSlice";
+import { NAME_CASES, formatName, isNameCase } from "@/utils/nameFormat";
+import { nameCaseLabel } from "./parameterUtils";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -59,6 +63,8 @@ export function ParameterEditModal({
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const schema = useMemo(() => makeSchema(t), [t]);
+  const dispatch = useDispatch();
+  const isNameCaseParam = parameter.key === "NAME_DISPLAY_CASE";
 
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
@@ -83,9 +89,11 @@ export function ParameterEditModal({
       };
       return updateFn(parameter.uuid, payload);
     },
-    onSuccess: (res) => {
+    onSuccess: (res, values) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: [queryKey] });
+        // Apply the new name display at once, without signing in again.
+        if (isNameCaseParam && isNameCase(values.value)) dispatch(setNameCase(values.value));
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -136,7 +144,27 @@ export function ParameterEditModal({
               <Controller
                 name="value"
                 control={form.control}
-                render={({ field }) => (
+                render={({ field }) => isNameCaseParam ? (
+                  <div className="grid gap-2" role="radiogroup" aria-label={t.paramValue}>
+                    {NAME_CASES.map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        role="radio"
+                        aria-checked={field.value === mode}
+                        onClick={() => field.onChange(mode)}
+                        className={cn(
+                          "flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors",
+                          field.value === mode ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:bg-muted/40"
+                        )}
+                      >
+                        <span className="text-sm font-medium text-foreground">{nameCaseLabel(mode, t)}</span>
+                        <span className="truncate text-sm text-muted-foreground">{formatName(t.nameCaseSample, mode)}</span>
+                      </button>
+                    ))}
+                    {field.value === "AS_TYPED" && <p className="text-xs text-muted-foreground">{t.nameCaseAsTypedNote}</p>}
+                  </div>
+                ) : (
                   <Input
                     id="param-value"
                     placeholder={t.paramValuePlaceholder}

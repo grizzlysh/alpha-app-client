@@ -140,7 +140,7 @@ export function StockAdjustModal({
           <div className="px-6 py-5">
             {/* Medicine + batch context */}
             <div className="mb-5 rounded-xl bg-muted/50 px-4 py-3">
-              <p className="text-sm font-medium uppercase text-foreground">
+              <p className="text-sm font-medium name-case text-foreground">
                 {stock.medicine.name}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">

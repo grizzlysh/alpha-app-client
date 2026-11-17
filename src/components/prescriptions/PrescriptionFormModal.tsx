@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { FileText, Loader2, AlertCircle, Plus, Trash2, Stethoscope } from "lucide-react";
 
 import { cn } from "@/utils/cn";
-import { toDoctorName } from "@/utils/stringHelpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +29,7 @@ import { createPrescription, updatePrescription } from "@/service/prescriptionSe
 import { getCustomersDropdown } from "@/service/customerService";
 import { getDoctorsDropdown } from "@/service/doctorService";
 import { getMedicinesDropdown } from "@/service/medicineService";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -119,7 +119,7 @@ function ItemsTable({ items, isPending, t, onRemove }: ItemsTableProps): JSX.Ele
               <tr key={index} className="transition-colors hover:bg-accent/40">
                 <td className="px-3 py-2.5 text-xs text-muted-foreground">{index + 1}</td>
                 <td className="px-3 py-2.5">
-                  <p className="font-medium text-foreground">{item.medicineName}</p>
+                  <p className="name-case font-medium text-foreground">{item.medicineName}</p>
                   {item.notes && (
                     <p className="text-xs italic text-muted-foreground">{item.notes}</p>
                   )}
@@ -178,6 +178,7 @@ export function PrescriptionFormModal({
   onClose,
   onSuccess,
 }: PrescriptionFormModalProps): JSX.Element {
+  const fmt = useNameFormat();
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const schema = useMemo(() => makeSchema(t), [t]);
@@ -216,10 +217,10 @@ export function PrescriptionFormModal({
       { value: "", label: `— ${t.prescriptionDoctorPlaceholder} —` },
       ...(doctorsData?.data ?? []).map((d) => ({
         value: d.uuid,
-        label: d.clinicName ? `${toDoctorName(d.name)} (${d.clinicName})` : toDoctorName(d.name),
+        label: d.clinicName ? `${fmt(d.name, { doctor: true })} (${d.clinicName})` : fmt(d.name, { doctor: true }),
       })),
     ],
-    [doctorsData, t]
+    [fmt, doctorsData, t]
   );
 
   const medicineOptions = useMemo(

@@ -87,7 +87,7 @@ export function CustomerDetailPanel({
           {getInitials(customer.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold uppercase text-foreground">{customer.name}</p>
+          <p className="text-lg font-bold name-case text-foreground">{customer.name}</p>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <StatusBadge
               status={customer.status}

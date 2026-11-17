@@ -45,7 +45,7 @@ export function DashboardPurchaseOrders({
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{po.orderNumber}</p>
                 <p className="text-xs text-muted-foreground">
-                  <span className="uppercase">{po.distributorName}</span> · {formatDate(po.orderedAt)}
+                  <span className="name-case">{po.distributorName}</span> · {formatDate(po.orderedAt)}
                 </p>
               </div>
               <span className="shrink-0 rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">

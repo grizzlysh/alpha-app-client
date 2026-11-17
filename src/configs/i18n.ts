@@ -2089,6 +2089,12 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  nameCaseUpper: string;
+  nameCaseTitle: string;
+  nameCaseLower: string;
+  nameCaseAsTyped: string;
+  nameCaseSample: string;
+  nameCaseAsTypedNote: string;
   poSignerHint: string;
   sdSignerHint: string;
   pharmaNoOwner: string;
@@ -4289,6 +4295,12 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    nameCaseUpper: "ALL CAPS",
+    nameCaseTitle: "Title Case",
+    nameCaseLower: "all lowercase",
+    nameCaseAsTyped: "As typed",
+    nameCaseSample: "paracetamol 500mg Tablet",
+    nameCaseAsTypedNote: "Names saved before this setting existed were stored in lowercase and will show that way.",
     poSignerHint: "Pharmacists with an active practice license. Orders with narcotics, psychotropics or precursors must be signed by the Head Pharmacist.",
     sdSignerHint: "Disposal records are signed by the Head Pharmacist (active practice license).",
     pharmaNoOwner: "No owner yet",
@@ -6485,6 +6497,12 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    nameCaseUpper: "KAPITAL SEMUA",
+    nameCaseTitle: "Huruf Awal Kapital",
+    nameCaseLower: "huruf kecil semua",
+    nameCaseAsTyped: "Sesuai ketikan",
+    nameCaseSample: "paracetamol 500mg Tablet",
+    nameCaseAsTypedNote: "Nama yang disimpan sebelum ada pengaturan ini tersimpan huruf kecil dan akan tampil begitu.",
     poSignerHint: "Apoteker dengan SIPA aktif. Pesanan narkotika, psikotropika, atau prekursor wajib ditandatangani Head Pharmacist.",
     sdSignerHint: "Berita acara pemusnahan ditandatangani Head Pharmacist (SIPA aktif).",
     pharmaNoOwner: "Belum ada pemilik",

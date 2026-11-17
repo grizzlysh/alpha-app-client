@@ -3,10 +3,10 @@ import { Pencil, Pill, Trash2 } from "lucide-react";
 
 import type { Translations } from "@/configs/i18n";
 import type { Medicine } from "@/types/medicine";
-import { toTitleCase } from "@/utils/stringHelpers";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getInitials, getAvatarColor, formatDate } from "./medicineUtils";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── MedicineDetailPanel ───────────────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ export function MedicineDetailPanel({
   onEdit,
   onDelete,
 }: MedicineDetailPanelProps): JSX.Element {
+  const fmt = useNameFormat();
   const isActive = medicine.status.toUpperCase() === "ACTIVE";
 
   return (
@@ -45,7 +46,7 @@ export function MedicineDetailPanel({
           {getInitials(medicine.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold uppercase text-foreground">{medicine.name}</p>
+          <p className="text-lg font-bold name-case text-foreground">{medicine.name}</p>
           <StatusBadge
             status={medicine.status}
             label={isActive ? t.medicineStatusActive : t.medicineStatusInactive}
@@ -58,9 +59,9 @@ export function MedicineDetailPanel({
 
       {/* Info pairs */}
       <div className="divide-y divide-border px-5">
-        <InfoPair label={t.medicineShapeLabel} value={medicine.medicineShape?.name != null ? toTitleCase(medicine.medicineShape.name) : undefined} />
-        <InfoPair label={t.medicineTypeLabel} value={medicine.medicineType?.name != null ? toTitleCase(medicine.medicineType.name) : undefined} />
-        <InfoPair label={t.medicineClassLabel} value={medicine.medicineClass?.name != null ? toTitleCase(medicine.medicineClass.name) : undefined} />
+        <InfoPair label={t.medicineShapeLabel} value={medicine.medicineShape?.name != null ? fmt(medicine.medicineShape.name) : undefined} />
+        <InfoPair label={t.medicineTypeLabel} value={medicine.medicineType?.name != null ? fmt(medicine.medicineType.name) : undefined} />
+        <InfoPair label={t.medicineClassLabel} value={medicine.medicineClass?.name != null ? fmt(medicine.medicineClass.name) : undefined} />
         <InfoPair label={t.medicineUnit} value={medicine.unit} />
         {medicine.ingredients.length > 0 && (
           <div className="py-2.5">

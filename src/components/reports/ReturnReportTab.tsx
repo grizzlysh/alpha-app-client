@@ -17,10 +17,12 @@ import { ReportSection } from "./ReportSection";
 import { ReportTable } from "./ReportTable";
 import { buildDateParams, formatDate } from "./reportUtils";
 import { exportToCsv, exportToXlsx } from "./reportExport";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 type DetailTab = "list" | "by-distributor";
 
 export function ReturnReportTab(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
 
   const [mode, setMode] = useState<ReportFilterMode>("monthly");
@@ -61,7 +63,7 @@ export function ReturnReportTab(): JSX.Element {
 
   const distributorOptions = [
     { value: "all", label: `${t.reportReturnFilterDistributor}: ${t.filterAll}` },
-    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name.toUpperCase() })),
+    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: fmt(d.name) })),
   ];
 
   function handleFilterChange(): void {
@@ -176,8 +178,8 @@ export function ReturnReportTab(): JSX.Element {
                     columns={[
                       { key: "number", header: t.reportReturnNumber, sortValue: (r) => r.returnNumber, render: (r) => r.returnNumber },
                       { key: "date", header: t.reportReturnDate, sortValue: (r) => r.returnedAt ?? "", render: (r) => formatDate(r.returnedAt) },
-                      { key: "distributor", header: t.reportReturnDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="uppercase">{r.distributorName}</span> },
-                      { key: "medicine", header: t.reportReturnMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                      { key: "distributor", header: t.reportReturnDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="name-case">{r.distributorName}</span> },
+                      { key: "medicine", header: t.reportReturnMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                       { key: "batch", header: t.reportReturnBatch, sortValue: (r) => r.batchNumber, render: (r) => <span className="uppercase">{r.batchNumber}</span> },
                       { key: "qty", header: t.reportReturnQty, sortValue: (r) => r.quantityPieces, render: (r) => r.quantityPieces.toLocaleString("id-ID") },
                       { key: "reason", header: t.reportReturnReason, sortValue: (r) => r.reason ?? "", render: (r) => r.reason ?? "—" },
@@ -205,7 +207,7 @@ export function ReturnReportTab(): JSX.Element {
                 keyExtractor={(r) => r.distributorUuid}
                 emptyLabel={t.reportNoData}
                 columns={[
-                  { key: "name", header: t.reportReturnDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="uppercase">{r.distributorName}</span> },
+                  { key: "name", header: t.reportReturnDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="name-case">{r.distributorName}</span> },
                   { key: "count", header: t.reportReturnCount, sortValue: (r) => r.returnCount, render: (r) => r.returnCount },
                   { key: "qty", header: t.reportReturnTotalQty, sortValue: (r) => r.totalQuantityPieces, render: (r) => r.totalQuantityPieces.toLocaleString("id-ID") },
                 ]}

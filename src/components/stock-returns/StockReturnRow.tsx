@@ -67,7 +67,7 @@ export function StockReturnRow({
               {stockReturn.returnNumber}
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              <span className="uppercase">{stockReturn.distributor.name}</span>
+              <span className="name-case">{stockReturn.distributor.name}</span>
             </p>
           </div>
         </div>

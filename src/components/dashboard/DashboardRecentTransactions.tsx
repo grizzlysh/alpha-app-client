@@ -44,7 +44,7 @@ export function DashboardRecentTransactions({
               className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 px-3 py-2.5"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium uppercase text-foreground">{tx.customerName}</p>
+                <p className="truncate text-sm font-medium name-case text-foreground">{tx.customerName}</p>
                 <p className="text-xs text-muted-foreground">
                   {tx.saleNumber} · {formatTime(tx.soldAt)}
                   {tx.isRx && (

@@ -105,7 +105,7 @@ export function PurchaseOrderPrintModal({
               {t.poSubmitConfirmTitle}
             </DialogTitle>
             <p className="mt-0.5 truncate text-xs text-muted-foreground">
-              {order.orderNumber} · <span className="uppercase">{order.distributor.name}</span>
+              {order.orderNumber} · <span className="name-case">{order.distributor.name}</span>
             </p>
           </div>
         </DialogHeader>

@@ -18,7 +18,7 @@ import {
   getStockStatusClass,
   getStockStatusKey,
 } from "./stockUtils";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface StockRowProps {
   stock: Stock;
@@ -35,6 +35,7 @@ export function StockRow({
   onSetPrice,
   onSetReorder,
 }: StockRowProps): JSX.Element {
+  const fmt = useNameFormat();
   const statusClass = getStockStatusClass(stock);
   const statusLabel = t[getStockStatusKey(stock)];
 
@@ -52,11 +53,11 @@ export function StockRow({
             {getInitials(stock.medicine.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium uppercase text-foreground">
+            <p className="truncate font-medium name-case text-foreground">
               {stock.medicine.name}
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              {toTitleCase(stock.medicine.shape.name)} · {toTitleCase(stock.medicine.medicineClass.name)}
+              {fmt(stock.medicine.shape.name)} · {fmt(stock.medicine.medicineClass.name)}
             </p>
           </div>
         </div>
@@ -81,7 +82,7 @@ export function StockRow({
 
       {/* Type — md+ */}
       <td className="hidden min-w-[120px] px-5 py-4 md:table-cell">
-        <span className="text-sm text-foreground">{toTitleCase(stock.medicine.type.name)}</span>
+        <span className="text-sm text-foreground">{fmt(stock.medicine.type.name)}</span>
       </td>
 
       {/* Reorder level — sm+ */}

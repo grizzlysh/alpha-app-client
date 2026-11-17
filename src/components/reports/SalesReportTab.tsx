@@ -178,7 +178,7 @@ export function SalesReportTab(): JSX.Element {
                     columns={[
                       { key: "saleNo", header: t.reportSalesSaleNumber, sortValue: (r) => r.saleNumber, render: (r) => r.saleNumber },
                       { key: "date", header: t.reportSalesDate, sortValue: (r) => r.soldAt, render: (r) => r.soldAt },
-                      { key: "patient", header: t.reportSalesPatient, sortValue: (r) => r.customerName, render: (r) => <span className="uppercase">{r.customerName}</span> },
+                      { key: "patient", header: t.reportSalesPatient, sortValue: (r) => r.customerName, render: (r) => <span className="name-case">{r.customerName}</span> },
                       { key: "type", header: t.reportSalesSaleType, sortValue: (r) => r.saleType, render: (r) => r.saleType },
                       { key: "status", header: t.reportSalesStatus, sortValue: (r) => r.status, render: (r) => r.status },
                       { key: "total", header: t.reportSalesTotalAmount, sortValue: (r) => r.totalAmount, render: (r) => formatCurrency(r.totalAmount) },
@@ -225,7 +225,7 @@ export function SalesReportTab(): JSX.Element {
                 emptyLabel={t.reportNoData}
                 columns={[
                   { key: "no", header: "#", className: "w-10", render: (_, i) => i + 1 },
-                  { key: "name", header: t.reportSalesMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                  { key: "name", header: t.reportSalesMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                   { key: "qty", header: t.reportSalesQtyPieces, sortValue: (r) => r.totalQuantityPieces, render: (r) => r.totalQuantityPieces.toLocaleString("id-ID") },
                   { key: "revenue", header: t.reportSalesRevenue, sortValue: (r) => r.totalRevenue, render: (r) => formatCurrency(r.totalRevenue) },
                 ]}

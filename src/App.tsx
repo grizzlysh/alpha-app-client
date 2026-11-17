@@ -14,6 +14,7 @@ import { ProtectedGuard } from "@/components/shared/ProtectedGuard";
 import { SharedAccessGuard } from "@/components/shared/SharedAccessGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useBootstrapAuth } from "@/hooks/useBootstrapAuth";
+import { useApplyNameCase } from "@/hooks/useNameFormat";
 import LoginPage from "@/pages/LoginPage";
 import HomePage from "@/pages/HomePage";
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
@@ -47,6 +48,7 @@ import { PermissionGate } from "@/components/shared/PermissionGate";
 
 function AppRoutes(): JSX.Element {
   const { isBootstrapping } = useBootstrapAuth();
+  useApplyNameCase();
   const { theme } = useTheme();
 
   if (isBootstrapping) {

@@ -12,7 +12,7 @@ import {
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 import { getInitials, getAvatarColor } from "./referenceUtils";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface ReferenceRowProps {
   item: ReferenceItem;
@@ -29,6 +29,7 @@ export function ReferenceRow({
   onEdit,
   onDelete,
 }: ReferenceRowProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: avatar + name */}
@@ -42,7 +43,7 @@ export function ReferenceRow({
           >
             {getInitials(item.name)}
           </div>
-          <p className="truncate font-medium text-foreground">{toTitleCase(item.name)}</p>
+          <p className="truncate font-medium text-foreground">{fmt(item.name)}</p>
         </div>
       </td>
 

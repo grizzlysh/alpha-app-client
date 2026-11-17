@@ -106,7 +106,7 @@ export function SaleDetailPanel({
 
       {/* Info pairs */}
       <div className="divide-y divide-border px-5">
-        <InfoPair label={t.salePatient} value={sale.customer.name} valueClassName="uppercase" />
+        <InfoPair label={t.salePatient} value={sale.customer.name} valueClassName="name-case" />
         <InfoPair label={t.saleType} value={getSaleTypeLabel(sale.saleType, t)} />
         <InfoPair label={t.saleSoldAt} value={formatDate(sale.soldAt)} />
         {sale.saleType === "CREDIT" && sale.dueDate && (
@@ -170,7 +170,7 @@ export function SaleDetailPanel({
             </div>
             {sale.prescription.doctor && (
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {t.salePrescriptionDoctor}: {sale.prescription.doctor.name}
+                {t.salePrescriptionDoctor}: <span className="name-case">{sale.prescription.doctor.name}</span>
               </p>
             )}
           </div>
@@ -193,7 +193,7 @@ export function SaleDetailPanel({
                 className="rounded-lg border border-border bg-muted/30 px-3 py-2.5"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium uppercase text-foreground">{item.medicine.name}</p>
+                  <p className="text-sm font-medium name-case text-foreground">{item.medicine.name}</p>
                   <span className="shrink-0 text-sm font-medium text-foreground">
                     {formatCurrency(item.totalAmount)}
                   </span>

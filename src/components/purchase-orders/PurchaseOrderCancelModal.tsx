@@ -104,7 +104,7 @@ export function PurchaseOrderCancelModal({
               {t.poCancelConfirmDesc}
             </DialogDescription>
             <p className="rounded-lg bg-muted px-3 py-2 text-sm font-medium text-foreground">
-              {order.orderNumber} · <span className="uppercase">{order.distributor.name}</span>
+              {order.orderNumber} · <span className="name-case">{order.distributor.name}</span>
             </p>
 
             <div className="space-y-1.5">

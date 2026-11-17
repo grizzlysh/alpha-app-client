@@ -19,6 +19,7 @@ import { getExaminationQueue } from "@/service/examinationService";
 import { cn } from "@/utils/cn";
 import type { Translations } from "@/configs/i18n";
 import type { Examination } from "@/types/examination";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export default function ExaminationsPage(): JSX.Element {
   const { t, language } = useLanguage();
@@ -230,6 +231,7 @@ function QueueItem({
   onClick: () => void;
   t: Translations;
 }): JSX.Element {
+  const fmt = useNameFormat();
   const stage = stageOf(exam);
   const since = stage === "WAITING" || stage === "READY" ? exam.checkedInAt : stage === "IN_PROGRESS" ? exam.startedAt : null;
   const minutes = since ? Math.max(0, Math.floor((Date.now() - new Date(since).getTime()) / 60000)) : null;
@@ -267,7 +269,7 @@ function QueueItem({
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
             <span className={cn("truncate text-sm font-semibold", selected ? "text-primary" : "text-foreground")}>
-              {exam.patient.name.toUpperCase()}
+              {fmt(exam.patient.name)}
             </span>
             {hasSevere && (
               <span className="shrink-0 rounded bg-destructive/10 px-1 text-[10px] font-bold uppercase text-destructive" title={t.examAllergies}>
