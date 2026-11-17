@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { AlertTriangle, Ban, CheckCircle2, FileText, Loader2, PlayCircle, Save, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Ban, CheckCircle2, FileText, Loader2, Pencil, PlayCircle, Save, Stethoscope } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/ui/combobox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormSectionLabel } from "@/components/medical-records/FormSection";
-import { SEVERITY_DOT, SEVERITY_TEXT, sortBySeverity } from "@/components/medical-records/severity";
+import { SEVERITY_DOT } from "@/components/medical-records/severity";
 import { PrescriptionStatusBadge } from "@/components/prescriptions/PrescriptionTable";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCan } from "@/hooks/usePermission";
@@ -28,51 +28,40 @@ import { getApiErrorMessage } from "@/utils/apiError";
 import { cn } from "@/utils/cn";
 import { toDoctorName } from "@/utils/stringHelpers";
 import type { Translations } from "@/configs/i18n";
-import type { Allergy } from "@/types/medicalRecord";
 import type { AllergyConflict, CompleteExamPayload, Examination, ExamFieldsPayload } from "@/types/examination";
 import { ExamPrescriptionEditor, type RxLine } from "./ExamPrescriptionEditor";
 import { ExamStatusBadge, formatQueueNumber } from "./examStatus";
+import { PatientAllergies } from "./PatientAllergies";
+import { TriagePanel, TriageStamp } from "./TriagePanel";
+import { VitalsInputs, VitalsSummary } from "./VitalSigns";
+import { vitalsFormOf, vitalsPayloadOf, type VitalsForm } from "./vitals";
 
 // ── Form state ────────────────────────────────────────────────────────────────
 
-interface ExamForm {
+interface ResultForm {
   chiefComplaint: string;
-  bloodPressure: string;
-  temperatureCelsius: string;
-  pulsePerMinute: string;
-  weightKg: string;
-  heightCm: string;
+  findings: string;
   diagnosis: string;
+  advice: string;
   notes: string;
 }
 
-const str = (v: number | string | null | undefined): string => (v == null ? "" : String(v));
+const str = (v: string | null | undefined): string => v ?? "";
 
-const formFromExam = (e: Examination): ExamForm => ({
+const resultFormOf = (e: Examination): ResultForm => ({
   chiefComplaint: str(e.chiefComplaint),
-  bloodPressure: str(e.bloodPressure),
-  temperatureCelsius: str(e.temperatureCelsius),
-  pulsePerMinute: str(e.pulsePerMinute),
-  weightKg: str(e.weightKg),
-  heightCm: str(e.heightCm),
+  findings: str(e.findings),
   diagnosis: str(e.diagnosis),
+  advice: str(e.advice),
   notes: str(e.notes),
 });
 
-const numOrNull = (v: string): number | null => {
-  const n = parseFloat(v.replace(",", "."));
-  return Number.isFinite(n) ? n : null;
-};
-
-const toPayload = (f: ExamForm): ExamFieldsPayload => ({
+const resultPayloadOf = (f: ResultForm): ExamFieldsPayload => ({
   chiefComplaint: f.chiefComplaint.trim(),
+  findings: f.findings.trim(),
   diagnosis: f.diagnosis.trim(),
+  advice: f.advice.trim(),
   notes: f.notes.trim(),
-  bloodPressure: f.bloodPressure.trim(),
-  temperatureCelsius: numOrNull(f.temperatureCelsius),
-  pulsePerMinute: f.pulsePerMinute ? Math.round(numOrNull(f.pulsePerMinute) ?? 0) || null : null,
-  weightKg: numOrNull(f.weightKg),
-  heightCm: numOrNull(f.heightCm),
 });
 
 // Prescription draft survives a reload (or the doctor switching patients).
@@ -117,10 +106,17 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
   const queryClient = useQueryClient();
   const canPerform = can("examinations.perform");
   const canCheckIn = can("examinations.checkin");
+  const canTriage = can("examinations.triage");
   const canPrescribe = can("prescriptions.create");
+  const canManageAllergies = can("medical_records.write");
 
-  const [form, setForm] = useState<ExamForm>(() => formFromExam(exam));
+  const [form, setForm] = useState<ResultForm>(() => resultFormOf(exam));
+  const [vitals, setVitals] = useState<VitalsForm>(() => vitalsFormOf(exam));
   const [dirty, setDirty] = useState(false);
+  // Vitals are only sent when the doctor touched them, so a nurse's correction
+  // made meanwhile isn't overwritten by the doctor's stale copy.
+  const [vitalsDirty, setVitalsDirty] = useState(false);
+  const [editVitals, setEditVitals] = useState(false);
   const [rx, setRx] = useState(() => loadRxDraft(exam.uuid));
   const [conflicts, setConflicts] = useState<AllergyConflict[]>([]);
   const [doctorUuid, setDoctorUuid] = useState("");
@@ -129,11 +125,12 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
   const [cancelReason, setCancelReason] = useState("");
   const [lineError, setLineError] = useState(false);
 
-  // A refetch of the same exam (e.g. after "save draft") must not wipe typing in
-  // progress; only reset when the server copy changes and nothing is pending.
+  // A refetch of the same exam (polling, "save draft") must not wipe typing in
+  // progress; only follow the server copy while nothing is pending.
   useEffect(() => {
-    if (!dirty) setForm(formFromExam(exam));
-  }, [exam, dirty]);
+    if (!dirty) setForm(resultFormOf(exam));
+    if (!vitalsDirty) setVitals(vitalsFormOf(exam));
+  }, [exam, dirty, vitalsDirty]);
 
   useEffect(() => saveRxDraft(exam.uuid, rx), [exam.uuid, rx]);
 
@@ -141,12 +138,25 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
 
   const isWaiting = exam.status === "WAITING";
   const inProgress = exam.status === "IN_PROGRESS";
+  const isClosed = exam.status === "COMPLETED" || exam.status === "CANCELLED";
   const editable = inProgress && canPerform;
+  // Not triaged: the doctor records the vitals in the exam itself.
+  const showVitalsForm = editable && (editVitals || !exam.triagedAt);
 
-  function set<K extends keyof ExamForm>(key: K, value: string): void {
+  function setField(key: keyof ResultForm, value: string): void {
     setForm((f) => ({ ...f, [key]: value }));
     setDirty(true);
   }
+  function setVital(key: keyof VitalsForm, value: string): void {
+    setVitals((f) => ({ ...f, [key]: value }));
+    setVitalsDirty(true);
+    setDirty(true);
+  }
+
+  const payload = (): ExamFieldsPayload => ({
+    ...resultPayloadOf(form),
+    ...(vitalsDirty && vitalsPayloadOf(vitals)),
+  });
 
   const onError = (err: unknown) => toast.error(getApiErrorMessage(err, language, t.unexpectedError));
   const refreshQueue = () => queryClient.invalidateQueries({ queryKey: ["examinations"] });
@@ -158,22 +168,25 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
   });
 
   const saveMutation = useMutation({
-    mutationFn: () => saveExamination(exam.uuid, toPayload(form)),
+    mutationFn: () => saveExamination(exam.uuid, payload()),
     onSuccess: () => {
       setDirty(false);
+      setVitalsDirty(false);
+      setEditVitals(false);
       toast.success(t.examSavedDraft);
     },
     onError,
   });
 
   const completeMutation = useMutation({
-    mutationFn: (payload: CompleteExamPayload) => completeExamination(exam.uuid, payload),
-    onSuccess: (_res, payload) => {
+    mutationFn: (body: CompleteExamPayload) => completeExamination(exam.uuid, body),
+    onSuccess: (_res, body) => {
       setDirty(false);
+      setVitalsDirty(false);
       setRx({ lines: [], notes: "" });
       saveRxDraft(exam.uuid, { lines: [], notes: "" });
       setConfirmAllergy(false);
-      toast.success(payload.prescription ? t.examCompleteWithRx : t.examCompleteSuccess);
+      toast.success(body.prescription ? t.examCompleteWithRx : t.examCompleteSuccess);
     },
     onError,
   });
@@ -201,7 +214,7 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
       return;
     }
     completeMutation.mutate({
-      ...toPayload(form),
+      ...payload(),
       ...(filled.length > 0 && {
         prescription: {
           notes: rx.notes.trim() || undefined,
@@ -217,35 +230,40 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
     });
   }
 
-  const allergies = sortBySeverity(exam.patient.allergies as Allergy[]);
   const age = ageLabel(exam.patient.dateOfBirth, t);
   const gender =
     exam.patient.gender === "MALE" ? t.examGenderMale : exam.patient.gender === "FEMALE" ? t.examGenderFemale : null;
+  const meta = [gender, age, exam.patient.bloodType && `${t.examBloodTypeShort} ${exam.patient.bloodType}`, exam.patient.phone].filter(Boolean);
+
+  const recent = <RecentVisits customerUuid={exam.patient.uuid} currentUuid={exam.uuid} t={t} language={language} />;
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      {/* ── Header ── */}
+      {/* ── Patient header ── */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border px-5 py-4">
-        <div className="flex h-11 min-w-11 items-center justify-center rounded-xl bg-primary/10 px-2 font-mono text-base font-bold tabular-nums text-primary">
-          {formatQueueNumber(exam.queueNumber)}
+        <div className="flex h-12 min-w-12 flex-col items-center justify-center rounded-xl bg-primary/10 px-2 text-primary">
+          <span className="text-[9px] font-semibold uppercase leading-none tracking-wider opacity-70">{t.examQueueShort}</span>
+          <span className="font-mono text-lg font-bold tabular-nums leading-tight">{formatQueueNumber(exam.queueNumber)}</span>
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate font-semibold text-foreground">{exam.patient.name.toUpperCase()}</p>
+            <p className="truncate text-base font-semibold text-foreground">{exam.patient.name.toUpperCase()}</p>
             <ExamStatusBadge status={exam.status} t={t} />
           </div>
-          <p className="truncate text-xs text-muted-foreground">
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
             <span className="font-mono">{exam.patient.medicalRecordNumber}</span>
-            {[gender, age, exam.patient.bloodType && `Gol. ${exam.patient.bloodType}`, exam.patient.phone]
-              .filter(Boolean)
-              .map((v) => ` · ${v}`)
-              .join("")}
-            {exam.doctor && ` · ${toDoctorName(exam.doctor.name)}`}
+            {meta.map((v) => ` · ${v}`).join("")}
           </p>
+          {exam.doctor && (
+            <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">
+              <Stethoscope className="h-3 w-3" aria-hidden />
+              {toDoctorName(exam.doctor.name)}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {(isWaiting || inProgress) && canCheckIn && (
+          {!isClosed && canCheckIn && (
             <Button variant="ghost" size="sm" className="h-9 gap-1.5 rounded-xl text-muted-foreground" disabled={busy} onClick={() => setConfirmCancel(true)}>
               <Ban className="h-4 w-4" />
               <span className="hidden sm:inline">{t.examCancel}</span>
@@ -266,120 +284,123 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        {/* ── Allergies: always the first thing the doctor sees ── */}
-        <div className="px-5 pt-4">
-          {allergies.length === 0 ? (
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
-              {t.examNoAllergies}
-            </p>
-          ) : (
-            <div className="rounded-xl border border-border bg-muted/20 px-3 py-2.5">
-              <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                <AlertTriangle className="h-3.5 w-3.5 text-destructive" aria-hidden />
-                {t.examAllergies}
-              </p>
-              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                {allergies.map((a) => (
-                  <li key={a.uuid} className="flex items-center gap-1.5">
-                    <span className={cn("h-2 w-2 rounded-full", SEVERITY_DOT[a.severity])} aria-hidden />
-                    <span className="font-medium text-foreground">{a.allergenName}</span>
-                    {a.reaction && <span className="text-muted-foreground">({a.reaction})</span>}
-                    <span className={cn("sr-only", SEVERITY_TEXT[a.severity])}>{a.severity}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5">
+        {/* Allergies: always the first thing anyone sees. */}
+        <PatientAllergies
+          customerUuid={exam.patient.uuid}
+          allergies={exam.patient.allergies}
+          canManage={canManageAllergies && !isClosed}
+          t={t}
+        />
 
-        {/* ── Waiting: call in ── */}
+        {/* ── 1. Waiting: triage + call in ── */}
         {isWaiting && (
-          <div className="mx-5 mt-4 rounded-xl border border-dashed border-border p-5">
-            {exam.chiefComplaint && (
-              <p className="mb-4 text-sm">
-                <span className="text-muted-foreground">{t.medicalRecordVisitChiefComplaint}: </span>
-                {exam.chiefComplaint}
-              </p>
-            )}
-            {canPerform ? (
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                <DoctorPicker value={doctorUuid} onChange={setDoctorUuid} fallback={exam.doctor?.name} t={t} />
-                <Button className="h-10 gap-2 rounded-xl" disabled={busy} onClick={() => startMutation.mutate()}>
-                  {startMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlayCircle className="h-4 w-4" />}
-                  {t.examCallIn}
-                </Button>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">{t.examStatusWaiting}</p>
-            )}
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <TriagePanel exam={exam} canEdit={canTriage} />
+            <div className="space-y-5">
+              {canPerform && (
+                <section className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                  <h3 className="text-sm font-semibold text-foreground">{t.examCallInTitle}</h3>
+                  {!exam.triagedAt && <p className="mt-1 text-xs text-muted-foreground">{t.examCallInNotTriaged}</p>}
+                  <div className="mt-3 space-y-3">
+                    <DoctorPicker value={doctorUuid} onChange={setDoctorUuid} fallback={exam.doctor?.name} t={t} />
+                    <Button className="h-10 w-full gap-2 rounded-xl" disabled={busy} onClick={() => startMutation.mutate()}>
+                      {startMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlayCircle className="h-4 w-4" />}
+                      {t.examCallIn}
+                    </Button>
+                  </div>
+                </section>
+              )}
+              {recent}
+            </div>
           </div>
         )}
 
-        {/* ── In progress / finished ── */}
+        {/* ── 2. In progress / closed ── */}
         {!isWaiting && (
-          <div className="grid gap-6 px-5 py-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div className="space-y-5">
-              <Field label={t.medicalRecordVisitChiefComplaint}>
-                <Textarea value={form.chiefComplaint} onChange={(e) => set("chiefComplaint", e.target.value)} disabled={!editable} placeholder={t.medicalRecordVisitChiefComplaintPlaceholder} rows={2} className="resize-none rounded-xl" />
-              </Field>
-
-              <div className="space-y-3">
-                <FormSectionLabel>{t.medicalRecordVisitSectionExam}</FormSectionLabel>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  <Vital label={t.medicalRecordVisitBloodPressure} unit="mmHg" value={form.bloodPressure} onChange={(v) => set("bloodPressure", v)} disabled={!editable} placeholder="120/80" inputMode="text" />
-                  <Vital label={t.medicalRecordVisitTemperature} unit="°C" value={form.temperatureCelsius} onChange={(v) => set("temperatureCelsius", v)} disabled={!editable} placeholder="36.5" />
-                  <Vital label={t.medicalRecordVisitPulse} unit="bpm" value={form.pulsePerMinute} onChange={(v) => set("pulsePerMinute", v)} disabled={!editable} placeholder="80" />
-                  <Vital label={t.medicalRecordVisitWeight} unit="kg" value={form.weightKg} onChange={(v) => set("weightKg", v)} disabled={!editable} placeholder="60" />
-                  <Vital label={t.medicalRecordVisitHeight} unit="cm" value={form.heightCm} onChange={(v) => set("heightCm", v)} disabled={!editable} placeholder="165" />
+          <>
+            <section className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <FormSectionLabel>{t.examVitalsTitle}</FormSectionLabel>
+                <div className="ml-auto flex items-center gap-2">
+                  <TriageStamp exam={exam} />
+                  {editable && exam.triagedAt && !editVitals && (
+                    <Button variant="ghost" size="sm" className="h-7 gap-1 rounded-lg px-2 text-xs" onClick={() => setEditVitals(true)}>
+                      <Pencil className="h-3 w-3" />
+                      {t.examEditVitals}
+                    </Button>
+                  )}
                 </div>
               </div>
+              {showVitalsForm ? (
+                <VitalsInputs value={vitals} onChange={setVital} disabled={busy} t={t} />
+              ) : (
+                <VitalsSummary values={exam} t={t} />
+              )}
+            </section>
 
-              <div className="space-y-3">
-                <FormSectionLabel>{t.medicalRecordVisitSectionAssessment}</FormSectionLabel>
-                <Field label={t.medicalRecordVisitDiagnosis}>
-                  <Textarea value={form.diagnosis} onChange={(e) => set("diagnosis", e.target.value)} disabled={!editable} placeholder={t.medicalRecordVisitDiagnosisPlaceholder} rows={2} className="resize-none rounded-xl" />
-                </Field>
-                <Field label={t.medicalRecordVisitNotesLabel}>
-                  <Textarea value={form.notes} onChange={(e) => set("notes", e.target.value)} disabled={!editable} placeholder={t.medicalRecordVisitNotesPlaceholder} rows={3} className="resize-none rounded-xl" />
-                </Field>
-              </div>
-            </div>
-
-            <div className="space-y-5">
-              <div className="space-y-3">
-                <FormSectionLabel>{t.examPrescription}</FormSectionLabel>
-                {exam.prescription ? (
-                  <ExistingPrescription exam={exam} t={t} onOpen={can("prescriptions.read") ? () => navigate(`/prescriptions?open=${exam.prescription!.uuid}`) : undefined} />
-                ) : editable && canPrescribe ? (
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <section className="space-y-4">
+                <FormSectionLabel>{t.examResultTitle}</FormSectionLabel>
+                {editable ? (
                   <>
-                    <p className="text-xs text-muted-foreground">{t.examPrescriptionHint}</p>
-                    <ExamPrescriptionEditor
-                      examUuid={exam.uuid}
-                      lines={rx.lines}
-                      notes={rx.notes}
-                      onLinesChange={(lines) => setRx((r) => ({ ...r, lines }))}
-                      onNotesChange={(notes) => setRx((r) => ({ ...r, notes }))}
-                      onConflictsChange={onConflictsChange}
-                      disabled={busy}
-                    />
-                    {lineError && <p className="text-xs text-destructive">{t.examLineRequired}</p>}
+                    <Field id="exam-complaint" label={t.medicalRecordVisitChiefComplaint}>
+                      <Textarea id="exam-complaint" value={form.chiefComplaint} onChange={(e) => setField("chiefComplaint", e.target.value)} placeholder={t.medicalRecordVisitChiefComplaintPlaceholder} rows={2} className="resize-none rounded-xl" />
+                    </Field>
+                    <Field id="exam-findings" label={t.examFindings}>
+                      <Textarea id="exam-findings" value={form.findings} onChange={(e) => setField("findings", e.target.value)} placeholder={t.examFindingsPlaceholder} rows={3} className="resize-none rounded-xl" />
+                    </Field>
+                    <Field id="exam-diagnosis" label={t.medicalRecordVisitDiagnosis}>
+                      <Textarea id="exam-diagnosis" value={form.diagnosis} onChange={(e) => setField("diagnosis", e.target.value)} placeholder={t.medicalRecordVisitDiagnosisPlaceholder} rows={2} className="resize-none rounded-xl" />
+                    </Field>
+                    <Field id="exam-advice" label={t.examAdvice}>
+                      <Textarea id="exam-advice" value={form.advice} onChange={(e) => setField("advice", e.target.value)} placeholder={t.examAdvicePlaceholder} rows={2} className="resize-none rounded-xl" />
+                    </Field>
+                    <Field id="exam-notes" label={t.examInternalNotes}>
+                      <Textarea id="exam-notes" value={form.notes} onChange={(e) => setField("notes", e.target.value)} placeholder={t.medicalRecordVisitNotesPlaceholder} rows={2} className="resize-none rounded-xl" />
+                    </Field>
                   </>
                 ) : (
-                  <p className="text-sm text-muted-foreground">{t.examNoPrescription}</p>
+                  <dl className="space-y-3">
+                    <ResultText label={t.medicalRecordVisitChiefComplaint} value={exam.chiefComplaint} />
+                    <ResultText label={t.examFindings} value={exam.findings} />
+                    <ResultText label={t.medicalRecordVisitDiagnosis} value={exam.diagnosis} emphasis />
+                    <ResultText label={t.examAdvice} value={exam.advice} />
+                    <ResultText label={exam.status === "CANCELLED" ? t.examCancelReason : t.examInternalNotes} value={exam.notes} />
+                    {!exam.chiefComplaint && !exam.findings && !exam.diagnosis && !exam.advice && !exam.notes && (
+                      <p className="text-sm text-muted-foreground">{t.examNoResult}</p>
+                    )}
+                  </dl>
                 )}
+              </section>
+
+              <div className="space-y-6">
+                <section className="space-y-3">
+                  <FormSectionLabel>{t.examPrescription}</FormSectionLabel>
+                  {exam.prescription ? (
+                    <ExistingPrescription exam={exam} t={t} onOpen={can("prescriptions.read") ? () => navigate(`/prescriptions?open=${exam.prescription!.uuid}`) : undefined} />
+                  ) : editable && canPrescribe ? (
+                    <>
+                      <p className="text-xs text-muted-foreground">{t.examPrescriptionHint}</p>
+                      <ExamPrescriptionEditor
+                        examUuid={exam.uuid}
+                        lines={rx.lines}
+                        notes={rx.notes}
+                        onLinesChange={(lines) => setRx((r) => ({ ...r, lines }))}
+                        onNotesChange={(notes) => setRx((r) => ({ ...r, notes }))}
+                        onConflictsChange={onConflictsChange}
+                        disabled={busy}
+                      />
+                      {lineError && <p className="text-xs text-destructive">{t.examLineRequired}</p>}
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">{t.examNoPrescription}</p>
+                  )}
+                </section>
+                {recent}
               </div>
-
-              <RecentVisits customerUuid={exam.patient.uuid} currentUuid={exam.uuid} t={t} language={language} />
             </div>
-          </div>
-        )}
-
-        {isWaiting && (
-          <div className="px-5 py-4">
-            <RecentVisits customerUuid={exam.patient.uuid} currentUuid={exam.uuid} t={t} language={language} />
-          </div>
+          </>
         )}
       </div>
 
@@ -442,39 +463,21 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
 
 // ── Small pieces ──────────────────────────────────────────────────────────────
 
-function Field({ label, children }: { label: string; children: ReactNode }): JSX.Element {
+function Field({ id, label, children }: { id: string; label: string; children: ReactNode }): JSX.Element {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label htmlFor={id}>{label}</Label>
       {children}
     </div>
   );
 }
 
-function Vital({
-  label,
-  unit,
-  value,
-  onChange,
-  disabled,
-  placeholder,
-  inputMode = "decimal",
-}: {
-  label: string;
-  unit: string;
-  value: string;
-  onChange: (v: string) => void;
-  disabled: boolean;
-  placeholder: string;
-  inputMode?: "decimal" | "text";
-}): JSX.Element {
+function ResultText({ label, value, emphasis }: { label: string; value: string | null; emphasis?: boolean }): JSX.Element | null {
+  if (!value) return null;
   return (
-    <div className="space-y-1.5">
-      <Label className="text-xs">{label}</Label>
-      <div className="relative">
-        <Input value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} placeholder={placeholder} inputMode={inputMode} className="h-10 rounded-xl pr-12" />
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{unit}</span>
-      </div>
+    <div>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className={cn("mt-0.5 whitespace-pre-line text-sm text-foreground", emphasis && "font-semibold")}>{value}</dd>
     </div>
   );
 }

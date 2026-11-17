@@ -2,13 +2,15 @@ import type { JSX } from "react";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/ui/combobox";
+import { CustomerFormModal } from "@/components/customers/CustomerFormModal";
+import { useCan } from "@/hooks/usePermission";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getCustomersDropdown } from "@/service/customerService";
 import { getDoctorsDropdown } from "@/service/doctorService";
@@ -28,6 +30,8 @@ export function CheckInModal({ onClose, onCheckedIn }: CheckInModalProps): JSX.E
   const [doctorUuid, setDoctorUuid] = useState("");
   const [complaint, setComplaint] = useState("");
   const [touched, setTouched] = useState(false);
+  const [creatingPatient, setCreatingPatient] = useState(false);
+  const can = useCan();
 
   const { data: patients } = useQuery({
     queryKey: ["customers-dropdown", { customerType: "PATIENT" }],
@@ -75,15 +79,23 @@ export function CheckInModal({ onClose, onCheckedIn }: CheckInModalProps): JSX.E
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{t.examCheckInTitle}</DialogTitle>
-          <DialogDescription>{t.examCheckInDesc}</DialogDescription>
+          <DialogDescription>{can("examinations.triage") ? t.examCheckInDescTriage : t.examCheckInDesc}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label>
-              {t.examPatient}
-              <span className="ml-0.5 text-destructive">*</span>
-            </Label>
+            <div className="flex items-center justify-between gap-2">
+              <Label>
+                {t.examPatient}
+                <span className="ml-0.5 text-destructive">*</span>
+              </Label>
+              {can("customers.create") && (
+                <Button type="button" variant="link" size="sm" className="h-auto gap-1 p-0 text-xs" onClick={() => setCreatingPatient(true)}>
+                  <UserPlus className="h-3.5 w-3.5" />
+                  {t.examNewPatient}
+                </Button>
+              )}
+            </div>
             <Combobox
               value={patientUuid}
               onValueChange={setPatientUuid}
@@ -128,6 +140,17 @@ export function CheckInModal({ onClose, onCheckedIn }: CheckInModalProps): JSX.E
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {creatingPatient && (
+        <CustomerFormModal
+          mode="create"
+          onClose={() => setCreatingPatient(false)}
+          onSuccess={(customer) => {
+            setCreatingPatient(false);
+            if (customer?.customerType === "PATIENT") setPatientUuid(customer.uuid);
+          }}
+        />
+      )}
     </Dialog>
   );
 }

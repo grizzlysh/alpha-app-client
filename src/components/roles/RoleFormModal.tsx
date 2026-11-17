@@ -49,8 +49,8 @@ function makeSchema(t: Translations, isEdit: boolean) {
   return z.object({
     name: z.string().trim().min(1, t.roleNameRequired).max(100),
     type: isEdit
-      ? z.enum(["OWNER", "ADMIN", "PHARMACIST", "HEAD_PHARMACIST", "CASHIER"] as const).optional()
-      : z.enum(["OWNER", "ADMIN", "PHARMACIST", "HEAD_PHARMACIST", "CASHIER"] as const, {
+      ? z.enum(["OWNER", "ADMIN", "PHARMACIST", "HEAD_PHARMACIST", "CASHIER", "DOCTOR", "NURSE"] as const).optional()
+      : z.enum(["OWNER", "ADMIN", "PHARMACIST", "HEAD_PHARMACIST", "CASHIER", "DOCTOR", "NURSE"] as const, {
           message: t.roleTypeRequired,
         }),
     requiresLicense: z.boolean().optional(),
@@ -504,6 +504,8 @@ export function RoleFormModal({
                           { value: "PHARMACIST", label: t.roleTypePharmacist },
                           { value: "HEAD_PHARMACIST", label: t.roleTypeHeadPharmacist },
                           { value: "CASHIER", label: t.roleTypeCashier },
+                          { value: "DOCTOR", label: t.roleTypeDoctor },
+                          { value: "NURSE", label: t.roleTypeNurse },
                         ]}
                         placeholder={t.roleSelectType}
                         className={cn(

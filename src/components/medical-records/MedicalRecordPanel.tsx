@@ -655,6 +655,7 @@ function VisitCard({
     visit.bloodPressure ? `${visit.bloodPressure} mmHg` : null,
     visit.temperatureCelsius != null ? `${visit.temperatureCelsius}°C` : null,
     visit.pulsePerMinute != null ? `${visit.pulsePerMinute} bpm` : null,
+    visit.oxygenSaturation != null ? `SpO₂ ${visit.oxygenSaturation}%` : null,
     visit.weightKg != null ? `${visit.weightKg} kg` : null,
     visit.heightCm != null ? `${visit.heightCm} cm` : null,
   ].filter(Boolean) as string[];
@@ -702,7 +703,7 @@ function VisitCard({
           )}
         </div>
 
-        {(visit.chiefComplaint || visit.diagnosis || visit.notes) && (
+        {(visit.chiefComplaint || visit.findings || visit.diagnosis || visit.advice || visit.notes) && (
           <dl className="mt-2 grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-1 text-xs">
             {visit.chiefComplaint && (
               <>
@@ -710,10 +711,22 @@ function VisitCard({
                 <dd className="min-w-0 text-foreground">{visit.chiefComplaint}</dd>
               </>
             )}
+            {visit.findings && (
+              <>
+                <dt className="text-muted-foreground">{t.examFindings}</dt>
+                <dd className="min-w-0 whitespace-pre-line text-foreground">{visit.findings}</dd>
+              </>
+            )}
             {visit.diagnosis && (
               <>
                 <dt className="text-muted-foreground">{t.medicalRecordVisitDiagnosis}</dt>
                 <dd className="min-w-0 font-medium text-foreground">{visit.diagnosis}</dd>
+              </>
+            )}
+            {visit.advice && (
+              <>
+                <dt className="text-muted-foreground">{t.examAdvice}</dt>
+                <dd className="min-w-0 whitespace-pre-line text-foreground">{visit.advice}</dd>
               </>
             )}
             {visit.notes && (

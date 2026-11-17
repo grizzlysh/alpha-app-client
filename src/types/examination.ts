@@ -1,4 +1,4 @@
-import type { AllergySeverity, AllergyType } from "./medicalRecord";
+import type { Allergy, AllergySeverity } from "./medicalRecord";
 import type { PrescriptionStatus } from "./prescription";
 
 export type VisitStatus = "WAITING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
@@ -11,13 +11,7 @@ export interface ExaminationPatient {
   dateOfBirth: string | null;
   medicalRecordNumber: string;
   bloodType: string | null;
-  allergies: {
-    uuid: string;
-    allergenName: string;
-    allergenType: AllergyType;
-    severity: AllergySeverity;
-    reaction: string | null;
-  }[];
+  allergies: Allergy[];
 }
 
 export interface ExaminationPrescriptionLine {
@@ -35,16 +29,21 @@ export interface Examination {
   status: VisitStatus;
   visitDate: string;
   checkedInAt: string | null;
+  triagedAt: string | null;
+  triagedBy: { uuid: string; name: string } | null;
   startedAt: string | null;
   completedAt: string | null;
   chiefComplaint: string | null;
+  findings: string | null;
   diagnosis: string | null;
+  advice: string | null;
   notes: string | null;
   weightKg: number | null;
   heightCm: number | null;
   bloodPressure: string | null;
   temperatureCelsius: number | null;
   pulsePerMinute: number | null;
+  oxygenSaturation: number | null;
   doctor: { uuid: string; name: string } | null;
   prescription: {
     uuid: string;
@@ -58,18 +57,26 @@ export interface Examination {
 export interface ExaminationQueue {
   date: string;
   counts: Record<VisitStatus, number>;
+  /** Waiting patients whose vitals are already recorded. */
+  triaged: number;
   items: Examination[];
 }
 
-export interface ExamFieldsPayload {
+export interface VitalsPayload {
   chiefComplaint?: string;
-  diagnosis?: string;
-  notes?: string;
   weightKg?: number | null;
   heightCm?: number | null;
   bloodPressure?: string;
   temperatureCelsius?: number | null;
   pulsePerMinute?: number | null;
+  oxygenSaturation?: number | null;
+}
+
+export interface ExamFieldsPayload extends VitalsPayload {
+  findings?: string;
+  diagnosis?: string;
+  advice?: string;
+  notes?: string;
 }
 
 export interface ExamPrescriptionItem {

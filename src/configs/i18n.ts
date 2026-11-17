@@ -2089,6 +2089,53 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  examEditVitals: string;
+  examAddAllergy: string;
+  examEditAllergy: string;
+  examAdvice: string;
+  examAdvicePlaceholder: string;
+  examBloodTypeShort: string;
+  examBmi: string;
+  examCallInTitle: string;
+  examCallInNotTriaged: string;
+  examCancelReason: string;
+  examFindings: string;
+  examFindingsPlaceholder: string;
+  examInternalNotes: string;
+  examNoResult: string;
+  examNoVitals: string;
+  examNotTriaged: string;
+  examQueueShort: string;
+  examResultTitle: string;
+  examSpo2: string;
+  examTriageTitle: string;
+  examTriageDesc: string;
+  examTriageSave: string;
+  examTriageUpdate: string;
+  examTriageSaved: string;
+  examTriagedBy: string;
+  examVitalBp: string;
+  examVitalTemp: string;
+  examVitalPulse: string;
+  examVitalWeight: string;
+  examVitalHeight: string;
+  examVitalsTitle: string;
+  examStageWaiting: string;
+  examStageReady: string;
+  examReadyEmpty: string;
+  examInProgressEmpty: string;
+  examCompletedEmpty: string;
+  examSeeWaiting: string;
+  examAllergyTag: string;
+  examCarriedOver: string;
+  examFlowRegister: string;
+  examFlowTriage: string;
+  examFlowDoctor: string;
+  examFlowDone: string;
+  examNewPatient: string;
+  examCheckInDescTriage: string;
+  roleTypeDoctor: string;
+  roleTypeNurse: string;
   examGenderMale: string;
   examGenderFemale: string;
   examLineRequired: string;
@@ -4084,7 +4131,7 @@ export const translations: Record<Language, Translations> = {
     examSubtitle: "Today's patient queue and the doctor's examination room",
     examCheckIn: "Register patient",
     examCheckInTitle: "Register patient to the queue",
-    examCheckInDesc: "New patient? Add them under Customers first.",
+    examCheckInDesc: "Pick the patient who arrived. A new patient can be registered right here.",
     examPatient: "Patient",
     examPatientPlaceholder: "Search patient name",
     examPatientRequired: "Choose a patient",
@@ -4139,6 +4186,53 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    examEditVitals: "Edit",
+    examAddAllergy: "Add allergy",
+    examEditAllergy: "Edit allergy",
+    examAdvice: "Treatment & advice",
+    examAdvicePlaceholder: "e.g. rest, drink plenty of water, come back in 3 days if the fever persists",
+    examBloodTypeShort: "Blood",
+    examBmi: "BMI",
+    examCallInTitle: "Call the patient in",
+    examCallInNotTriaged: "Vital signs haven't been recorded yet; you can fill them in during the examination.",
+    examCancelReason: "Cancellation reason",
+    examFindings: "Physical examination",
+    examFindingsPlaceholder: "e.g. pharynx hyperaemic, lungs clear, no tenderness",
+    examInternalNotes: "Internal notes",
+    examNoResult: "No examination result recorded.",
+    examNoVitals: "No vital signs recorded.",
+    examNotTriaged: "Not triaged",
+    examQueueShort: "No.",
+    examResultTitle: "Examination result",
+    examSpo2: "SpO₂",
+    examTriageTitle: "Triage",
+    examTriageDesc: "Complaint and vital signs before the doctor.",
+    examTriageSave: "Save & ready for doctor",
+    examTriageUpdate: "Update vital signs",
+    examTriageSaved: "Vital signs saved",
+    examTriagedBy: "{name} · {time}",
+    examVitalBp: "Blood pressure",
+    examVitalTemp: "Temperature",
+    examVitalPulse: "Pulse",
+    examVitalWeight: "Weight",
+    examVitalHeight: "Height",
+    examVitalsTitle: "Vital signs",
+    examStageWaiting: "Arrived",
+    examStageReady: "Ready",
+    examReadyEmpty: "No patient is ready for the doctor yet.",
+    examInProgressEmpty: "Nobody is being examined.",
+    examCompletedEmpty: "No examinations finished today.",
+    examSeeWaiting: "{n} patient(s) still waiting for triage",
+    examAllergyTag: "Allergy",
+    examCarriedOver: "Since",
+    examFlowRegister: "Register",
+    examFlowTriage: "Triage",
+    examFlowDoctor: "Doctor",
+    examFlowDone: "Prescription / done",
+    examNewPatient: "New patient",
+    examCheckInDescTriage: "Pick the patient who arrived; record vital signs and allergies in the triage panel next.",
+    roleTypeDoctor: "Doctor",
+    roleTypeNurse: "Nurse",
     examGenderMale: "M",
     examGenderFemale: "F",
     examLineRequired: "Fill in the medicine name and quantity",
@@ -6130,7 +6224,7 @@ export const translations: Record<Language, Translations> = {
     examSubtitle: "Antrean pasien hari ini dan ruang periksa dokter",
     examCheckIn: "Daftarkan pasien",
     examCheckInTitle: "Daftarkan pasien ke antrean",
-    examCheckInDesc: "Pasien baru? Tambahkan dulu di menu Pelanggan.",
+    examCheckInDesc: "Pilih pasien yang datang. Pasien baru bisa langsung didaftarkan di sini.",
     examPatient: "Pasien",
     examPatientPlaceholder: "Cari nama pasien",
     examPatientRequired: "Pilih pasien",
@@ -6185,6 +6279,53 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    examEditVitals: "Ubah",
+    examAddAllergy: "Tambah alergi",
+    examEditAllergy: "Ubah alergi",
+    examAdvice: "Tindakan & anjuran",
+    examAdvicePlaceholder: "mis. istirahat, banyak minum, kontrol 3 hari lagi bila demam berlanjut",
+    examBloodTypeShort: "Gol.",
+    examBmi: "IMT",
+    examCallInTitle: "Panggil pasien",
+    examCallInNotTriaged: "Tanda vital belum dicatat; bisa diisi saat pemeriksaan.",
+    examCancelReason: "Alasan pembatalan",
+    examFindings: "Pemeriksaan fisik",
+    examFindingsPlaceholder: "mis. faring hiperemis, paru bersih, tidak ada nyeri tekan",
+    examInternalNotes: "Catatan internal",
+    examNoResult: "Belum ada hasil pemeriksaan.",
+    examNoVitals: "Tanda vital belum dicatat.",
+    examNotTriaged: "Belum triase",
+    examQueueShort: "No.",
+    examResultTitle: "Hasil pemeriksaan",
+    examSpo2: "SpO₂",
+    examTriageTitle: "Triase",
+    examTriageDesc: "Keluhan dan tanda vital sebelum ke dokter.",
+    examTriageSave: "Simpan & siap diperiksa",
+    examTriageUpdate: "Perbarui tanda vital",
+    examTriageSaved: "Tanda vital tersimpan",
+    examTriagedBy: "{name} · {time}",
+    examVitalBp: "Tensi",
+    examVitalTemp: "Suhu",
+    examVitalPulse: "Nadi",
+    examVitalWeight: "Berat",
+    examVitalHeight: "Tinggi",
+    examVitalsTitle: "Tanda vital",
+    examStageWaiting: "Antre",
+    examStageReady: "Siap periksa",
+    examReadyEmpty: "Belum ada pasien yang siap diperiksa.",
+    examInProgressEmpty: "Tidak ada pasien yang sedang diperiksa.",
+    examCompletedEmpty: "Belum ada pemeriksaan yang selesai hari ini.",
+    examSeeWaiting: "{n} pasien masih menunggu triase",
+    examAllergyTag: "Alergi",
+    examCarriedOver: "Sejak",
+    examFlowRegister: "Daftar",
+    examFlowTriage: "Triase",
+    examFlowDoctor: "Dokter",
+    examFlowDone: "Resep / selesai",
+    examNewPatient: "Pasien baru",
+    examCheckInDescTriage: "Pilih pasien yang datang, lalu catat tanda vital dan alergi di panel triase.",
+    roleTypeDoctor: "Dokter",
+    roleTypeNurse: "Perawat",
     examGenderMale: "L",
     examGenderFemale: "P",
     examLineRequired: "Isi nama obat dan jumlahnya",

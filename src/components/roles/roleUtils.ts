@@ -8,6 +8,8 @@ export function getRoleTypeLabel(type: PharmacyRole, t: Translations): string {
     PHARMACIST: t.roleTypePharmacist,
     HEAD_PHARMACIST: t.roleTypeHeadPharmacist,
     CASHIER: t.roleTypeCashier,
+    DOCTOR: t.roleTypeDoctor,
+    NURSE: t.roleTypeNurse,
   };
   return map[type] ?? type;
 }

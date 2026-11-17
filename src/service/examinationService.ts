@@ -8,6 +8,7 @@ import type {
   Examination,
   ExaminationQueue,
   VisitStatus,
+  VitalsPayload,
 } from "@/types/examination";
 
 export async function getExaminationQueue(params?: { date?: string; status?: VisitStatus }): Promise<ApiResponse<ExaminationQueue>> {
@@ -26,6 +27,11 @@ export async function checkInPatient(payload: {
   chiefComplaint?: string;
 }): Promise<ApiResponse<Examination>> {
   const res = await axiosInstance.post<ApiResponse<Examination>>("/examinations", payload);
+  return res.data;
+}
+
+export async function triageExamination(uuid: string, payload: VitalsPayload): Promise<ApiResponse<Examination>> {
+  const res = await axiosInstance.put<ApiResponse<Examination>>(`/examinations/${uuid}/triage`, payload);
   return res.data;
 }
 

@@ -45,13 +45,16 @@ function buildSchema(t: { medicalRecordVisitDateRequired: string; medicalRecordV
       .min(1, t.medicalRecordVisitDateRequired)
       .refine((v) => v <= todayStr(), t.medicalRecordVisitFutureDate),
     chiefComplaint: z.string().trim().optional(),
+    findings: z.string().trim().optional(),
     diagnosis: z.string().trim().optional(),
+    advice: z.string().trim().optional(),
     notes: z.string().trim().optional(),
     weightKg: z.string().trim().optional(),
     heightCm: z.string().trim().optional(),
     bloodPressure: z.string().trim().optional(),
     temperatureCelsius: z.string().trim().optional(),
     pulsePerMinute: z.string().trim().optional(),
+    oxygenSaturation: z.string().trim().optional(),
     doctorUuid: z.string().optional(),
   });
 }
@@ -87,13 +90,16 @@ export function VisitFormModal({
       // A new visit is almost always today's.
       visitDate: visit ? toDateStr(visit.visitDate) : todayStr(),
       chiefComplaint: visit?.chiefComplaint ?? "",
+      findings: visit?.findings ?? "",
       diagnosis: visit?.diagnosis ?? "",
+      advice: visit?.advice ?? "",
       notes: visit?.notes ?? "",
       weightKg: visit?.weightKg != null ? String(visit.weightKg) : "",
       heightCm: visit?.heightCm != null ? String(visit.heightCm) : "",
       bloodPressure: visit?.bloodPressure ?? "",
       temperatureCelsius: visit?.temperatureCelsius != null ? String(visit.temperatureCelsius) : "",
       pulsePerMinute: visit?.pulsePerMinute != null ? String(visit.pulsePerMinute) : "",
+      oxygenSaturation: visit?.oxygenSaturation != null ? String(visit.oxygenSaturation) : "",
       doctorUuid: visit?.doctor?.uuid ?? "",
     },
   });
@@ -103,13 +109,16 @@ export function VisitFormModal({
       // A new visit is almost always today's.
       visitDate: visit ? toDateStr(visit.visitDate) : todayStr(),
       chiefComplaint: visit?.chiefComplaint ?? "",
+      findings: visit?.findings ?? "",
       diagnosis: visit?.diagnosis ?? "",
+      advice: visit?.advice ?? "",
       notes: visit?.notes ?? "",
       weightKg: visit?.weightKg != null ? String(visit.weightKg) : "",
       heightCm: visit?.heightCm != null ? String(visit.heightCm) : "",
       bloodPressure: visit?.bloodPressure ?? "",
       temperatureCelsius: visit?.temperatureCelsius != null ? String(visit.temperatureCelsius) : "",
       pulsePerMinute: visit?.pulsePerMinute != null ? String(visit.pulsePerMinute) : "",
+      oxygenSaturation: visit?.oxygenSaturation != null ? String(visit.oxygenSaturation) : "",
       doctorUuid: visit?.doctor?.uuid ?? "",
     });
   }, [visit, form]);
@@ -161,13 +170,16 @@ export function VisitFormModal({
       // Noon local time, so the stored date never shifts a day across time zones.
       visitDate: new Date(`${values.visitDate}T12:00:00`).toISOString(),
       chiefComplaint: values.chiefComplaint || undefined,
+      findings: values.findings || undefined,
       diagnosis: values.diagnosis || undefined,
+      advice: values.advice || undefined,
       notes: values.notes || undefined,
       weightKg: values.weightKg ? parseFloat(values.weightKg) : undefined,
       heightCm: values.heightCm ? parseFloat(values.heightCm) : undefined,
       bloodPressure: values.bloodPressure || undefined,
       temperatureCelsius: values.temperatureCelsius ? parseFloat(values.temperatureCelsius) : undefined,
       pulsePerMinute: values.pulsePerMinute ? parseInt(values.pulsePerMinute, 10) : undefined,
+      oxygenSaturation: values.oxygenSaturation ? parseInt(values.oxygenSaturation, 10) : undefined,
       doctorUuid: values.doctorUuid || undefined,
     };
 
@@ -313,6 +325,22 @@ export function VisitFormModal({
                 />
                 <FormField
                   control={form.control}
+                  name="oxygenSaturation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.examSpo2}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input {...field} type="number" inputMode="numeric" min={50} max={100} className="h-10 rounded-xl pr-14" placeholder="98" />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="weightKg"
                   render={({ field }) => (
                     <FormItem>
@@ -365,12 +393,38 @@ export function VisitFormModal({
               <div className="grid gap-4 sm:grid-cols-4">
                 <FormField
                   control={form.control}
+                  name="findings"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-4">
+                      <FormLabel>{t.examFindings}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder={t.examFindingsPlaceholder} rows={2} className="resize-none rounded-xl" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="diagnosis"
                   render={({ field }) => (
                     <FormItem className="sm:col-span-4">
                       <FormLabel>{t.medicalRecordVisitDiagnosis}</FormLabel>
                       <FormControl>
                         <Textarea {...field} placeholder={t.medicalRecordVisitDiagnosisPlaceholder} rows={2} className="resize-none rounded-xl" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="advice"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-4">
+                      <FormLabel>{t.examAdvice}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder={t.examAdvicePlaceholder} rows={2} className="resize-none rounded-xl" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

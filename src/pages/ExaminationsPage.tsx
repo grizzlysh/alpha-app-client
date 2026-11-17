@@ -2,13 +2,15 @@ import type { JSX } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
-import { HeartPulse, Plus, Stethoscope } from "lucide-react";
+import { ClipboardList, HeartPulse, Plus, Stethoscope } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckInModal } from "@/components/examinations/CheckInModal";
 import { ExamWorkspace } from "@/components/examinations/ExamWorkspace";
 import { ExamStatusBadge, formatQueueNumber } from "@/components/examinations/examStatus";
+import { QUEUE_STAGES, stageOf, type QueueStage } from "@/components/examinations/queueStage";
+import { hasAbnormalVital, vitalsInline } from "@/components/examinations/vitals";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCan } from "@/hooks/usePermission";
@@ -16,25 +18,24 @@ import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { getExaminationQueue } from "@/service/examinationService";
 import { cn } from "@/utils/cn";
 import type { Translations } from "@/configs/i18n";
-import type { Examination, VisitStatus } from "@/types/examination";
-
-type Filter = "WAITING" | "IN_PROGRESS" | "COMPLETED";
-const FILTERS: Filter[] = ["WAITING", "IN_PROGRESS", "COMPLETED"];
+import type { Examination } from "@/types/examination";
 
 export default function ExaminationsPage(): JSX.Element {
   const { t, language } = useLanguage();
   const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
   const pharmacyUuid = useSelector((s: RootState) => s.auth.currentPharmacy?.uuid);
+  const canPerform = can("examinations.perform");
 
-  const [filter, setFilter] = useState<Filter>("WAITING");
+  // Doctors start on "ready"; the front desk / nurse on the arrivals.
+  const [stage, setStage] = useState<QueueStage>(canPerform ? "READY" : "WAITING");
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
   const [checkInOpen, setCheckInOpen] = useState(false);
   // On narrow screens the list and the workspace take turns.
   const [mobileView, setMobileView] = useState<"queue" | "exam">("queue");
 
-  // The queue changes from other desks (front desk checks in, another doctor
-  // calls a patient), so it polls.
+  // The queue changes from other desks (front desk checks in, nurse triages,
+  // another doctor calls a patient), so it polls.
   const { data, isLoading } = useQuery({
     queryKey: ["examinations", pharmacyUuid, "today"],
     queryFn: () => getExaminationQueue(),
@@ -44,29 +45,32 @@ export default function ExaminationsPage(): JSX.Element {
 
   const queue = data?.data;
   const items = useMemo(() => queue?.items ?? [], [queue]);
-  const visible = items.filter((e) => e.status === filter);
-  const selected = items.find((e) => e.uuid === selectedUuid) ?? null;
-
-  // Keep the selection on screen when its status moves it to another tab.
-  useEffect(() => {
-    if (selected && selected.status !== "CANCELLED" && selected.status !== filter) {
-      setFilter(selected.status as Filter);
+  const counts: Record<QueueStage, number> = useMemo(() => {
+    const c = { WAITING: 0, READY: 0, IN_PROGRESS: 0, COMPLETED: 0 };
+    for (const e of items) {
+      const s = stageOf(e);
+      if (s) c[s]++;
     }
+    return c;
+  }, [items]);
+  const visible = items.filter((e) => stageOf(e) === stage);
+  const selected = items.find((e) => e.uuid === selectedUuid) ?? null;
+  const selectedStage = selected ? stageOf(selected) : null;
+
+  // Keep the selection on screen when triage / call-in moves it to another stage.
+  useEffect(() => {
+    if (selectedStage && selectedStage !== stage) setStage(selectedStage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected?.status]);
+  }, [selectedStage]);
 
   function select(exam: Examination): void {
     setSelectedUuid(exam.uuid);
     setMobileView("exam");
   }
 
+  const locale = language === "id" ? "id-ID" : "en-US";
   const dateLabel = queue
-    ? new Date(`${queue.date}T12:00:00`).toLocaleDateString(language === "id" ? "id-ID" : "en-US", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
+    ? new Date(`${queue.date}T12:00:00`).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
     : "";
 
   return (
@@ -91,22 +95,25 @@ export default function ExaminationsPage(): JSX.Element {
 
       <div className="flex min-h-0 flex-1 gap-4">
         {/* ── Queue ── */}
-        <Card className={cn("w-full flex-shrink-0 flex-col overflow-hidden lg:flex lg:w-80", mobileView === "queue" ? "flex" : "hidden")}>
-          <div className="grid grid-cols-3 gap-1 border-b border-border p-2" role="tablist">
-            {FILTERS.map((f) => (
+        <Card className={cn("w-full flex-shrink-0 flex-col overflow-hidden lg:flex lg:w-[22rem]", mobileView === "queue" ? "flex" : "hidden")}>
+          {/* Stage stepper: the order a patient moves through. */}
+          <div className="grid grid-cols-4 gap-1 border-b border-border bg-muted/20 p-2" role="tablist" aria-label={t.navExaminations}>
+            {QUEUE_STAGES.map((s) => (
               <button
-                key={f}
+                key={s}
                 type="button"
                 role="tab"
-                aria-selected={filter === f}
-                onClick={() => setFilter(f)}
+                aria-selected={stage === s}
+                onClick={() => setStage(s)}
                 className={cn(
-                  "flex flex-col items-center rounded-lg px-2 py-1.5 text-xs font-medium transition-colors",
-                  filter === f ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/60"
+                  "flex flex-col items-center rounded-xl px-1 py-2 text-[11px] font-medium leading-tight transition-colors",
+                  stage === s ? "bg-card text-primary shadow-sm ring-1 ring-border" : "text-muted-foreground hover:bg-card/60"
                 )}
               >
-                <span className="text-lg font-bold tabular-nums leading-tight">{queue?.counts[f] ?? 0}</span>
-                {statusLabel(f, t)}
+                <span className={cn("text-lg font-bold tabular-nums leading-tight", stage === s ? "text-primary" : "text-foreground")}>
+                  {counts[s]}
+                </span>
+                <span className="text-center">{stageLabel(s, t)}</span>
               </button>
             ))}
           </div>
@@ -121,12 +128,25 @@ export default function ExaminationsPage(): JSX.Element {
             ) : visible.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
                 <HeartPulse className="h-8 w-8 text-muted-foreground/30" />
-                <p className="text-sm text-muted-foreground">{t.examQueueEmpty}</p>
+                <p className="text-sm text-muted-foreground">{stageEmpty(stage, t)}</p>
+                {stage === "READY" && counts.WAITING > 0 && (
+                  <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => setStage("WAITING")}>
+                    {t.examSeeWaiting.replace("{n}", String(counts.WAITING))}
+                  </Button>
+                )}
               </div>
             ) : (
               <ul className="space-y-1">
                 {visible.map((exam) => (
-                  <QueueItem key={exam.uuid} exam={exam} selected={exam.uuid === selectedUuid} onClick={() => select(exam)} t={t} />
+                  <QueueItem
+                    key={exam.uuid}
+                    exam={exam}
+                    today={queue?.date ?? ""}
+                    locale={locale}
+                    selected={exam.uuid === selectedUuid}
+                    onClick={() => select(exam)}
+                    t={t}
+                  />
                 ))}
               </ul>
             )}
@@ -148,7 +168,7 @@ export default function ExaminationsPage(): JSX.Element {
               <ExamWorkspace key={selected.uuid} exam={selected} />
             </>
           ) : (
-            <div className="flex flex-1 flex-col items-center justify-center gap-3 p-12 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 p-12 text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/40">
                 <Stethoscope className="h-8 w-8 text-muted-foreground/40" />
               </div>
@@ -156,6 +176,17 @@ export default function ExaminationsPage(): JSX.Element {
                 <p className="text-base font-semibold text-foreground">{t.examSelectTitle}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{t.examSelectDesc}</p>
               </div>
+              <ol className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+                {[t.examFlowRegister, t.examFlowTriage, t.examFlowDoctor, t.examFlowDone].map((label, i, all) => (
+                  <li key={label} className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-foreground">{i + 1}</span>
+                      {label}
+                    </span>
+                    {i < all.length - 1 && <span aria-hidden>→</span>}
+                  </li>
+                ))}
+              </ol>
             </div>
           )}
         </Card>
@@ -166,8 +197,9 @@ export default function ExaminationsPage(): JSX.Element {
           onClose={() => setCheckInOpen(false)}
           onCheckedIn={(exam) => {
             setCheckInOpen(false);
-            setFilter("WAITING");
+            setStage("WAITING");
             setSelectedUuid(exam.uuid);
+            setMobileView("exam");
           }}
         />
       )}
@@ -175,27 +207,43 @@ export default function ExaminationsPage(): JSX.Element {
   );
 }
 
-function statusLabel(s: VisitStatus, t: Translations): string {
-  return { WAITING: t.examStatusWaiting, IN_PROGRESS: t.examStatusInProgress, COMPLETED: t.examStatusCompleted, CANCELLED: t.examStatusCancelled }[s];
+function stageLabel(s: QueueStage, t: Translations): string {
+  return { WAITING: t.examStageWaiting, READY: t.examStageReady, IN_PROGRESS: t.examStatusInProgress, COMPLETED: t.examStatusCompleted }[s];
+}
+
+function stageEmpty(s: QueueStage, t: Translations): string {
+  return { WAITING: t.examQueueEmpty, READY: t.examReadyEmpty, IN_PROGRESS: t.examInProgressEmpty, COMPLETED: t.examCompletedEmpty }[s];
 }
 
 function QueueItem({
   exam,
+  today,
+  locale,
   selected,
   onClick,
   t,
 }: {
   exam: Examination;
+  today: string;
+  locale: string;
   selected: boolean;
   onClick: () => void;
   t: Translations;
 }): JSX.Element {
-  const since = exam.status === "WAITING" ? exam.checkedInAt : exam.status === "IN_PROGRESS" ? exam.startedAt : null;
+  const stage = stageOf(exam);
+  const since = stage === "WAITING" || stage === "READY" ? exam.checkedInAt : stage === "IN_PROGRESS" ? exam.startedAt : null;
   const minutes = since ? Math.max(0, Math.floor((Date.now() - new Date(since).getTime()) / 60000)) : null;
-  const time = exam.checkedInAt
-    ? new Date(exam.checkedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  const checkedIn = exam.checkedInAt ? new Date(exam.checkedInAt) : null;
+  // Carried over from an earlier day (still waiting / being examined).
+  const carriedOver = checkedIn != null && today !== "" && checkedIn.toLocaleDateString("sv-SE") < today;
+  const time = checkedIn
+    ? carriedOver
+      ? checkedIn.toLocaleDateString(locale, { day: "numeric", month: "short" })
+      : checkedIn.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : "";
   const hasSevere = exam.patient.allergies.some((a) => a.severity === "SEVERE");
+  const vitals = vitalsInline(exam);
+  const abnormal = hasAbnormalVital(exam);
 
   return (
     <li>
@@ -221,15 +269,26 @@ function QueueItem({
             <span className={cn("truncate text-sm font-semibold", selected ? "text-primary" : "text-foreground")}>
               {exam.patient.name.toUpperCase()}
             </span>
-            {hasSevere && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" title={t.examAllergies} aria-label={t.examAllergies} />}
+            {hasSevere && (
+              <span className="shrink-0 rounded bg-destructive/10 px-1 text-[10px] font-bold uppercase text-destructive" title={t.examAllergies}>
+                {t.examAllergyTag}
+              </span>
+            )}
           </span>
           <span className="block truncate text-xs text-muted-foreground">
+            {carriedOver && <span className="font-medium text-amber-700 dark:text-amber-400">{t.examCarriedOver} </span>}
             {time}
-            {minutes != null && exam.status === "WAITING" && ` · ${t.examWaitingFor.replace("{n}", String(minutes))}`}
+            {minutes != null && !carriedOver && (stage === "WAITING" || stage === "READY") && ` · ${t.examWaitingFor.replace("{n}", String(minutes))}`}
             {exam.chiefComplaint && ` · ${exam.chiefComplaint}`}
           </span>
+          {vitals && (stage === "READY" || stage === "IN_PROGRESS") && (
+            <span className={cn("mt-0.5 flex items-center gap-1 truncate text-[11px] tabular-nums", abnormal ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground")}>
+              <ClipboardList className="h-3 w-3 shrink-0" aria-hidden />
+              <span className="truncate">{vitals}</span>
+            </span>
+          )}
         </span>
-        {exam.status !== "WAITING" && <ExamStatusBadge status={exam.status} t={t} />}
+        {stage === "IN_PROGRESS" && <ExamStatusBadge status={exam.status} t={t} />}
       </button>
     </li>
   );
