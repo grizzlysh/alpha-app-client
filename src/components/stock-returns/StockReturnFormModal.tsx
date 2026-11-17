@@ -46,7 +46,7 @@ import type { Invoice, InvoiceDetail } from "@/types/invoice";
 import { createStockReturn, updateStockReturn } from "@/service/stockReturnService";
 import { getInvoices, getInvoice } from "@/service/invoiceService";
 import { getStocks } from "@/service/stockService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 import { formatDate } from "./stockReturnUtils";
 
 // ── Edit-mode schema (existing items) ────────────────────────────────────────
@@ -547,8 +547,9 @@ export function StockReturnFormModal({
   });
 
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "PHARMACIST"],
+    // Only pharmacists with an active practice license can sign.
+    queryFn: () => getSigners("PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 

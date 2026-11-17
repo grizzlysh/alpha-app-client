@@ -52,7 +52,7 @@ import {
   updateStockDisposal,
 } from "@/service/stockDisposalService";
 import { getStockDetails } from "@/service/stockService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 import { formatDate } from "./stockDisposalUtils";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
@@ -207,9 +207,10 @@ export function StockDisposalFormModal({
     staleTime: 0,
   });
 
+  // Only people allowed to sign: the Head Pharmacist.
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "HEAD_PHARMACIST"],
+    queryFn: () => getSigners("HEAD_PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -637,6 +638,7 @@ export function StockDisposalFormModal({
                     />
                   )}
                 />
+                <p className="text-xs text-muted-foreground">{t.sdSignerHint}</p>
               </div>
 
               <div className="space-y-1.5">

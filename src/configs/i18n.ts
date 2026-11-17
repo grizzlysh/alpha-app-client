@@ -2089,6 +2089,8 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  poSignerHint: string;
+  sdSignerHint: string;
   pharmaNoOwner: string;
   navPharmacyProfile: string;
   setupTitle: string;
@@ -4287,6 +4289,8 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    poSignerHint: "Pharmacists with an active practice license. Orders with narcotics, psychotropics or precursors must be signed by the Head Pharmacist.",
+    sdSignerHint: "Disposal records are signed by the Head Pharmacist (active practice license).",
     pharmaNoOwner: "No owner yet",
     navPharmacyProfile: "Pharmacy profile",
     setupTitle: "Finish setting up this pharmacy",
@@ -6481,6 +6485,8 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    poSignerHint: "Apoteker dengan SIPA aktif. Pesanan narkotika, psikotropika, atau prekursor wajib ditandatangani Head Pharmacist.",
+    sdSignerHint: "Berita acara pemusnahan ditandatangani Head Pharmacist (SIPA aktif).",
     pharmaNoOwner: "Belum ada pemilik",
     navPharmacyProfile: "Profil apotek",
     setupTitle: "Lengkapi pengaturan apotek",

@@ -27,6 +27,17 @@ const EMPTY_204: ApiResponse<null> = {
   meta: null,
 };
 
+/** People allowed to sign at the selected pharmacy (licensed pharmacists, or only the Head Pharmacist). */
+export async function getSigners(
+  level: "PHARMACIST" | "HEAD_PHARMACIST"
+): Promise<ApiResponse<(UserDropdownItem & { isHeadPharmacist: boolean })[]>> {
+  const response = await axiosInstance.get<ApiResponse<(UserDropdownItem & { isHeadPharmacist: boolean })[]>>(
+    "/users/signers",
+    { params: { level } }
+  );
+  return response.data;
+}
+
 export async function getUsersDropdown(params?: {
   search?: string;
   pharmacyUuid?: string;

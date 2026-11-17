@@ -24,7 +24,7 @@ import type { Translations } from "@/configs/i18n";
 import { getApiErrorMessage } from "@/utils/apiError";
 import type { Stock, StockDetail } from "@/types/stock";
 import { adjustStock } from "@/service/stockService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -76,8 +76,9 @@ export function StockAdjustModal({
   });
 
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "PHARMACIST"],
+    // Only pharmacists with an active practice license can sign.
+    queryFn: () => getSigners("PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 

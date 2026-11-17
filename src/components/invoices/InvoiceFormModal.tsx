@@ -41,7 +41,7 @@ import type { MedicineDropdownItem } from "@/types/medicine";
 import { createInvoice } from "@/service/invoiceService";
 import { getDistributorsDropdown } from "@/service/distributorService";
 import { getMedicinesDropdown } from "@/service/medicineService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 import { getPurchaseOrder, getPurchaseOrdersDropdown } from "@/service/purchaseOrderService";
 import { getBusinessParameters } from "@/service/businessParameterService";
 import { getCabinetsDropdown, getShelvesDropdown, getBinsDropdown } from "@/service/storageService";
@@ -763,8 +763,9 @@ export function InvoiceFormModal({
   });
 
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "PHARMACIST"],
+    // Only pharmacists with an active practice license can sign.
+    queryFn: () => getSigners("PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 
