@@ -1,8 +1,12 @@
 import { barcodeSvg } from "@/utils/barcode";
 import type { StockCard } from "@/types/stock";
 
-/** What can be printed for a batch / a medicine. */
-export type PrintKind = "batch-label" | "medicine-label" | "stock-card";
+/**
+ * What can be printed: one label for the whole batch, one label per item
+ * (box) of the batch, the medicine's shelf label, or the batch's stock card.
+ */
+export type PrintKind = "batch-label" | "item-label" | "medicine-label" | "stock-card";
+export type LabelKind = Exclude<PrintKind, "stock-card">;
 
 /** Label stock: a thermal roll (one label per page) or an A4 sheet of 3 × 8. */
 export type LabelSize = "50x30" | "38x25" | "a4-64x34";
@@ -18,6 +22,10 @@ export interface LabelText {
   batch: string;
   expiry: string;
   stock: string;
+  totalStock: string;
+  contents: string;
+  item: string;
+  box: string;
   allBatches: string;
   stockCard: string;
   packaging: string;
@@ -36,10 +44,19 @@ export interface LabelText {
   page: string;
 }
 
-export interface LabelOptions {
+/** Which lines a label shows. Stock only applies to the batch label. */
+export interface LabelFields {
+  showStock: boolean;
+  showExpiry: boolean;
+  showContents: boolean;
+  showPrice: boolean;
+}
+
+export interface LabelOptions extends LabelFields {
   size: LabelSize;
   copies: number;
-  showPrice: boolean;
+  /** Item labels: number of the first item (to continue a batch printed earlier). */
+  startNumber: number;
   /** "id-ID" or "en-GB": dates and money. */
   locale: string;
   /** Applies the pharmacy's name display setting (upper / title / as typed). */
@@ -78,32 +95,68 @@ export function drugClassMark(typeName: string, isControlled: boolean, sizeMm = 
 
 // ── Labels ────────────────────────────────────────────────────────────────────
 
-/** One label's inner HTML (the same for every copy). */
-export function labelHtml(kind: Exclude<PrintKind, "stock-card">, card: StockCard, text: LabelText, opts: LabelOptions): string {
+/** The code printed on item n of a batch: the batch code, "-" and a 3-digit number. */
+export const itemCode = (batchBarcode: string, n: number): string => `${batchBarcode}-${String(n).padStart(3, "0")}`;
+
+/** "isi 10 strip" for a box, or the unit itself when a batch is not boxed. */
+function contentsText(card: StockCard, text: LabelText): string {
+  const unit = card.medicine.unit.toLowerCase();
+  return card.batch.quantityPerBox > 1
+    ? `${text.contents} 1 ${text.box} = ${card.batch.quantityPerBox} ${unit}`
+    : `${text.contents} 1 ${unit}`;
+}
+
+/** "44 strip (4 box + 4)" */
+export function stockText(card: StockCard): string {
+  const unit = card.medicine.unit.toLowerCase();
+  const pieces = card.batch.quantityPieces;
+  const per = card.batch.quantityPerBox;
+  if (per <= 1) return `${pieces.toLocaleString("id-ID")} ${unit}`;
+  const boxes = Math.floor(pieces / per);
+  const rest = pieces % per;
+  return `${pieces.toLocaleString("id-ID")} ${unit} (${boxes} box${rest ? ` + ${rest}` : ""})`;
+}
+
+/** One label's inner HTML. `itemNumber` is set for item labels. */
+export function labelHtml(kind: LabelKind, card: StockCard, text: LabelText, opts: LabelOptions, itemNumber?: number): string {
   const m = card.medicine;
   const small = opts.size === "38x25";
-  const code = kind === "medicine-label" ? m.barcode : card.batch.barcode;
-  const svg = code ? barcodeSvg(code, { height: small ? 34 : 40, width: 1.4, fontSize: small ? 10 : 11 }) : null;
+  const code =
+    kind === "medicine-label" ? m.barcode : kind === "item-label" ? itemCode(card.batch.barcode, itemNumber ?? 1) : card.batch.barcode;
+  const svg = code ? barcodeSvg(code, { height: small ? 34 : 40, width: 1.4, fontSize: small ? 9 : 10 }) : null;
   const mark = drugClassMark(m.type, m.isControlled, small ? 3.4 : 4.4);
   const name = esc(opts.formatName(m.name));
-  const price = opts.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
 
-  const detail =
-    kind === "batch-label"
-      ? `<div class="row"><span>${text.batch} <b class="mono">${esc(card.batch.batchNumber.toUpperCase())}</b></span><span>${text.expiry} <b>${monthYear(card.batch.expiryDate)}</b></span></div>
-         <div class="row"><span>${text.stock} <b>${card.batch.quantityPieces.toLocaleString("id-ID")} ${esc(m.unit.toLowerCase())}</b></span>${price}</div>`
-      : `<div class="row"><span>${text.allBatches}</span>${price}</div>`;
+  const rows: string[] = [];
+  if (kind !== "medicine-label") {
+    const batch = `<span>${text.batch} <b class="mono">${esc(card.batch.batchNumber.toUpperCase())}</b></span>`;
+    const expiry = opts.showExpiry ? `<span>${text.expiry} <b>${monthYear(card.batch.expiryDate)}</b></span>` : "";
+    rows.push(`<div class="row">${batch}${expiry}</div>`);
+  } else {
+    rows.push(`<div class="row"><span>${text.allBatches}</span></div>`);
+  }
+  // One fact per line so nothing gets cut off; the price sits at the end of the last line.
+  const lines: string[] = [];
+  const contents = opts.showContents ? esc(contentsText(card, text)) : "";
+  if (kind === "item-label") lines.push(`<b>${text.item} ${itemNumber ?? 1}</b>${contents ? ` · ${contents}` : ""}`);
+  else if (contents) lines.push(contents);
+  if (kind === "batch-label" && opts.showStock) lines.push(`${text.stock} <b>${esc(stockText(card))}</b>`);
+  const price = opts.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
+  if (lines.length === 0 && price) lines.push("");
+  lines.forEach((line, i) => {
+    rows.push(`<div class="row"><span class="left">${line}</span>${i === lines.length - 1 ? price : ""}</div>`);
+  });
 
   return `
     <div class="top">
       <div class="id">
         ${small ? "" : `<div class="shop">${esc(card.pharmacy.name)}</div>`}
         <div class="name">${name}</div>
-        ${small ? "" : `<div class="sub">${esc(m.shape)} · ${esc(m.unit)}${card.batch.quantityPerBox > 1 ? ` isi ${card.batch.quantityPerBox}` : ""}</div>`}
+        ${small ? "" : `<div class="sub">${esc(m.shape)} · ${esc(m.unit)}</div>`}
       </div>
       ${mark}
     </div>
-    ${detail}
+    ${rows.join("")}
     <div class="bc">${svg ?? `<span class="mono">${esc(code ?? "")}</span>`}</div>`;
 }
 
@@ -118,6 +171,7 @@ const LABEL_CSS = `
   .name { font-weight: 700; text-transform: uppercase; line-height: 1.1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .sub { color: #444; }
   .row { display: flex; justify-content: space-between; gap: 1mm; margin-top: .3mm; white-space: nowrap; }
+  .row .left { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .bc { margin-top: auto; height: var(--bc-h); display: flex; justify-content: center; }
   .bc svg { width: 100%; height: 100%; }
 `;
@@ -135,11 +189,14 @@ const SIZE_CSS: Record<LabelSize, string> = {
     .name { font-size: 8pt; } .sub, .row { font-size: 6pt; } .shop { font-size: 5.6pt; } .price { font-size: 7.4pt; }`,
 };
 
-/** A full printable document of `copies` labels. */
-export function labelsDocument(kind: Exclude<PrintKind, "stock-card">, card: StockCard, text: LabelText, opts: LabelOptions): string {
-  const one = `<div class="label">${labelHtml(kind, card, text, opts)}</div>`;
+/** A full printable document of `copies` labels (item labels numbered from `startNumber`). */
+export function labelsDocument(kind: LabelKind, card: StockCard, text: LabelText, opts: LabelOptions): string {
   const copies = Math.max(1, Math.min(500, Math.floor(opts.copies)));
-  const labels = Array.from({ length: copies }, () => one);
+  const start = Math.max(1, Math.floor(opts.startNumber));
+  const same = kind === "item-label" ? null : `<div class="label">${labelHtml(kind, card, text, opts)}</div>`;
+  const labels = Array.from({ length: copies }, (_, i) =>
+    same ?? `<div class="label">${labelHtml(kind, card, text, opts, start + i)}</div>`
+  );
   let body: string;
   if (opts.size === "a4-64x34") {
     const sheets: string[] = [];
@@ -200,6 +257,8 @@ export function stockCardDocument(card: StockCard, text: LabelText, opts: Pick<L
       <dt>${text.expiry}</dt><dd>${fullDate(b.expiryDate, opts.locale)}</dd>
       <dt>${text.location}</dt><dd>${esc(b.location ?? "—")}</dd>
       <dt>${text.minStock}</dt><dd>${card.reorderLevel} ${esc(m.unit.toLowerCase())}</dd>
+      <dt>${text.totalStock}</dt><dd>${esc(stockText(card))}</dd>
+      <dt>${text.contents}</dt><dd>${esc(contentsText(card, text).replace(`${text.contents} `, ""))}</dd>
     </dl>`;
 
   const table = (page: Row[]): string => `

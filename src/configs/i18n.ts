@@ -1303,6 +1303,17 @@ export interface Translations {
   printSizeA4: string;
   printCopies: string;
   printShowPrice: string;
+  printItemLabel: string;
+  printItemLabelHint: string;
+  printFields: string;
+  printShowStock: string;
+  printShowExpiry: string;
+  printShowContents: string;
+  printStartNumber: string;
+  labelTotalStock: string;
+  labelContents: string;
+  labelItem: string;
+  labelBox: string;
   printPreview: string;
   printButton: string;
   printPopupBlocked: string;
@@ -3773,7 +3784,7 @@ export const translations: Record<Language, Translations> = {
     printBatchLabel: "Batch label",
     printMedicineLabel: "Medicine label",
     printStockCard: "Stock card",
-    printBatchLabelHint: "For the pack: the batch's own code, number, expiry and current stock.",
+    printBatchLabelHint: "One code for the whole batch: every pack of it scans the same. Stock, ED and contents can be shown.",
     printMedicineLabelHint: "For the shelf: one code for every batch. The till picks the batch that expires first.",
     printStockCardHint: "A5 card with every movement of this batch, and empty rows to write in.",
     printNoMedicineBarcode: "This medicine has no barcode yet. Add one (scan the pack or generate) in the medicine's form.",
@@ -3783,6 +3794,17 @@ export const translations: Record<Language, Translations> = {
     printSizeA4: "A4 sheet, 3 × 8 (64 × 34 mm)",
     printCopies: "Number of labels",
     printShowPrice: "Show selling price",
+    printItemLabel: "Item labels",
+    printItemLabelHint: "One label per box, each with its own code (batch code + item number). No stock; shows the contents.",
+    printFields: "Show on the label",
+    printShowStock: "Batch stock",
+    printShowExpiry: "Expiry date (ED)",
+    printShowContents: "Contents (per box)",
+    printStartNumber: "First item number",
+    labelTotalStock: "Total stock",
+    labelContents: "Contents",
+    labelItem: "Item",
+    labelBox: "box",
     printPreview: "Preview",
     printButton: "Print",
     printPopupBlocked: "The browser blocked the print window. Allow pop-ups for this site and try again.",
@@ -6131,7 +6153,7 @@ export const translations: Record<Language, Translations> = {
     printBatchLabel: "Label batch",
     printMedicineLabel: "Label obat",
     printStockCard: "Kartu stok",
-    printBatchLabelHint: "Untuk kemasan: kode batch, nomor batch, ED dan stok saat ini.",
+    printBatchLabelHint: "Satu kode untuk seluruh batch: semua kemasan batch ini discan sama. Stok, ED dan isi bisa ditampilkan.",
     printMedicineLabelHint: "Untuk rak: satu kode untuk semua batch. Kasir otomatis memakai batch dengan ED terdekat.",
     printStockCardHint: "Kartu A5 berisi semua keluar-masuk batch ini, plus baris kosong untuk ditulis tangan.",
     printNoMedicineBarcode: "Obat ini belum punya barcode. Tambahkan dulu (scan kemasan atau buat otomatis) di form obat.",
@@ -6141,6 +6163,17 @@ export const translations: Record<Language, Translations> = {
     printSizeA4: "Lembar A4, 3 × 8 (64 × 34 mm)",
     printCopies: "Jumlah label",
     printShowPrice: "Tampilkan harga jual",
+    printItemLabel: "Label per item",
+    printItemLabelHint: "Satu label per box, masing-masing kodenya sendiri (kode batch + nomor item). Tanpa stok, berisi isi kemasan.",
+    printFields: "Tampilkan di label",
+    printShowStock: "Stok batch",
+    printShowExpiry: "Tanggal ED",
+    printShowContents: "Isi (per box)",
+    printStartNumber: "Nomor item awal",
+    labelTotalStock: "Total stok",
+    labelContents: "Isi",
+    labelItem: "Item",
+    labelBox: "box",
     printPreview: "Pratinjau",
     printButton: "Cetak",
     printPopupBlocked: "Browser memblokir jendela cetak. Izinkan pop-up untuk situs ini lalu coba lagi.",

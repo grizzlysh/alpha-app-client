@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ClipboardList, Loader2, Printer, ScanBarcode, Tag } from "lucide-react";
+import { Boxes, ClipboardList, Loader2, Printer, ScanBarcode, Tag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -14,6 +14,8 @@ import { getStockCard } from "@/service/stockService";
 import { cn } from "@/utils/cn";
 import type { Translations } from "@/configs/i18n";
 import {
+  type LabelFields,
+  type LabelKind,
   type LabelSize,
   type LabelText,
   type PrintKind,
@@ -23,25 +25,44 @@ import {
   stockCardDocument,
 } from "./barcodeLabels";
 
-const PREFS_KEY = "barcode-print-prefs";
+const PREFS_KEY = "barcode-print-prefs-v2";
 
-/** Label size and price switch follow the device (each till has its own printer). */
+/** The fields each label kind can show (stock only means something for the whole batch). */
+const FIELDS_BY_KIND: Record<LabelKind, (keyof LabelFields)[]> = {
+  "batch-label": ["showStock", "showExpiry", "showContents", "showPrice"],
+  "item-label": ["showExpiry", "showContents", "showPrice"],
+  "medicine-label": ["showContents", "showPrice"],
+};
+
+const DEFAULT_FIELDS: Record<LabelKind, LabelFields> = {
+  "batch-label": { showStock: true, showExpiry: true, showContents: true, showPrice: false },
+  "item-label": { showStock: false, showExpiry: true, showContents: true, showPrice: false },
+  "medicine-label": { showStock: false, showExpiry: false, showContents: false, showPrice: true },
+};
+
+/** Label size and fields follow the device (each till has its own printer). */
 interface PrintPrefs {
   size: LabelSize;
-  showPrice: boolean;
+  fields: Record<LabelKind, LabelFields>;
 }
 
 function loadPrefs(): PrintPrefs {
+  const fallback: PrintPrefs = { size: "50x30", fields: DEFAULT_FIELDS };
   try {
     const raw = localStorage.getItem(PREFS_KEY);
-    if (raw) {
-      const p = JSON.parse(raw) as Partial<PrintPrefs>;
-      if (p.size && LABEL_SIZES.some((s) => s.value === p.size)) return { size: p.size, showPrice: !!p.showPrice };
-    }
+    if (!raw) return fallback;
+    const p = JSON.parse(raw) as Partial<PrintPrefs>;
+    return {
+      size: p.size && LABEL_SIZES.some((s) => s.value === p.size) ? p.size : fallback.size,
+      fields: {
+        "batch-label": { ...DEFAULT_FIELDS["batch-label"], ...p.fields?.["batch-label"] },
+        "item-label": { ...DEFAULT_FIELDS["item-label"], ...p.fields?.["item-label"], showStock: false },
+        "medicine-label": { ...DEFAULT_FIELDS["medicine-label"], ...p.fields?.["medicine-label"], showStock: false, showExpiry: false },
+      },
+    };
   } catch {
-    // storage unavailable: use defaults
+    return fallback;
   }
-  return { size: "50x30", showPrice: false };
 }
 
 function savePrefs(prefs: PrintPrefs): void {
@@ -57,6 +78,10 @@ function labelText(t: Translations): LabelText {
     batch: t.labelBatch,
     expiry: t.labelExpiry,
     stock: t.labelStock,
+    totalStock: t.labelTotalStock,
+    contents: t.labelContents,
+    item: t.labelItem,
+    box: t.labelBox,
     allBatches: t.labelAllBatches,
     stockCard: t.labelStockCard,
     packaging: t.labelPackaging,
@@ -83,14 +108,15 @@ export interface BarcodePrintModalProps {
   onClose: () => void;
 }
 
-/** Print a batch label, the medicine's shelf label or the batch's stock card. */
+/** Print a batch label, item labels, the medicine's shelf label or the batch's stock card. */
 export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label", onClose }: BarcodePrintModalProps): JSX.Element {
   const { t, language } = useLanguage();
   const fmt = useNameFormat();
   const locale = language === "id" ? "id-ID" : "en-GB";
   const [kind, setKind] = useState<PrintKind>(initialKind);
   const [prefs, setPrefs] = useState<PrintPrefs>(loadPrefs);
-  const [copies, setCopies] = useState<string>("");
+  const [copies, setCopies] = useState("");
+  const [startNumber, setStartNumber] = useState("1");
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["stock-card", stockDetailUuid],
@@ -98,21 +124,27 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
   });
   const card = data?.data;
 
-  // Default number of batch labels: one per box of the batch's current stock.
-  const defaultCopies = card && kind === "batch-label" ? Math.max(1, Math.ceil(card.batch.quantityPieces / Math.max(card.batch.quantityPerBox, 1))) : 1;
+  const boxes = card ? Math.max(1, Math.ceil(card.batch.quantityPieces / Math.max(card.batch.quantityPerBox, 1))) : 1;
+  // Item labels default to one per box in stock; the others to a single label.
+  const defaultCopies = kind === "item-label" ? boxes : 1;
   const copiesValue = copies === "" ? defaultCopies : Math.max(1, Math.min(500, Number(copies) || 1));
+  const startValue = Math.max(1, Number(startNumber) || 1);
   const missingMedicineCode = kind === "medicine-label" && card && !card.medicine.barcode;
+  const labelKind = kind === "stock-card" ? null : kind;
+  const fields = labelKind ? prefs.fields[labelKind] : null;
 
   const text = useMemo(() => labelText(t), [t]);
   const formatName = (name: string): string => fmt(name);
 
   function documentHtml(forPreview: boolean): string | null {
     if (!card || missingMedicineCode) return null;
-    if (kind === "stock-card") return stockCardDocument(card, text, { locale, formatName });
-    return labelsDocument(kind, card, text, {
+    if (!labelKind || !fields) return stockCardDocument(card, text, { locale, formatName });
+    const perPage = prefs.size === "a4-64x34" ? 24 : labelKind === "item-label" ? 3 : 1;
+    return labelsDocument(labelKind, card, text, {
+      ...fields,
       size: prefs.size,
-      copies: forPreview ? Math.min(copiesValue, prefs.size === "a4-64x34" ? 24 : 1) : copiesValue,
-      showPrice: prefs.showPrice,
+      copies: forPreview ? Math.min(copiesValue, perPage) : copiesValue,
+      startNumber: startValue,
       locale,
       formatName,
     });
@@ -120,12 +152,19 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
 
   const preview = documentHtml(true);
   // Shrink the A4 sheet and A5 card to fit; enlarge small thermal labels to read.
-  const previewZoom = kind === "stock-card" ? 0.6 : prefs.size === "a4-64x34" ? 0.5 : 1.5;
+  const previewZoom = kind === "stock-card" ? 0.6 : prefs.size === "a4-64x34" ? 0.5 : 1.4;
 
-  function updatePrefs(next: Partial<PrintPrefs>): void {
-    const merged = { ...prefs, ...next };
-    setPrefs(merged);
-    savePrefs(merged);
+  function updatePrefs(next: PrintPrefs): void {
+    setPrefs(next);
+    savePrefs(next);
+  }
+
+  function toggleField(field: keyof LabelFields): void {
+    if (!labelKind) return;
+    updatePrefs({
+      ...prefs,
+      fields: { ...prefs.fields, [labelKind]: { ...prefs.fields[labelKind], [field]: !prefs.fields[labelKind][field] } },
+    });
   }
 
   function handlePrint(): void {
@@ -137,6 +176,7 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
 
   const kinds: { value: PrintKind; label: string; hint: string; icon: JSX.Element }[] = [
     { value: "batch-label", label: t.printBatchLabel, hint: t.printBatchLabelHint, icon: <ScanBarcode className="h-4 w-4" /> },
+    { value: "item-label", label: t.printItemLabel, hint: t.printItemLabelHint, icon: <Boxes className="h-4 w-4" /> },
     { value: "medicine-label", label: t.printMedicineLabel, hint: t.printMedicineLabelHint, icon: <Tag className="h-4 w-4" /> },
     { value: "stock-card", label: t.printStockCard, hint: t.printStockCardHint, icon: <ClipboardList className="h-4 w-4" /> },
   ];
@@ -144,6 +184,12 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
     "50x30": t.printSizeThermal5030,
     "38x25": t.printSizeThermal3825,
     "a4-64x34": t.printSizeA4,
+  };
+  const fieldLabel: Record<keyof LabelFields, string> = {
+    showStock: t.printShowStock,
+    showExpiry: t.printShowExpiry,
+    showContents: t.printShowContents,
+    showPrice: t.printShowPrice,
   };
 
   return (
@@ -178,27 +224,27 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
                       setCopies("");
                     }}
                     className={cn(
-                      "flex w-full items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors",
+                      "flex w-full items-start gap-3 rounded-xl border px-3 py-2 text-left transition-colors",
                       kind === k.value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
                     )}
                   >
                     <span className={cn("mt-0.5", kind === k.value ? "text-primary" : "text-muted-foreground")}>{k.icon}</span>
                     <span className="min-w-0">
                       <span className="block text-sm font-medium text-foreground">{k.label}</span>
-                      <span className="block text-xs text-muted-foreground">{k.hint}</span>
+                      {kind === k.value && <span className="block text-xs text-muted-foreground">{k.hint}</span>}
                     </span>
                   </button>
                 ))}
               </div>
 
-              {kind !== "stock-card" && (
+              {labelKind && fields && (
                 <>
                   <div className="space-y-1.5">
                     <Label htmlFor="print-size">{t.printSize}</Label>
                     <select
                       id="print-size"
                       value={prefs.size}
-                      onChange={(e) => updatePrefs({ size: e.target.value as LabelSize })}
+                      onChange={(e) => updatePrefs({ ...prefs, size: e.target.value as LabelSize })}
                       className="h-10 w-full rounded-xl border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                       {LABEL_SIZES.map((s) => (
@@ -206,28 +252,51 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
                       ))}
                     </select>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="print-copies">{t.printCopies}</Label>
-                    <Input
-                      id="print-copies"
-                      type="number"
-                      inputMode="numeric"
-                      min={1}
-                      max={500}
-                      value={copies === "" ? String(defaultCopies) : copies}
-                      onChange={(e) => setCopies(e.target.value)}
-                      className="w-28 rounded-xl"
-                    />
+
+                  <div className="flex flex-wrap gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="print-copies">{t.printCopies}</Label>
+                      <Input
+                        id="print-copies"
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={500}
+                        value={copies === "" ? String(defaultCopies) : copies}
+                        onChange={(e) => setCopies(e.target.value)}
+                        className="w-24 rounded-xl"
+                      />
+                    </div>
+                    {labelKind === "item-label" && (
+                      <div className="space-y-1.5">
+                        <Label htmlFor="print-start">{t.printStartNumber}</Label>
+                        <Input
+                          id="print-start"
+                          type="number"
+                          inputMode="numeric"
+                          min={1}
+                          value={startNumber}
+                          onChange={(e) => setStartNumber(e.target.value)}
+                          className="w-24 rounded-xl"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <label className="flex items-center gap-2 text-sm text-foreground">
-                    <input
-                      type="checkbox"
-                      checked={prefs.showPrice}
-                      onChange={(e) => updatePrefs({ showPrice: e.target.checked })}
-                      className="h-4 w-4 accent-[hsl(var(--primary))]"
-                    />
-                    {t.printShowPrice}
-                  </label>
+
+                  <fieldset className="space-y-2">
+                    <legend className="mb-1 text-sm font-medium text-foreground">{t.printFields}</legend>
+                    {FIELDS_BY_KIND[labelKind].map((field) => (
+                      <label key={field} className="flex items-center gap-2 text-sm text-foreground">
+                        <input
+                          type="checkbox"
+                          checked={fields[field]}
+                          onChange={() => toggleField(field)}
+                          className="h-4 w-4 accent-[hsl(var(--primary))]"
+                        />
+                        {fieldLabel[field]}
+                      </label>
+                    ))}
+                  </fieldset>
                 </>
               )}
             </div>
@@ -245,7 +314,7 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
                     srcDoc={`<!doctype html><html><head><meta charset="utf-8"><style>html,body{background:#e9e9e9;margin:0}.pv{zoom:${previewZoom};padding:10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:${kind === "stock-card" || prefs.size === "a4-64x34" ? "flex-start" : "center"}}.label{box-shadow:0 1px 4px rgba(0,0,0,.25)}.sheet,.card{background:#fff;padding:6mm 7mm;box-shadow:0 1px 4px rgba(0,0,0,.25)}</style></head><body><div class="pv">${preview ?? ""}</div></body></html>`}
                     className={cn(
                       "w-full rounded-lg bg-white",
-                      kind === "stock-card" ? "h-[26rem]" : prefs.size === "a4-64x34" ? "h-[22rem]" : "h-[9rem]"
+                      kind === "stock-card" ? "h-[26rem]" : prefs.size === "a4-64x34" ? "h-[22rem]" : kind === "item-label" ? "h-[20rem]" : "h-[10rem]"
                     )}
                   />
                 )}

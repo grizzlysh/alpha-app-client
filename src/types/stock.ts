@@ -1,6 +1,8 @@
 // ── Detail Search Result ──────────────────────────────────────────────────────
 
 export interface StockDetailSearchResult {
+  /** On a barcode scan: what the code was (a batch, a medicine, or one item of a batch). */
+  scanMatch?: "BATCH" | "MEDICINE" | "ITEM";
   uuid: string;
   barcode: string | null;
   batchNumber: string;
