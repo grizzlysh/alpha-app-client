@@ -23,6 +23,7 @@ const MedicinesPage = lazy(() => import("@/pages/MedicinesPage"));
 const MedicineClassificationPage = lazy(() => import("@/pages/MedicineClassificationPage"));
 const BusinessParametersPage = lazy(() => import("@/pages/BusinessParametersPage"));
 const SystemParametersPage = lazy(() => import("@/pages/SystemParametersPage"));
+const BackgroundJobsPage = lazy(() => import("@/pages/BackgroundJobsPage"));
 const RolesPage = lazy(() => import("@/pages/RolesPage"));
 const UsersPage = lazy(() => import("@/pages/UsersPage"));
 const PharmaciesPage = lazy(() => import("@/pages/PharmaciesPage"));
@@ -90,6 +91,7 @@ function AppRoutes(): JSX.Element {
           <Route element={<DashboardLayout />}>
             <Route path="/pharmacies" element={<PharmaciesPage />} />
             <Route path="/system-parameters" element={<SystemParametersPage />} />
+            <Route path="/background-jobs" element={<BackgroundJobsPage />} />
           </Route>
         </Route>
 

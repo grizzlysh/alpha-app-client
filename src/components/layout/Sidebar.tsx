@@ -29,6 +29,7 @@ export function Sidebar(): JSX.Element {
   const user = useSelector((state: RootState) => state.auth.user);
   const pharmacyCount = user?.accessiblePharmacies.length ?? 0;
   const isPlatformUser = user !== null && user?.platformRole !== null;
+  const isPlatformAdmin = user?.platformRole === "PLATFORM_ADMIN";
   const isOwner = user?.accessiblePharmacies.some((p) => p.role?.type === "OWNER") ?? false;
   const canSwitchPharmacy = isPlatformUser || isOwner || pharmacyCount > 1;
   const { t, language, toggleLanguage } = useLanguage();
@@ -42,7 +43,7 @@ export function Sidebar(): JSX.Element {
 
   const isOwnerOfCurrentPharmacy = currentPharmacy?.role?.type === "OWNER";
 
-  const navGroups = (() => {
+  const allNavGroups = (() => {
     if (isPlatformUser) {
       // Platform admins switch to pharmacy nav as soon as a pharmacy is selected,
       // so /users and /roles remain in the pharmacy context (not global).
@@ -57,6 +58,9 @@ export function Sidebar(): JSX.Element {
     if (isOwner) return PHARMACY_OWNER_PRE_SELECT_NAV_GROUPS;
     return PHARMACY_STAFF_PRE_SELECT_NAV_GROUPS;
   })();
+  const navGroups = allNavGroups
+    .map((g) => ({ ...g, items: g.items.filter((item) => !item.platformAdminOnly || isPlatformAdmin) }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <aside
