@@ -31,13 +31,13 @@ const PREFS_KEY = "barcode-print-prefs-v2";
 const FIELDS_BY_KIND: Record<LabelKind, (keyof LabelFields)[]> = {
   "batch-label": ["showStock", "showExpiry", "showContents", "showPrice"],
   "item-label": ["showExpiry", "showContents", "showPrice"],
-  "medicine-label": ["showContents", "showPrice"],
+  "medicine-label": ["showStock", "showContents", "showPrice"],
 };
 
 const DEFAULT_FIELDS: Record<LabelKind, LabelFields> = {
   "batch-label": { showStock: true, showExpiry: true, showContents: true, showPrice: false },
   "item-label": { showStock: false, showExpiry: true, showContents: true, showPrice: false },
-  "medicine-label": { showStock: false, showExpiry: false, showContents: false, showPrice: true },
+  "medicine-label": { showStock: true, showExpiry: false, showContents: false, showPrice: true },
 };
 
 /** Label size and fields follow the device (each till has its own printer). */
@@ -57,7 +57,7 @@ function loadPrefs(): PrintPrefs {
       fields: {
         "batch-label": { ...DEFAULT_FIELDS["batch-label"], ...p.fields?.["batch-label"] },
         "item-label": { ...DEFAULT_FIELDS["item-label"], ...p.fields?.["item-label"], showStock: false },
-        "medicine-label": { ...DEFAULT_FIELDS["medicine-label"], ...p.fields?.["medicine-label"], showStock: false, showExpiry: false },
+        "medicine-label": { ...DEFAULT_FIELDS["medicine-label"], ...p.fields?.["medicine-label"], showExpiry: false },
       },
     };
   } catch {
@@ -186,7 +186,7 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
     "a4-64x34": t.printSizeA4,
   };
   const fieldLabel: Record<keyof LabelFields, string> = {
-    showStock: t.printShowStock,
+    showStock: kind === "medicine-label" ? t.printShowTotalStock : t.printShowStock,
     showExpiry: t.printShowExpiry,
     showContents: t.printShowContents,
     showPrice: t.printShowPrice,
@@ -314,7 +314,7 @@ export function BarcodePrintModal({ stockDetailUuid, initialKind = "batch-label"
                     srcDoc={`<!doctype html><html><head><meta charset="utf-8"><style>html,body{background:#e9e9e9;margin:0}.pv{zoom:${previewZoom};padding:10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:${kind === "stock-card" || prefs.size === "a4-64x34" ? "flex-start" : "center"}}.label{box-shadow:0 1px 4px rgba(0,0,0,.25)}.sheet,.card{background:#fff;padding:6mm 7mm;box-shadow:0 1px 4px rgba(0,0,0,.25)}</style></head><body><div class="pv">${preview ?? ""}</div></body></html>`}
                     className={cn(
                       "w-full rounded-lg bg-white",
-                      kind === "stock-card" ? "h-[26rem]" : prefs.size === "a4-64x34" ? "h-[22rem]" : kind === "item-label" ? "h-[20rem]" : "h-[10rem]"
+                      kind === "stock-card" ? "h-[26rem]" : prefs.size === "a4-64x34" ? "h-[22rem]" : kind === "item-label" ? "h-[20rem]" : "h-[12rem]"
                     )}
                   />
                 )}

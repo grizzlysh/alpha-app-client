@@ -106,10 +106,9 @@ function contentsText(card: StockCard, text: LabelText): string {
     : `${text.contents} 1 ${unit}`;
 }
 
-/** "44 strip (4 box + 4)" */
-export function stockText(card: StockCard): string {
+/** "44 strip (4 box + 4)": the batch's stock, or with `pieces` another amount in the same packaging. */
+export function stockText(card: StockCard, pieces: number = card.batch.quantityPieces): string {
   const unit = card.medicine.unit.toLowerCase();
-  const pieces = card.batch.quantityPieces;
   const per = card.batch.quantityPerBox;
   if (per <= 1) return `${pieces.toLocaleString("id-ID")} ${unit}`;
   const boxes = Math.floor(pieces / per);
@@ -140,7 +139,11 @@ export function labelHtml(kind: LabelKind, card: StockCard, text: LabelText, opt
   const contents = opts.showContents ? esc(contentsText(card, text)) : "";
   if (kind === "item-label") lines.push(`<b>${text.item} ${itemNumber ?? 1}</b>${contents ? ` · ${contents}` : ""}`);
   else if (contents) lines.push(contents);
+  // Batch label: this batch's stock. Medicine label: the total over every batch.
   if (kind === "batch-label" && opts.showStock) lines.push(`${text.stock} <b>${esc(stockText(card))}</b>`);
+  if (kind === "medicine-label" && opts.showStock) {
+    lines.push(`${text.totalStock} <b>${esc(stockText(card, card.medicineTotalPieces))}</b>`);
+  }
   const price = opts.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
   if (lines.length === 0 && price) lines.push("");
   lines.forEach((line, i) => {

@@ -1307,6 +1307,7 @@ export interface Translations {
   printItemLabelHint: string;
   printFields: string;
   printShowStock: string;
+  printShowTotalStock: string;
   printShowExpiry: string;
   printShowContents: string;
   printStartNumber: string;
@@ -3798,6 +3799,7 @@ export const translations: Record<Language, Translations> = {
     printItemLabelHint: "One label per box, each with its own code (batch code + item number). No stock; shows the contents.",
     printFields: "Show on the label",
     printShowStock: "Batch stock",
+    printShowTotalStock: "Total stock (all batches)",
     printShowExpiry: "Expiry date (ED)",
     printShowContents: "Contents (per box)",
     printStartNumber: "First item number",
@@ -6167,6 +6169,7 @@ export const translations: Record<Language, Translations> = {
     printItemLabelHint: "Satu label per box, masing-masing kodenya sendiri (kode batch + nomor item). Tanpa stok, berisi isi kemasan.",
     printFields: "Tampilkan di label",
     printShowStock: "Stok batch",
+    printShowTotalStock: "Total stok (semua batch)",
     printShowExpiry: "Tanggal ED",
     printShowContents: "Isi (per box)",
     printStartNumber: "Nomor item awal",

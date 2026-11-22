@@ -198,6 +198,8 @@ export interface StockCard {
     location: string | null;
   };
   reorderLevel: number;
+  /** Stock of the medicine across all its batches. */
+  medicineTotalPieces: number;
   sellingPrice: number;
   openingBalance: number;
   lines: StockCardLine[];
