@@ -2327,6 +2327,20 @@ export interface Translations {
   examFlowTriage: string;
   examFlowDoctor: string;
   examFlowDone: string;
+  examViewByPatient: string;
+  examViewByDoctor: string;
+  examDoctorYou: string;
+  examDoctorFree: string;
+  examDoctorBusy: string;
+  examCallNext: string;
+  examNextUp: string;
+  examLaneEmpty: string;
+  examAnyDoctor: string;
+  examAnyDoctorHint: string;
+  examNoDoctorsTitle: string;
+  examNoDoctorsDesc: string;
+  examWaitingCount: string;
+  examCalledIn: string;
   examNewPatient: string;
   examCheckInDescTriage: string;
   roleTypeDoctor: string;
@@ -4619,6 +4633,20 @@ export const translations: Record<Language, Translations> = {
     examFlowTriage: "Triage",
     examFlowDoctor: "Doctor",
     examFlowDone: "Prescription / done",
+    examViewByPatient: "By patient",
+    examViewByDoctor: "By doctor",
+    examDoctorYou: "you",
+    examDoctorFree: "Free",
+    examDoctorBusy: "Examining {n}",
+    examCallNext: "Call next · {n} {name}",
+    examNextUp: "Next: {n} {name}",
+    examLaneEmpty: "No one waiting",
+    examAnyDoctor: "Any doctor",
+    examAnyDoctorHint: "Patients without a chosen doctor appear in every doctor's line; whoever calls them first takes them.",
+    examNoDoctorsTitle: "No in-house doctors yet",
+    examNoDoctorsDesc: "Link a doctor to a user account (Doctors page) to split the queue per doctor.",
+    examWaitingCount: "{n} waiting",
+    examCalledIn: "{name} called in",
     examNewPatient: "New patient",
     examCheckInDescTriage: "Pick the patient who arrived; record vital signs and allergies in the triage panel next.",
     roleTypeDoctor: "Doctor",
@@ -6907,6 +6935,20 @@ export const translations: Record<Language, Translations> = {
     examFlowTriage: "Triase",
     examFlowDoctor: "Dokter",
     examFlowDone: "Resep / selesai",
+    examViewByPatient: "Per pasien",
+    examViewByDoctor: "Per dokter",
+    examDoctorYou: "Anda",
+    examDoctorFree: "Kosong",
+    examDoctorBusy: "Memeriksa {n}",
+    examCallNext: "Panggil berikutnya · {n} {name}",
+    examNextUp: "Berikutnya: {n} {name}",
+    examLaneEmpty: "Tidak ada yang menunggu",
+    examAnyDoctor: "Bebas",
+    examAnyDoctorHint: "Pasien tanpa pilihan dokter muncul di urutan semua dokter; siapa yang memanggil duluan yang menangani.",
+    examNoDoctorsTitle: "Belum ada dokter praktik",
+    examNoDoctorsDesc: "Hubungkan dokter dengan akun user (halaman Dokter) agar antrean bisa dibagi per dokter.",
+    examWaitingCount: "{n} menunggu",
+    examCalledIn: "{name} dipanggil",
     examNewPatient: "Pasien baru",
     examCheckInDescTriage: "Pilih pasien yang datang, lalu catat tanda vital dan alergi di panel triase.",
     roleTypeDoctor: "Dokter",
