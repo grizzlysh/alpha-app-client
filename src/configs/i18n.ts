@@ -387,6 +387,7 @@ export interface Translations {
   medicalRecordNotFoundDesc: string;
   medicalRecordOverviewTab: string;
   medicalRecordAllergiesTab: string;
+  medicalRecordAllergiesMore: string;
   medicalRecordVisitsTab: string;
   // Allergies
   medicalRecordAllergyAdd: string;
@@ -2732,6 +2733,7 @@ export const translations: Record<Language, Translations> = {
     medicalRecordNotFoundDesc: "This patient doesn't have a medical record yet. It will be created automatically once the backend generates one for this patient.",
     medicalRecordOverviewTab: "Overview",
     medicalRecordAllergiesTab: "Allergies",
+    medicalRecordAllergiesMore: "+{n} more",
     medicalRecordVisitsTab: "Visit History",
     medicalRecordAllergyAdd: "Add Allergy",
     medicalRecordAllergyDelete: "Remove",
@@ -5036,6 +5038,7 @@ export const translations: Record<Language, Translations> = {
     medicalRecordNotFoundDesc: "Pasien ini belum memiliki rekam medis. Rekam medis akan dibuat otomatis setelah backend membuatkannya untuk pasien ini.",
     medicalRecordOverviewTab: "Ringkasan",
     medicalRecordAllergiesTab: "Alergi",
+    medicalRecordAllergiesMore: "+{n} lainnya",
     medicalRecordVisitsTab: "Riwayat Kunjungan",
     medicalRecordAllergyAdd: "Tambah Alergi",
     medicalRecordAllergyDelete: "Hapus",
