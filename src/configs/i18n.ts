@@ -1324,12 +1324,9 @@ export interface Translations {
   labelAllBatches: string;
   labelStockCard: string;
   labelPackaging: string;
-  labelDistributor: string;
   labelLocation: string;
   labelMinStock: string;
   labelDate: string;
-  labelDocument: string;
-  labelFromTo: string;
   labelIn: string;
   labelOut: string;
   labelBalance: string;
@@ -1337,6 +1334,36 @@ export interface Translations {
   labelOpeningBalance: string;
   labelPrintedOn: string;
   labelPage: string;
+  labelNotes: string;
+  labelPeriod: string;
+  labelSalesCount: string;
+  labelAdjustmentsCount: string;
+  labelBatchesInStock: string;
+  navStockLabels: string;
+  stockLabelsSubtitle: string;
+  stockLabelsTabLabels: string;
+  stockLabelsTabCard: string;
+  stockLabelsSearch: string;
+  stockLabelsSearchHint: string;
+  stockLabelsNoResults: string;
+  stockLabelsNoBatches: string;
+  stockLabelsAdd: string;
+  stockLabelsQueue: string;
+  stockLabelsQueueEmpty: string;
+  stockLabelsClear: string;
+  stockLabelsRemove: string;
+  stockLabelsTotal: string;
+  stockLabelsPrintAll: string;
+  stockLabelsSettings: string;
+  stockLabelsLoading: string;
+  stockLabelsSkippedNoBarcode: string;
+  stockCardPickMedicine: string;
+  stockCardFrom: string;
+  stockCardTo: string;
+  stockCardPickHint: string;
+  stockCardEmptyPeriod: string;
+  stockCardAfterPeriod: string;
+  stockCardInvalidPeriod: string;
 
   // Stock Disposals page
   sdSubtitle: string;
@@ -3787,7 +3814,7 @@ export const translations: Record<Language, Translations> = {
     printStockCard: "Stock card",
     printBatchLabelHint: "One code for the whole batch: every pack of it scans the same. Stock and ED can be shown.",
     printMedicineLabelHint: "For the shelf: one code for every batch. The till picks the batch that expires first.",
-    printStockCardHint: "A5 card with every movement of this batch, and empty rows to write in.",
+    printStockCardHint: "A5 card for the whole medicine: one row per day, all batches together.",
     printNoMedicineBarcode: "This medicine has no barcode yet. Add one (scan the pack or generate) in the medicine's form.",
     printSize: "Label size",
     printSizeThermal5030: "Thermal 50 × 30 mm",
@@ -3816,12 +3843,9 @@ export const translations: Record<Language, Translations> = {
     labelAllBatches: "All batches",
     labelStockCard: "Stock card",
     labelPackaging: "Packaging",
-    labelDistributor: "Distributor",
     labelLocation: "Location",
     labelMinStock: "Min. stock",
     labelDate: "Date",
-    labelDocument: "Document no.",
-    labelFromTo: "From / to",
     labelIn: "In",
     labelOut: "Out",
     labelBalance: "Balance",
@@ -3829,6 +3853,36 @@ export const translations: Record<Language, Translations> = {
     labelOpeningBalance: "Opening balance",
     labelPrintedOn: "Printed from PharmaCare ·",
     labelPage: "Page",
+    labelNotes: "Notes",
+    labelPeriod: "Period",
+    labelSalesCount: "{n} sale(s)",
+    labelAdjustmentsCount: "{n} adjustment(s)",
+    labelBatchesInStock: "Batches in stock",
+    navStockLabels: "Print Labels",
+    stockLabelsSubtitle: "Barcode labels and stock cards, printed in one go",
+    stockLabelsTabLabels: "Barcode labels",
+    stockLabelsTabCard: "Stock card",
+    stockLabelsSearch: "Search a medicine or scan its barcode…",
+    stockLabelsSearchHint: "Search a medicine to add its labels.",
+    stockLabelsNoResults: "No medicine in stock matches.",
+    stockLabelsNoBatches: "No batch in stock",
+    stockLabelsAdd: "Add",
+    stockLabelsQueue: "Print queue",
+    stockLabelsQueueEmpty: "No labels yet. Search a medicine, then add a batch, item or medicine label.",
+    stockLabelsClear: "Clear",
+    stockLabelsRemove: "Remove",
+    stockLabelsTotal: "{n} label(s)",
+    stockLabelsPrintAll: "Print all",
+    stockLabelsSettings: "Label settings",
+    stockLabelsLoading: "Loading label data…",
+    stockLabelsSkippedNoBarcode: "{n} medicine label(s) skipped: the medicine has no barcode yet.",
+    stockCardPickMedicine: "Choose a medicine",
+    stockCardFrom: "From",
+    stockCardTo: "To",
+    stockCardPickHint: "Choose a medicine to see its stock card.",
+    stockCardEmptyPeriod: "No movements in this period.",
+    stockCardAfterPeriod: "Today's stock differs: {n} movement(s) happened after this period.",
+    stockCardInvalidPeriod: "The start date must be before the end date, at most one year apart.",
 
     sdSubtitle: "Record and manage medicine stock write-offs and disposals",
     sdAdd: "Add",
@@ -6157,7 +6211,7 @@ export const translations: Record<Language, Translations> = {
     printStockCard: "Kartu stok",
     printBatchLabelHint: "Satu kode untuk seluruh batch: semua kemasan batch ini discan sama. Stok dan ED bisa ditampilkan.",
     printMedicineLabelHint: "Untuk rak: satu kode untuk semua batch. Kasir otomatis memakai batch dengan ED terdekat.",
-    printStockCardHint: "Kartu A5 berisi semua keluar-masuk batch ini, plus baris kosong untuk ditulis tangan.",
+    printStockCardHint: "Kartu A5 per obat: satu baris per hari, semua batch digabung.",
     printNoMedicineBarcode: "Obat ini belum punya barcode. Tambahkan dulu (scan kemasan atau buat otomatis) di form obat.",
     printSize: "Ukuran label",
     printSizeThermal5030: "Thermal 50 × 30 mm",
@@ -6186,12 +6240,9 @@ export const translations: Record<Language, Translations> = {
     labelAllBatches: "Semua batch",
     labelStockCard: "Kartu stok",
     labelPackaging: "Bentuk / kemasan",
-    labelDistributor: "Distributor",
     labelLocation: "Lokasi",
     labelMinStock: "Stok min.",
     labelDate: "Tanggal",
-    labelDocument: "No. dokumen",
-    labelFromTo: "Dari / kepada",
     labelIn: "Masuk",
     labelOut: "Keluar",
     labelBalance: "Sisa",
@@ -6199,6 +6250,36 @@ export const translations: Record<Language, Translations> = {
     labelOpeningBalance: "Saldo awal",
     labelPrintedOn: "Dicetak dari PharmaCare ·",
     labelPage: "Lembar",
+    labelNotes: "Keterangan",
+    labelPeriod: "Periode",
+    labelSalesCount: "{n} penjualan",
+    labelAdjustmentsCount: "{n} penyesuaian",
+    labelBatchesInStock: "Batch tersedia",
+    navStockLabels: "Cetak Label",
+    stockLabelsSubtitle: "Label barcode dan kartu stok, dicetak sekaligus",
+    stockLabelsTabLabels: "Label barcode",
+    stockLabelsTabCard: "Kartu stok",
+    stockLabelsSearch: "Cari obat atau scan barcodenya…",
+    stockLabelsSearchHint: "Cari obat untuk menambahkan labelnya.",
+    stockLabelsNoResults: "Tidak ada obat dengan stok yang cocok.",
+    stockLabelsNoBatches: "Tidak ada batch dengan stok",
+    stockLabelsAdd: "Tambah",
+    stockLabelsQueue: "Antrean cetak",
+    stockLabelsQueueEmpty: "Belum ada label. Cari obat, lalu tambahkan label batch, per item, atau label obat.",
+    stockLabelsClear: "Kosongkan",
+    stockLabelsRemove: "Hapus",
+    stockLabelsTotal: "{n} label",
+    stockLabelsPrintAll: "Cetak semua",
+    stockLabelsSettings: "Pengaturan label",
+    stockLabelsLoading: "Memuat data label…",
+    stockLabelsSkippedNoBarcode: "{n} label obat dilewati: obatnya belum punya barcode.",
+    stockCardPickMedicine: "Pilih obat",
+    stockCardFrom: "Dari tanggal",
+    stockCardTo: "Sampai tanggal",
+    stockCardPickHint: "Pilih obat untuk melihat kartu stoknya.",
+    stockCardEmptyPeriod: "Tidak ada keluar-masuk pada periode ini.",
+    stockCardAfterPeriod: "Stok hari ini berbeda: ada {n} transaksi setelah periode ini.",
+    stockCardInvalidPeriod: "Tanggal mulai harus sebelum tanggal akhir, maksimal satu tahun.",
 
     sdSubtitle: "Catat dan kelola penghapusan serta disposal stok obat",
     sdAdd: "Tambah",

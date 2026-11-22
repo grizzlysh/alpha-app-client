@@ -1,5 +1,6 @@
 import { useState, Fragment, type JSX } from "react";
 import {
+  ClipboardList,
   Package,
   Tag,
   Truck,
@@ -260,6 +261,7 @@ export interface StockDetailPanelProps {
   onDispose?: (detail: StockDetail) => void;
   onReturn?: (detail: StockDetail) => void;
   onPrint?: (detail: StockDetail) => void;
+  onPrintStockCard?: () => void;
 }
 
 export function StockDetailPanel({
@@ -272,6 +274,7 @@ export function StockDetailPanel({
   onDispose,
   onReturn,
   onPrint,
+  onPrintStockCard,
 }: StockDetailPanelProps): JSX.Element {
   const fmt = useNameFormat();
   const statusClass = getStockStatusClass(stock);
@@ -392,6 +395,16 @@ export function StockDetailPanel({
           >
             <Pencil className="h-4 w-4" />
             {t.stockUpdateReorder}
+          </Button>
+          )}
+          {onPrintStockCard && (
+          <Button
+            variant="outline"
+            className="flex-1 gap-2 rounded-xl"
+            onClick={onPrintStockCard}
+          >
+            <ClipboardList className="h-4 w-4" />
+            {t.printStockCard}
           </Button>
           )}
         </div>

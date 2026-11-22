@@ -23,6 +23,10 @@ const STOCK = [
   "stock-movements",
   "inventory-tree",
   "inventory-bin-items",
+  "batch-label",
+  "medicine-stock-card",
+  "stock-label-search",
+  "stock-label-medicines",
 ];
 
 const CUSTOMERS = [

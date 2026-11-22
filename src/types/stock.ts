@@ -163,30 +163,22 @@ export interface AdjustStockPayload {
   description: string;
 }
 
-export interface StockCardLine {
-  date: string;
-  type: "IN" | "OUT";
-  reason: string;
-  documentNumber: string | null;
-  party: string | null;
-  quantity: number;
-  balance: number;
+export interface StockCardMedicine {
+  uuid: string;
+  name: string;
+  unit: string;
+  barcode: string | null;
+  shape: string;
+  type: string;
+  isControlled: boolean;
+  requiredPrescription: boolean;
+  therapeuticClass: string;
 }
 
-/** Data behind a printed stock card or batch label. */
-export interface StockCard {
+/** Data behind a printed batch, item or medicine label. */
+export interface BatchLabel {
   pharmacy: { name: string; code: string };
-  medicine: {
-    uuid: string;
-    name: string;
-    unit: string;
-    barcode: string | null;
-    shape: string;
-    type: string;
-    isControlled: boolean;
-    requiredPrescription: boolean;
-    therapeuticClass: string;
-  };
+  medicine: StockCardMedicine;
   batch: {
     uuid: string;
     batchNumber: string;
@@ -201,6 +193,36 @@ export interface StockCard {
   /** Stock of the medicine across all its batches. */
   medicineTotalPieces: number;
   sellingPrice: number;
+}
+
+/** One day on a medicine's stock card (all batches together). */
+export interface MedicineStockCardDay {
+  /** yyyy-MM-dd */
+  date: string;
+  in: number;
+  out: number;
+  balance: number;
+  documents: string[];
+  sales: number;
+  adjustments: number;
+}
+
+export interface MedicineStockCard {
+  pharmacy: { name: string; code: string };
+  medicine: StockCardMedicine;
+  reorderLevel: number;
+  totalPieces: number;
+  quantityPerBox: number;
+  sellingPrice: number;
+  batches: { batchNumber: string; expiryDate: string; quantityPieces: number; location: string | null }[];
+  period: { from: string; to: string };
   openingBalance: number;
-  lines: StockCardLine[];
+  closingBalance: number;
+  movementsAfterPeriod: number;
+  days: MedicineStockCardDay[];
+}
+
+export interface MedicineStockCardParams {
+  from?: string;
+  to?: string;
 }

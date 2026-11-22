@@ -1,12 +1,11 @@
 import { barcodeSvg } from "@/utils/barcode";
-import type { StockCard } from "@/types/stock";
+import type { BatchLabel, MedicineStockCard } from "@/types/stock";
 
 /**
- * What can be printed: one label for the whole batch, one label per item
- * (box) of the batch, the medicine's shelf label, or the batch's stock card.
+ * Label kinds: one label for the whole batch, one label per item (box) of the
+ * batch, or the medicine's shelf label (one code for every batch).
  */
-export type PrintKind = "batch-label" | "item-label" | "medicine-label" | "stock-card";
-export type LabelKind = Exclude<PrintKind, "stock-card">;
+export type LabelKind = "batch-label" | "item-label" | "medicine-label";
 
 /** Label stock: a thermal roll (one label per page) or an A4 sheet of 3 × 8. */
 export type LabelSize = "50x30" | "38x25" | "a4-64x34";
@@ -29,12 +28,14 @@ export interface LabelText {
   allBatches: string;
   stockCard: string;
   packaging: string;
-  distributor: string;
   location: string;
   minStock: string;
   date: string;
-  document: string;
-  fromTo: string;
+  notes: string;
+  period: string;
+  salesCount: string;
+  adjustmentsCount: string;
+  batchesInStock: string;
   in: string;
   out: string;
   balance: string;
@@ -52,15 +53,25 @@ export interface LabelFields {
   showPrice: boolean;
 }
 
-export interface LabelOptions extends LabelFields {
+/** Settings shared by every label in one print. */
+export interface SheetOptions {
   size: LabelSize;
-  copies: number;
-  /** Item labels: number of the first item (to continue a batch printed earlier). */
-  startNumber: number;
   /** "id-ID" or "en-GB": dates and money. */
   locale: string;
   /** Applies the pharmacy's name display setting (upper / title / as typed). */
   formatName: (name: string) => string;
+}
+
+export type LabelOptions = LabelFields & SheetOptions;
+
+/** One line of a print: `copies` labels of one kind for one batch. */
+export interface LabelJob {
+  kind: LabelKind;
+  data: BatchLabel;
+  copies: number;
+  /** Item labels: number of the first item (to continue a batch printed earlier). */
+  startNumber: number;
+  fields: LabelFields;
 }
 
 const esc = (s: string): string =>
@@ -98,33 +109,31 @@ export function drugClassMark(typeName: string, isControlled: boolean, sizeMm = 
 /** The code printed on item n of a batch: the batch code, "-" and a 3-digit number. */
 export const itemCode = (batchBarcode: string, n: number): string => `${batchBarcode}-${String(n).padStart(3, "0")}`;
 
-/** "isi 10 strip" for a box, or the unit itself when a batch is not boxed. */
-function contentsText(card: StockCard, text: LabelText): string {
-  const unit = card.medicine.unit.toLowerCase();
-  return card.batch.quantityPerBox > 1
-    ? `${text.contents} 1 ${text.box} = ${card.batch.quantityPerBox} ${unit}`
-    : `${text.contents} 1 ${unit}`;
+/** Boxes in a batch: the default number of item labels. */
+export const boxCount = (pieces: number, perBox: number): number => Math.max(1, Math.ceil(pieces / Math.max(perBox, 1)));
+
+/** "isi 1 box = 10 strip" for a box, or the unit itself when a batch is not boxed. */
+function contentsText(unit: string, perBox: number, text: LabelText): string {
+  const u = unit.toLowerCase();
+  return perBox > 1 ? `${text.contents} 1 ${text.box} = ${perBox} ${u}` : `${text.contents} 1 ${u}`;
 }
 
-/** "44 strip": the batch's stock, or with `pieces` another amount, in the selling unit. */
-export function stockText(card: StockCard, pieces: number = card.batch.quantityPieces): string {
-  return `${pieces.toLocaleString("id-ID")} ${card.medicine.unit.toLowerCase()}`;
+/** "44 strip": an amount in the selling unit. */
+export function stockText(pieces: number, unit: string): string {
+  return `${pieces.toLocaleString("id-ID")} ${unit.toLowerCase()}`;
 }
 
-/** "44 strip (4 box + 4 strip)": the same, broken into full boxes and loose units (stock card). */
-export function stockBreakdownText(card: StockCard): string {
-  const unit = card.medicine.unit.toLowerCase();
-  const pieces = card.batch.quantityPieces;
-  const per = card.batch.quantityPerBox;
-  if (per <= 1) return stockText(card);
-  const boxes = Math.floor(pieces / per);
-  const rest = pieces % per;
-  const parts = [boxes > 0 ? `${boxes} box` : "", rest > 0 ? `${rest} ${unit}` : ""].filter(Boolean).join(" + ");
-  return `${stockText(card)}${parts ? ` (${parts})` : ""}`;
+/** "44 strip (4 box + 4 strip)": the same, broken into full boxes and loose units. */
+export function stockBreakdownText(pieces: number, unit: string, perBox: number): string {
+  if (perBox <= 1) return stockText(pieces, unit);
+  const boxes = Math.floor(pieces / perBox);
+  const rest = pieces % perBox;
+  const parts = [boxes > 0 ? `${boxes} box` : "", rest > 0 ? stockText(rest, unit) : ""].filter(Boolean).join(" + ");
+  return `${stockText(pieces, unit)}${parts ? ` (${parts})` : ""}`;
 }
 
 /** One label's inner HTML. `itemNumber` is set for item labels. */
-export function labelHtml(kind: LabelKind, card: StockCard, text: LabelText, opts: LabelOptions, itemNumber?: number): string {
+export function labelHtml(kind: LabelKind, card: BatchLabel, text: LabelText, opts: LabelOptions, itemNumber?: number): string {
   const m = card.medicine;
   const small = opts.size === "38x25";
   const code =
@@ -144,13 +153,13 @@ export function labelHtml(kind: LabelKind, card: StockCard, text: LabelText, opt
   // One fact per line so nothing gets cut off; the price sits at the end of the last line.
   const lines: string[] = [];
   // Contents (per box) only on item labels: an item is one box.
-  const contents = kind === "item-label" && opts.showContents ? esc(contentsText(card, text)) : "";
+  const contents = kind === "item-label" && opts.showContents ? esc(contentsText(m.unit, card.batch.quantityPerBox, text)) : "";
   if (kind === "item-label") lines.push(`<b>${text.item} ${itemNumber ?? 1}</b>${contents ? ` · ${contents}` : ""}`);
   else if (contents) lines.push(contents);
   // Batch label: this batch's stock. Medicine label: the total over every batch.
-  if (kind === "batch-label" && opts.showStock) lines.push(`${text.stock} <b>${esc(stockText(card))}</b>`);
+  if (kind === "batch-label" && opts.showStock) lines.push(`${text.stock} <b>${esc(stockText(card.batch.quantityPieces, m.unit))}</b>`);
   if (kind === "medicine-label" && opts.showStock) {
-    lines.push(`${text.totalStock} <b>${esc(stockText(card, card.medicineTotalPieces))}</b>`);
+    lines.push(`${text.totalStock} <b>${esc(stockText(card.medicineTotalPieces, m.unit))}</b>`);
   }
   const price = opts.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
   if (lines.length === 0 && price) lines.push("");
@@ -200,57 +209,85 @@ const SIZE_CSS: Record<LabelSize, string> = {
     .name { font-size: 8pt; } .sub, .row { font-size: 6pt; } .shop { font-size: 5.6pt; } .price { font-size: 7.4pt; }`,
 };
 
-/** A full printable document of `copies` labels (item labels numbered from `startNumber`). */
-export function labelsDocument(kind: LabelKind, card: StockCard, text: LabelText, opts: LabelOptions): string {
-  const copies = Math.max(1, Math.min(500, Math.floor(opts.copies)));
-  const start = Math.max(1, Math.floor(opts.startNumber));
-  const same = kind === "item-label" ? null : `<div class="label">${labelHtml(kind, card, text, opts)}</div>`;
-  const labels = Array.from({ length: copies }, (_, i) =>
-    same ?? `<div class="label">${labelHtml(kind, card, text, opts, start + i)}</div>`
-  );
+export const MAX_LABELS = 1000;
+const clampCopies = (n: number): number => Math.max(1, Math.min(500, Math.floor(n) || 1));
+
+/** How many labels the jobs print in total. */
+export const countLabels = (jobs: LabelJob[]): number => jobs.reduce((sum, j) => sum + clampCopies(j.copies), 0);
+
+/**
+ * A printable document of every job's labels in order (item labels numbered
+ * from each job's start number). `limit` cuts it short, for previews.
+ */
+export function labelsDocument(jobs: LabelJob[], text: LabelText, sheet: SheetOptions, limit = MAX_LABELS): string {
+  const labels: string[] = [];
+  for (const job of jobs) {
+    const opts: LabelOptions = { ...job.fields, ...sheet };
+    const start = Math.max(1, Math.floor(job.startNumber));
+    const same = job.kind === "item-label" ? null : `<div class="label">${labelHtml(job.kind, job.data, text, opts)}</div>`;
+    for (let i = 0; i < clampCopies(job.copies) && labels.length < limit; i++) {
+      labels.push(same ?? `<div class="label">${labelHtml(job.kind, job.data, text, opts, start + i)}</div>`);
+    }
+  }
   let body: string;
-  if (opts.size === "a4-64x34") {
+  if (sheet.size === "a4-64x34") {
     const sheets: string[] = [];
     for (let i = 0; i < labels.length; i += 24) sheets.push(`<div class="sheet">${labels.slice(i, i + 24).join("")}</div>`);
     body = sheets.join("");
   } else {
     body = labels.join("");
   }
-  return `<style>${LABEL_CSS}${SIZE_CSS[opts.size]}</style>${body}`;
+  return `<style>${LABEL_CSS}${SIZE_CSS[sheet.size]}</style>${body}`;
 }
 
-// ── Stock card (A5) ───────────────────────────────────────────────────────────
+// ── Stock card (A5, one medicine, one row per day) ────────────────────────────
 
-/** Movement rows per A5 page; the header repeats on each page. */
-const ROWS_PER_PAGE = 20;
+/** Day rows per A5 page; the header repeats on each page. */
+const ROWS_PER_PAGE = 18;
+/** Batches listed in the header; the rest are summed up as "+N". */
+const BATCHES_SHOWN = 4;
 
-export function stockCardDocument(card: StockCard, text: LabelText, opts: Pick<LabelOptions, "locale" | "formatName">): string {
+export function stockCardDocument(card: MedicineStockCard, text: LabelText, opts: Pick<SheetOptions, "locale" | "formatName">): string {
   const m = card.medicine;
-  const b = card.batch;
-  const svg = barcodeSvg(b.barcode, { height: 40, width: 1.5, fontSize: 11 }) ?? "";
+  const unit = m.unit.toLowerCase();
+  const svg = m.barcode ? barcodeSvg(m.barcode, { height: 40, width: 1.5, fontSize: 11 }) ?? "" : "";
   const mark = drugClassMark(m.type, m.isControlled, 5);
   const today = fullDate(new Date().toISOString(), opts.locale);
+  const day = (iso: string): string => fullDate(`${iso}T00:00:00`, opts.locale);
+  const locations = [...new Set(card.batches.map((b) => b.location).filter((l): l is string => !!l))];
 
-  type Row = { date: string; doc: string; party: string; inn: string; out: string; bal: string };
-  const rows: Row[] = [];
-  if (card.openingBalance !== 0) {
-    rows.push({ date: "", doc: "", party: text.openingBalance, inn: "", out: "", bal: String(card.openingBalance) });
-  }
-  for (const l of card.lines) {
+  type Row = { date: string; notes: string; inn: string; out: string; bal: string };
+  const rows: Row[] = [{ date: day(card.period.from), notes: text.openingBalance, inn: "", out: "", bal: String(card.openingBalance) }];
+  for (const d of card.days) {
+    const notes = [
+      ...d.documents,
+      d.sales > 0 ? text.salesCount.replace("{n}", String(d.sales)) : "",
+      d.adjustments > 0 ? text.adjustmentsCount.replace("{n}", String(d.adjustments)) : "",
+    ].filter(Boolean);
     rows.push({
-      date: fullDate(l.date, opts.locale),
-      doc: l.documentNumber ?? "",
-      party: l.party ?? "",
-      inn: l.type === "IN" ? String(l.quantity) : "",
-      out: l.type === "OUT" ? String(l.quantity) : "",
-      bal: String(l.balance),
+      date: day(d.date),
+      notes: notes.join(", "),
+      inn: d.in ? String(d.in) : "",
+      out: d.out ? String(d.out) : "",
+      bal: String(d.balance),
     });
   }
   const pages: Row[][] = [];
-  for (let i = 0; i < Math.max(rows.length, 1); i += ROWS_PER_PAGE) pages.push(rows.slice(i, i + ROWS_PER_PAGE));
+  for (let i = 0; i < rows.length; i += ROWS_PER_PAGE) pages.push(rows.slice(i, i + ROWS_PER_PAGE));
   // Leave the last page's empty rows for handwritten entries.
   const last = pages[pages.length - 1];
-  while (last.length < ROWS_PER_PAGE) last.push({ date: "", doc: "", party: "", inn: "", out: "", bal: "" });
+  while (last.length < ROWS_PER_PAGE) last.push({ date: "", notes: "", inn: "", out: "", bal: "" });
+
+  const shown = card.batches.slice(0, BATCHES_SHOWN);
+  const more = card.batches.length - shown.length;
+  const batches = card.batches.length
+    ? `<div class="batches"><span class="muted">${text.batchesInStock}</span>${shown
+        .map(
+          (b) =>
+            `<span class="chip"><b class="mono">${esc(b.batchNumber.toUpperCase())}</b> · ${text.expiry} ${monthYear(b.expiryDate)} · ${esc(stockText(b.quantityPieces, unit))}</span>`
+        )
+        .join("")}${more > 0 ? `<span class="chip">+${more}</span>` : ""}</div>`
+    : "";
 
   const header = `
     <div class="head">
@@ -259,25 +296,23 @@ export function stockCardDocument(card: StockCard, text: LabelText, opts: Pick<L
         <div class="muted">${esc(card.pharmacy.name)} · ${esc(card.pharmacy.code)}</div>
         <div class="med">${mark}<div><div class="mname">${esc(opts.formatName(m.name))}</div><div class="muted">${esc(m.type)} · ${esc(m.therapeuticClass)}</div></div></div>
       </div>
-      <div class="bcbox">${svg}</div>
+      ${svg ? `<div class="bcbox">${svg}</div>` : ""}
     </div>
     <dl>
-      <dt>${text.packaging}</dt><dd>${esc(m.shape)} · ${esc(m.unit)}${b.quantityPerBox > 1 ? ` isi ${b.quantityPerBox}` : ""}</dd>
-      <dt>${text.batch}</dt><dd class="mono">${esc(b.batchNumber.toUpperCase())}</dd>
-      <dt>${text.distributor}</dt><dd>${esc(b.distributor)}</dd>
-      <dt>${text.expiry}</dt><dd>${fullDate(b.expiryDate, opts.locale)}</dd>
-      <dt>${text.location}</dt><dd>${esc(b.location ?? "—")}</dd>
-      <dt>${text.minStock}</dt><dd>${card.reorderLevel} ${esc(m.unit.toLowerCase())}</dd>
-      <dt>${text.totalStock}</dt><dd>${esc(stockBreakdownText(card))}</dd>
-      <dt>${text.contents}</dt><dd>${esc(contentsText(card, text).replace(`${text.contents} `, ""))}</dd>
-    </dl>`;
+      <dt>${text.packaging}</dt><dd>${esc(m.shape)} · ${esc(m.unit)}${card.quantityPerBox > 1 ? ` (${esc(contentsText(m.unit, card.quantityPerBox, text).replace(`${text.contents} `, ""))})` : ""}</dd>
+      <dt>${text.period}</dt><dd>${day(card.period.from)} – ${day(card.period.to)}</dd>
+      <dt>${text.totalStock}</dt><dd>${esc(stockBreakdownText(card.totalPieces, m.unit, card.quantityPerBox))}</dd>
+      <dt>${text.minStock}</dt><dd>${esc(stockText(card.reorderLevel, unit))}</dd>
+      <dt>${text.location}</dt><dd class="wide">${esc(locations.join(", ") || "—")}</dd>
+    </dl>
+    ${batches}`;
 
   const table = (page: Row[]): string => `
     <table>
-      <thead><tr><th class="c-date">${text.date}</th><th>${text.document}</th><th>${text.fromTo}</th><th class="n">${text.in}</th><th class="n">${text.out}</th><th class="n">${text.balance}</th><th class="c-ed">${text.expiry}</th><th class="c-sign">${text.initials}</th></tr></thead>
+      <thead><tr><th class="c-date">${text.date}</th><th>${text.notes}</th><th class="n">${text.in}</th><th class="n">${text.out}</th><th class="n">${text.balance}</th><th class="c-sign">${text.initials}</th></tr></thead>
       <tbody>${page
         .map(
-          (r) => `<tr><td>${r.date}</td><td class="mono">${esc(r.doc)}</td><td class="party">${esc(r.party)}</td><td class="n">${r.inn}</td><td class="n">${r.out}</td><td class="n"><b>${r.bal}</b></td><td>${r.date ? monthYear(b.expiryDate) : ""}</td><td></td></tr>`
+          (r) => `<tr><td>${r.date}</td><td class="notes">${esc(r.notes)}</td><td class="n">${r.inn}</td><td class="n">${r.out}</td><td class="n"><b>${r.bal}</b></td><td></td></tr>`
         )
         .join("")}</tbody>
     </table>`;
@@ -294,7 +329,8 @@ export function stockCardDocument(card: StockCard, text: LabelText, opts: Pick<L
     * { box-sizing: border-box; }
     body { margin: 0; font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: #000; font-size: 7.4pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .mono { font-family: "JetBrains Mono", Menlo, Consolas, monospace; }
-    .card { break-after: page; }
+    /* A5 minus the page margins, so the preview matches the paper. */
+    .card { width: 132mm; break-after: page; }
     .head { display: flex; justify-content: space-between; gap: 4mm; border-bottom: .5mm solid #000; padding-bottom: 2.5mm; }
     .title { font-size: 12pt; font-weight: 700; letter-spacing: .08em; }
     .muted { color: #555; font-size: 6.8pt; }
@@ -302,15 +338,17 @@ export function stockCardDocument(card: StockCard, text: LabelText, opts: Pick<L
     .mname { font-size: 10pt; font-weight: 700; text-transform: uppercase; }
     .bcbox { width: 52mm; height: 15mm; flex: none; }
     .bcbox svg { width: 100%; height: 100%; }
-    dl { display: grid; grid-template-columns: 22mm 1fr 16mm 1fr; gap: 1mm 2mm; margin: 2.5mm 0; }
+    dl { display: grid; grid-template-columns: 22mm 1fr 16mm 1fr; gap: 1mm 2mm; margin: 2.5mm 0 1.5mm; }
     dt { color: #555; } dd { margin: 0; font-weight: 600; }
-    table { width: 100%; border-collapse: collapse; font-size: 6.6pt; font-variant-numeric: tabular-nums; }
-    th, td { border: .25mm solid #333; padding: 1mm 1.2mm; text-align: left; height: 6mm; white-space: nowrap; }
+    dd.wide { grid-column: span 3; }
+    .batches { display: flex; flex-wrap: wrap; gap: 1mm 1.5mm; align-items: center; margin-bottom: 2.5mm; font-size: 6.4pt; }
+    .chip { border: .25mm solid #999; border-radius: 1mm; padding: .4mm 1.2mm; white-space: nowrap; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 6.8pt; font-variant-numeric: tabular-nums; }
+    th, td { border: .25mm solid #333; padding: 1mm 1.2mm; text-align: left; height: 6.4mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     th { background: #f1f1f1; font-size: 6pt; text-transform: uppercase; letter-spacing: .03em; }
-    td.mono { font-size: 6pt; }
-    td.party { max-width: 30mm; overflow: hidden; text-overflow: ellipsis; }
-    .n { text-align: right; width: 10mm; }
-    .c-date { width: 17mm; } .c-ed { width: 12mm; } .c-sign { width: 11mm; }
+    td.notes { font-size: 6.2pt; }
+    .n { text-align: right; width: 14mm; }
+    .c-date { width: 19mm; } .c-sign { width: 14mm; }
     .foot { display: flex; justify-content: space-between; color: #555; font-size: 6.2pt; margin-top: 2mm; }
   </style>${body}`;
 }

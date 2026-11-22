@@ -24,6 +24,7 @@ import {
   Stethoscope,
   HeartPulse,
   Timer,
+  ScanBarcode,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -116,6 +117,7 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
       { key: "medicines", labelKey: "navMedicines", icon: Pill, path: "/medicines", permission: "medicines.read" },
       { key: "medicine-classification", labelKey: "navMedicineClassification", icon: LibraryBig, path: "/medicine-classification", permission: ["medicine_types.read", "medicine_shapes.read", "medicine_classes.read"] },
       { key: "stock", labelKey: "navStock", icon: Package, path: "/stock", permission: "stock.read" },
+      { key: "stock-labels", labelKey: "navStockLabels", icon: ScanBarcode, path: "/stock-labels", permission: "stock.read" },
       { key: "stock-disposals", labelKey: "navStockDisposals", icon: ArchiveX, path: "/stock-disposals", permission: "stock_disposal.read" },
       { key: "stock-returns", labelKey: "navStockReturns", icon: Undo2, path: "/stock-returns", permission: "stock_return.read" },
       { key: "stock-movements", labelKey: "navStockMovements", icon: ArrowLeftRight, path: "/stock-movements", permission: "stock_movements.read" },
