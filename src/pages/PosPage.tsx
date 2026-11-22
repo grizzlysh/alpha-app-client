@@ -295,12 +295,18 @@ export default function PosPage(): JSX.Element {
   }
 
   // ── Barcode lookup (camera modal, USB scanner, Enter in search) ────────────
-  // Exact barcode match through the unpaginated /stock/details endpoint.
+  // A batch barcode picks that batch; a medicine barcode picks its batch with
+  // the earliest expiry that still has stock (FEFO). The server returns either
+  // the one batch or the medicine's sellable batches, earliest expiry first.
   const addByBarcode = useCallback(
     async (code: string): Promise<boolean> => {
       try {
-        const res = await getStockDetails({ search: code });
-        const match = res.data?.find((item) => item.barcode === code);
+        const res = await getStockDetails({ barcode: code });
+        const batches = res.data ?? [];
+        const match =
+          batches.find((item) => item.barcode === code) ??
+          batches.find((item) => item.availablePieces > 0) ??
+          batches[0];
         if (!match) return false;
         if (handleAddToCart(match)) {
           toast.success(t.posScanAdded.replace("{name}", fmt(match.medicine.name)), { duration: 1500 });

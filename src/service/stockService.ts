@@ -12,6 +12,7 @@ import type {
   UpdateStockPricePayload,
   UpdateStockReorderLevelPayload,
   AdjustStockPayload,
+  StockCard,
 } from "@/types/stock";
 
 export async function getStockDetails(
@@ -97,5 +98,11 @@ export async function adjustStock(
     `/stock/${stockDetailUuid}/adjust`,
     payload
   );
+  return response.data;
+}
+
+/** Header data and every movement of one batch, for its stock card and labels. */
+export async function getStockCard(stockDetailUuid: string): Promise<ApiResponse<StockCard>> {
+  const response = await axiosInstance.get<ApiResponse<StockCard>>(`/stock/details/${stockDetailUuid}/card`);
   return response.data;
 }

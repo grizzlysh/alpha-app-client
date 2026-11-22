@@ -16,6 +16,7 @@ import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { getStocks } from "@/service/stockService";
 import { StockTable } from "@/components/stock/StockTable";
 import { StockDetailPanel } from "@/components/stock/StockDetailPanel";
+import { BarcodePrintModal } from "@/components/stock/BarcodePrintModal";
 import { StockAdjustModal } from "@/components/stock/StockAdjustModal";
 import { StockUpdatePriceModal } from "@/components/stock/StockUpdatePriceModal";
 import { StockUpdateReorderModal } from "@/components/stock/StockUpdateReorderModal";
@@ -58,6 +59,7 @@ export default function StockPage(): JSX.Element {
   } = useTablePageState();
 
   const [modal, setModal] = useState<ModalState>(null);
+  const [printDetailUuid, setPrintDetailUuid] = useState<string | null>(null);
   const [filter, setFilter] = useState<StockFilter>("all");
 
   // ── Main query ────────────────────────────────────────────────────────────────
@@ -204,6 +206,11 @@ export default function StockPage(): JSX.Element {
       {/* Detail panel */}
       {modal?.mode === "opening" && <OpeningStockImportModal onClose={() => setModal(null)} />}
 
+      {/* Opens on top of the stock detail, which stays open behind it. */}
+      {printDetailUuid && (
+        <BarcodePrintModal stockDetailUuid={printDetailUuid} onClose={() => setPrintDetailUuid(null)} />
+      )}
+
       {modal?.mode === "detail" && (
         <StockDetailPanel
           stock={modal.stock}
@@ -217,6 +224,7 @@ export default function StockPage(): JSX.Element {
             setModal({ mode: "dispose", stock: modal.stock, stockDetail: detail }) : undefined}
           onReturn={can("stock_return.create") ? (detail) =>
             setModal({ mode: "return", stock: modal.stock, stockDetail: detail }) : undefined}
+          onPrint={(detail) => setPrintDetailUuid(detail.uuid)}
         />
       )}
 

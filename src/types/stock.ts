@@ -16,6 +16,7 @@ export interface StockDetailSearchResult {
     uuid: string;
     name: string;
     unit: string;
+    barcode?: string | null;
     shape: { name: string };
     type: { name: string; requiredPrescription: boolean };
   };
@@ -25,6 +26,8 @@ export interface StockDetailListParams {
   search?: string;
   /** Sellable (unexpired) batches of one medicine, earliest expiry first. */
   medicineUuid?: string;
+  /** Exact scan: that batch, or the medicine's sellable batches earliest expiry first. */
+  barcode?: string;
 }
 
 export interface StockCatalogParams {
@@ -156,4 +159,44 @@ export interface AdjustStockPayload {
   quantity: number;
   signedByUuid: string;
   description: string;
+}
+
+export interface StockCardLine {
+  date: string;
+  type: "IN" | "OUT";
+  reason: string;
+  documentNumber: string | null;
+  party: string | null;
+  quantity: number;
+  balance: number;
+}
+
+/** Data behind a printed stock card or batch label. */
+export interface StockCard {
+  pharmacy: { name: string; code: string };
+  medicine: {
+    uuid: string;
+    name: string;
+    unit: string;
+    barcode: string | null;
+    shape: string;
+    type: string;
+    isControlled: boolean;
+    requiredPrescription: boolean;
+    therapeuticClass: string;
+  };
+  batch: {
+    uuid: string;
+    batchNumber: string;
+    barcode: string;
+    expiryDate: string;
+    quantityPieces: number;
+    quantityPerBox: number;
+    distributor: string;
+    location: string | null;
+  };
+  reorderLevel: number;
+  sellingPrice: number;
+  openingBalance: number;
+  lines: StockCardLine[];
 }

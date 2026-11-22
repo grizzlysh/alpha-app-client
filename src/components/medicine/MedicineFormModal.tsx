@@ -5,9 +5,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Pill, Loader2, Plus, Trash2, AlertCircle } from "lucide-react";
+import { Pill, Loader2, Plus, Trash2, AlertCircle, Wand2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { generateInStoreEan13 } from "@/utils/barcode";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +37,7 @@ function makeSchema(t: Translations) {
     medicineTypeUuid: z.string().min(1, t.medicineTypeRequired),
     medicineClassUuid: z.string().min(1, t.medicineClassRequired),
     unit: z.string().min(1, t.medicineUnitRequired),
+    barcode: z.string().trim().max(64).regex(/^[0-9A-Za-z\-./]*$/, t.medicineBarcodeInvalid),
     status: z.enum(["ACTIVE", "INACTIVE"]),
     ingredients: z.array(z.object({ value: z.string() })),
   });
@@ -47,6 +49,7 @@ interface FormValues {
   medicineTypeUuid: string;
   medicineClassUuid: string;
   unit: string;
+  barcode: string;
   status: "ACTIVE" | "INACTIVE";
   ingredients: { value: string }[];
 }
@@ -87,6 +90,7 @@ export function MedicineFormModal({
       medicineTypeUuid: medicine?.medicineType?.uuid ?? "",
       medicineClassUuid: medicine?.medicineClass?.uuid ?? "",
       unit: medicine?.unit ?? "",
+      barcode: medicine?.barcode ?? "",
       status: medicine?.status ?? "ACTIVE",
       ingredients: defaultIngredients,
     },
@@ -159,6 +163,7 @@ export function MedicineFormModal({
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
         unit: values.unit,
+        barcode: values.barcode.trim() || null,
         ingredients,
       };
       createMutation.mutate(payload);
@@ -169,6 +174,7 @@ export function MedicineFormModal({
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
         unit: values.unit,
+        barcode: values.barcode.trim() || null,
         status: values.status,
         ingredients,
       };
@@ -338,6 +344,42 @@ export function MedicineFormModal({
                 />
                 {fieldError("unit") && (
                   <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("unit")}</p>
+                )}
+              </div>
+
+              {/* Barcode: scan the pack, or generate an in-store code */}
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="med-barcode">{t.medicineBarcode}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="med-barcode"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder={t.medicineBarcodePlaceholder}
+                    {...form.register("barcode")}
+                    // USB scanners end with Enter: keep it from submitting the form.
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") e.preventDefault();
+                    }}
+                    className={cn(
+                      "font-mono",
+                      fieldError("barcode") && "border-destructive focus-visible:ring-destructive/30"
+                    )}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0 gap-1.5 rounded-xl"
+                    onClick={() => form.setValue("barcode", generateInStoreEan13(), { shouldDirty: true, shouldValidate: true })}
+                  >
+                    <Wand2 className="h-4 w-4" />
+                    {t.medicineBarcodeGenerate}
+                  </Button>
+                </div>
+                {fieldError("barcode") ? (
+                  <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("barcode")}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">{t.medicineBarcodeHint}</p>
                 )}
               </div>
 
