@@ -640,6 +640,19 @@ export interface Translations {
   jobsLastRun: string;
   jobsNeverRun: string;
   jobsDailyAt: string;
+  jobsSettings: string;
+  jobsSettingsTitle: string;
+  jobsEnabled: string;
+  jobsEnabledHint: string;
+  jobsTime: string;
+  jobsTimeHint: string;
+  jobsOff: string;
+  jobsDefaultValue: string;
+  jobsPharmacyParams: string;
+  jobsPharmacyParamsHint: string;
+  jobsSettingsSaved: string;
+  jobsParamNotificationRetention: string;
+  jobsParamJobRunRetention: string;
   jobsHistory: string;
   jobsAllJobs: string;
   jobsColJob: string;
@@ -2976,6 +2989,19 @@ export const translations: Record<Language, Translations> = {
     jobsLastRun: "Last run",
     jobsNeverRun: "Not run yet",
     jobsDailyAt: "Daily at {time}",
+    jobsSettings: "Settings",
+    jobsSettingsTitle: "{name} settings",
+    jobsEnabled: "Run on schedule",
+    jobsEnabledHint: "When off, it only runs when started by hand.",
+    jobsTime: "Time of day",
+    jobsTimeHint: "Every day, {tz} time. Default {time}.",
+    jobsOff: "Off",
+    jobsDefaultValue: "Default {value}, range {min}–{max}",
+    jobsPharmacyParams: "Set by each pharmacy",
+    jobsPharmacyParamsHint: "Each pharmacy changes these in Business Parameters:",
+    jobsSettingsSaved: "Settings saved",
+    jobsParamNotificationRetention: "Keep notifications (days)",
+    jobsParamJobRunRetention: "Keep run history (days)",
     jobsHistory: "Run history",
     jobsAllJobs: "All jobs",
     jobsColJob: "Job",
@@ -5281,6 +5307,19 @@ export const translations: Record<Language, Translations> = {
     jobsLastRun: "Terakhir jalan",
     jobsNeverRun: "Belum pernah jalan",
     jobsDailyAt: "Setiap hari pukul {time}",
+    jobsSettings: "Atur",
+    jobsSettingsTitle: "Pengaturan {name}",
+    jobsEnabled: "Jalan sesuai jadwal",
+    jobsEnabledHint: "Jika dimatikan, job hanya jalan saat dijalankan manual.",
+    jobsTime: "Jam",
+    jobsTimeHint: "Setiap hari, waktu {tz}. Default {time}.",
+    jobsOff: "Nonaktif",
+    jobsDefaultValue: "Default {value}, rentang {min}–{max}",
+    jobsPharmacyParams: "Diatur oleh setiap apotek",
+    jobsPharmacyParamsHint: "Setiap apotek mengubahnya di Parameter Bisnis:",
+    jobsSettingsSaved: "Pengaturan disimpan",
+    jobsParamNotificationRetention: "Simpan notifikasi (hari)",
+    jobsParamJobRunRetention: "Simpan riwayat job (hari)",
     jobsHistory: "Riwayat eksekusi",
     jobsAllJobs: "Semua job",
     jobsColJob: "Job",

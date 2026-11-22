@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { JobCard } from "@/components/background-jobs/JobCard";
 import { JobRunHistory } from "@/components/background-jobs/JobRunHistory";
 import { JobRunConfirmModal } from "@/components/background-jobs/JobRunConfirmModal";
+import { JobSettingsModal } from "@/components/background-jobs/JobSettingsModal";
 import { jobLabel } from "@/components/background-jobs/jobUtils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
@@ -27,6 +28,7 @@ export default function BackgroundJobsPage(): JSX.Element {
   const isPlatformAdmin = useSelector((s: RootState) => s.auth.user?.platformRole === "PLATFORM_ADMIN");
   const [filter, setFilter] = useState("");
   const [confirming, setConfirming] = useState<BackgroundJob | null>(null);
+  const [editing, setEditing] = useState<BackgroundJob | null>(null);
 
   const jobsQuery = useQuery({
     queryKey: ["background-jobs"],
@@ -88,6 +90,7 @@ export default function BackgroundJobsPage(): JSX.Element {
                 language={language}
                 isRunning={runningName === job.name}
                 onRun={() => setConfirming(job)}
+                onSettings={() => setEditing(job)}
               />
             ))}
       </div>
@@ -103,6 +106,8 @@ export default function BackgroundJobsPage(): JSX.Element {
           language={language}
         />
       </Card>
+
+      {editing && <JobSettingsModal job={editing} onClose={() => setEditing(null)} />}
 
       {confirming && (
         <JobRunConfirmModal
