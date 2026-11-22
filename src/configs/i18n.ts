@@ -2283,6 +2283,7 @@ export interface Translations {
   purchaseAdd: string;
   purchaseSales: string;
   purchaseLoadMore: string;
+  purchaseItemsCount: string;
   examEditVitals: string;
   examAddAllergy: string;
   examEditAllergy: string;
@@ -4574,6 +4575,7 @@ export const translations: Record<Language, Translations> = {
     purchaseAdd: "Add",
     purchaseSales: "Transactions",
     purchaseLoadMore: "Load more",
+    purchaseItemsCount: "{n} medicine(s) · tap for details",
     examEditVitals: "Edit",
     examAddAllergy: "Add allergy",
     examEditAllergy: "Edit allergy",
@@ -6861,6 +6863,7 @@ export const translations: Record<Language, Translations> = {
     purchaseAdd: "Tambah",
     purchaseSales: "Transaksi",
     purchaseLoadMore: "Muat lagi",
+    purchaseItemsCount: "{n} obat · ketuk untuk detail",
     examEditVitals: "Ubah",
     examAddAllergy: "Tambah alergi",
     examEditAllergy: "Ubah alergi",

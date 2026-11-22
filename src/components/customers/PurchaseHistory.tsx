@@ -41,6 +41,9 @@ export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryPro
   const { t, language } = useLanguage();
   const locale = language === "id" ? "id-ID" : "en-US";
   const [adding, setAdding] = useState<string | null>(null);
+  // At the till the list is for "buy again", so it starts open; elsewhere the
+  // medicines only show when asked for.
+  const [frequentOpen, setFrequentOpen] = useState(!!onBuyAgain);
 
   const query = useInfiniteQuery({
     queryKey: ["customer-purchases", customerUuid],
@@ -100,10 +103,14 @@ export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryPro
     <div className="space-y-6">
       {/* ── Headline numbers ── */}
       <div>
-        <dl className="grid grid-cols-3 gap-2">
+        <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <Stat label={t.purchaseTransactions} value={String(summary.transactionCount)} />
           <Stat label={t.purchaseTotalSpent} value={formatCurrency(summary.totalSpent)} />
-          <Stat label={t.purchaseLast} value={summary.lastPurchaseAt ? relativeDay(summary.lastPurchaseAt, t, locale) : "—"} />
+          <Stat
+            label={t.purchaseLast}
+            value={summary.lastPurchaseAt ? relativeDay(summary.lastPurchaseAt, t, locale) : "—"}
+            className="col-span-2 sm:col-span-1"
+          />
         </dl>
         {summary.firstPurchaseAt && (
           <p className="mt-2 text-xs text-muted-foreground">
@@ -120,7 +127,19 @@ export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryPro
       {/* ── Frequently bought ── */}
       {first.frequentItems.length > 0 && (
         <section className="space-y-2">
-          <SectionLabel>{t.purchaseFrequent}</SectionLabel>
+          <button
+            type="button"
+            onClick={() => setFrequentOpen((o) => !o)}
+            aria-expanded={frequentOpen}
+            className="flex w-full items-center gap-3 text-left"
+          >
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {t.purchaseFrequent} ({first.frequentItems.length})
+            </span>
+            <span className="h-px flex-1 bg-border" aria-hidden />
+            <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", frequentOpen && "rotate-180")} aria-hidden />
+          </button>
+          {frequentOpen && (
           <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border">
             {first.frequentItems.map((f) => (
               <li key={f.medicine.uuid} className="flex items-center gap-3 px-3 py-2.5">
@@ -150,6 +169,7 @@ export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryPro
               </li>
             ))}
           </ul>
+          )}
         </section>
       )}
 
@@ -179,9 +199,9 @@ export function PurchaseHistory({ customerUuid, onBuyAgain }: PurchaseHistoryPro
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }): JSX.Element {
+function Stat({ label, value, className }: { label: string; value: string; className?: string }): JSX.Element {
   return (
-    <div className="rounded-xl border border-border bg-muted/20 px-3 py-2.5">
+    <div className={cn("rounded-xl border border-border bg-muted/20 px-3 py-2.5", className)}>
       <dt className="truncate text-[11px] font-medium text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 truncate text-sm font-semibold tabular-nums text-foreground">{value}</dd>
     </div>
@@ -200,7 +220,6 @@ function SectionLabel({ children }: { children: string }): JSX.Element {
 function SaleRow({ sale, t, locale }: { sale: Sale; t: Translations; locale: string }): JSX.Element {
   const [open, setOpen] = useState(false);
   const voided = sale.status === "REFUNDED" || sale.status === "CANCELLED";
-  const summary = sale.items.map((i) => `${i.medicine.name} ×${i.quantityPieces}`).join(", ");
   const date = new Date(sale.soldAt);
 
   return (
@@ -233,7 +252,11 @@ function SaleRow({ sale, t, locale }: { sale: Sale; t: Translations; locale: str
               </span>
             )}
           </span>
-          {!open && <span className="name-case mt-0.5 block truncate text-xs text-muted-foreground">{summary}</span>}
+          {!open && (
+            <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+              {t.purchaseItemsCount.replace("{n}", String(sale.items.length))}
+            </span>
+          )}
         </span>
         <span className="flex shrink-0 items-center gap-1.5">
           <span className={cn("text-sm font-semibold tabular-nums", voided ? "text-muted-foreground line-through" : "text-foreground")}>
