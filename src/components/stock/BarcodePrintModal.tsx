@@ -29,13 +29,13 @@ const PREFS_KEY = "barcode-print-prefs-v2";
 
 /** The fields each label kind can show (stock only means something for the whole batch). */
 const FIELDS_BY_KIND: Record<LabelKind, (keyof LabelFields)[]> = {
-  "batch-label": ["showStock", "showExpiry", "showContents", "showPrice"],
+  "batch-label": ["showStock", "showExpiry", "showPrice"],
   "item-label": ["showExpiry", "showContents", "showPrice"],
-  "medicine-label": ["showStock", "showContents", "showPrice"],
+  "medicine-label": ["showStock", "showPrice"],
 };
 
 const DEFAULT_FIELDS: Record<LabelKind, LabelFields> = {
-  "batch-label": { showStock: true, showExpiry: true, showContents: true, showPrice: false },
+  "batch-label": { showStock: true, showExpiry: true, showContents: false, showPrice: false },
   "item-label": { showStock: false, showExpiry: true, showContents: true, showPrice: false },
   "medicine-label": { showStock: true, showExpiry: false, showContents: false, showPrice: true },
 };
@@ -55,9 +55,9 @@ function loadPrefs(): PrintPrefs {
     return {
       size: p.size && LABEL_SIZES.some((s) => s.value === p.size) ? p.size : fallback.size,
       fields: {
-        "batch-label": { ...DEFAULT_FIELDS["batch-label"], ...p.fields?.["batch-label"] },
+        "batch-label": { ...DEFAULT_FIELDS["batch-label"], ...p.fields?.["batch-label"], showContents: false },
         "item-label": { ...DEFAULT_FIELDS["item-label"], ...p.fields?.["item-label"], showStock: false },
-        "medicine-label": { ...DEFAULT_FIELDS["medicine-label"], ...p.fields?.["medicine-label"], showExpiry: false },
+        "medicine-label": { ...DEFAULT_FIELDS["medicine-label"], ...p.fields?.["medicine-label"], showExpiry: false, showContents: false },
       },
     };
   } catch {

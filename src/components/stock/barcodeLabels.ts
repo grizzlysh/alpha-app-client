@@ -106,14 +106,21 @@ function contentsText(card: StockCard, text: LabelText): string {
     : `${text.contents} 1 ${unit}`;
 }
 
-/** "44 strip (4 box + 4)": the batch's stock, or with `pieces` another amount in the same packaging. */
+/** "44 strip": the batch's stock, or with `pieces` another amount, in the selling unit. */
 export function stockText(card: StockCard, pieces: number = card.batch.quantityPieces): string {
+  return `${pieces.toLocaleString("id-ID")} ${card.medicine.unit.toLowerCase()}`;
+}
+
+/** "44 strip (4 box + 4 strip)": the same, broken into full boxes and loose units (stock card). */
+export function stockBreakdownText(card: StockCard): string {
   const unit = card.medicine.unit.toLowerCase();
+  const pieces = card.batch.quantityPieces;
   const per = card.batch.quantityPerBox;
-  if (per <= 1) return `${pieces.toLocaleString("id-ID")} ${unit}`;
+  if (per <= 1) return stockText(card);
   const boxes = Math.floor(pieces / per);
   const rest = pieces % per;
-  return `${pieces.toLocaleString("id-ID")} ${unit} (${boxes} box${rest ? ` + ${rest}` : ""})`;
+  const parts = [boxes > 0 ? `${boxes} box` : "", rest > 0 ? `${rest} ${unit}` : ""].filter(Boolean).join(" + ");
+  return `${stockText(card)}${parts ? ` (${parts})` : ""}`;
 }
 
 /** One label's inner HTML. `itemNumber` is set for item labels. */
@@ -136,7 +143,8 @@ export function labelHtml(kind: LabelKind, card: StockCard, text: LabelText, opt
   }
   // One fact per line so nothing gets cut off; the price sits at the end of the last line.
   const lines: string[] = [];
-  const contents = opts.showContents ? esc(contentsText(card, text)) : "";
+  // Contents (per box) only on item labels: an item is one box.
+  const contents = kind === "item-label" && opts.showContents ? esc(contentsText(card, text)) : "";
   if (kind === "item-label") lines.push(`<b>${text.item} ${itemNumber ?? 1}</b>${contents ? ` · ${contents}` : ""}`);
   else if (contents) lines.push(contents);
   // Batch label: this batch's stock. Medicine label: the total over every batch.
@@ -260,7 +268,7 @@ export function stockCardDocument(card: StockCard, text: LabelText, opts: Pick<L
       <dt>${text.expiry}</dt><dd>${fullDate(b.expiryDate, opts.locale)}</dd>
       <dt>${text.location}</dt><dd>${esc(b.location ?? "—")}</dd>
       <dt>${text.minStock}</dt><dd>${card.reorderLevel} ${esc(m.unit.toLowerCase())}</dd>
-      <dt>${text.totalStock}</dt><dd>${esc(stockText(card))}</dd>
+      <dt>${text.totalStock}</dt><dd>${esc(stockBreakdownText(card))}</dd>
       <dt>${text.contents}</dt><dd>${esc(contentsText(card, text).replace(`${text.contents} `, ""))}</dd>
     </dl>`;
 
