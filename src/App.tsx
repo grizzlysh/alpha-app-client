@@ -24,6 +24,7 @@ const MedicineClassificationPage = lazy(() => import("@/pages/MedicineClassifica
 const BusinessParametersPage = lazy(() => import("@/pages/BusinessParametersPage"));
 const SystemParametersPage = lazy(() => import("@/pages/SystemParametersPage"));
 const BackgroundJobsPage = lazy(() => import("@/pages/BackgroundJobsPage"));
+const PharmacyProfilePage = lazy(() => import("@/pages/PharmacyProfilePage"));
 const RolesPage = lazy(() => import("@/pages/RolesPage"));
 const UsersPage = lazy(() => import("@/pages/UsersPage"));
 const PharmaciesPage = lazy(() => import("@/pages/PharmaciesPage"));
@@ -122,6 +123,7 @@ function AppRoutes(): JSX.Element {
             <Route path="/medical-records" element={<MedicalRecordsPage />} />
             <Route path="/distributors" element={<DistributorsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/pharmacy-profile" element={<PharmacyProfilePage />} />
             </Route>
             <Route path="*" element={<StatusPage kind="not-found" />} />
           </Route>

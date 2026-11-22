@@ -2184,6 +2184,8 @@ export interface Translations {
   sdSignerHint: string;
   pharmaNoOwner: string;
   navPharmacyProfile: string;
+  pharmacyProfileSubtitle: string;
+  pharmaInfoTitle: string;
   setupTitle: string;
   setupProgress: string;
   setupHide: string;
@@ -4490,6 +4492,8 @@ export const translations: Record<Language, Translations> = {
     sdSignerHint: "Disposal records are signed by the Head Pharmacist (active practice license).",
     pharmaNoOwner: "No owner yet",
     navPharmacyProfile: "Pharmacy profile",
+    pharmacyProfileSubtitle: "Details and business licenses of the pharmacy you are working in",
+    pharmaInfoTitle: "Pharmacy information",
     setupTitle: "Finish setting up this pharmacy",
     setupProgress: "{done} of {total} done",
     setupHide: "Hide",
@@ -6792,6 +6796,8 @@ export const translations: Record<Language, Translations> = {
     sdSignerHint: "Berita acara pemusnahan ditandatangani Head Pharmacist (SIPA aktif).",
     pharmaNoOwner: "Belum ada pemilik",
     navPharmacyProfile: "Profil apotek",
+    pharmacyProfileSubtitle: "Data dan izin usaha apotek yang sedang Anda buka",
+    pharmaInfoTitle: "Informasi apotek",
     setupTitle: "Lengkapi pengaturan apotek",
     setupProgress: "{done} dari {total} selesai",
     setupHide: "Sembunyikan",
