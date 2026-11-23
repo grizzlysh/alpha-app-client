@@ -1236,6 +1236,8 @@ export interface Translations {
   poRepurchase: string;
   poPrint: string;
   poReprint: string;
+  poCopies: string;
+  poCopiesHint: string;
   poPrinting: string;
   poPrintReceipt: string;
   poReceiptTitle: string;
@@ -3668,6 +3670,8 @@ export const translations: Record<Language, Translations> = {
     poRepurchase: "Repurchase",
     poPrint: "Print",
     poReprint: "Reprint",
+    poCopies: "Copies",
+    poCopiesHint: "Each copy is marked: the first is the original for the distributor, the last is the pharmacy's file copy.",
     poPrinting: "Printing...",
     poPrintReceipt: "Print Receipt",
     poReceiptTitle: "PURCHASE ORDER",
@@ -6091,6 +6095,8 @@ export const translations: Record<Language, Translations> = {
     poRepurchase: "Pesan Ulang",
     poPrint: "Cetak",
     poReprint: "Cetak Ulang",
+    poCopies: "Jumlah rangkap",
+    poCopiesHint: "Setiap lembar diberi keterangan: lembar pertama asli untuk PBF, lembar terakhir arsip apotek.",
     poPrinting: "Mencetak...",
     poPrintReceipt: "Cetak Struk",
     poReceiptTitle: "PESANAN PEMBELIAN",

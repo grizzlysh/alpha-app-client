@@ -47,9 +47,11 @@ export interface SpecialOrderLetterProps {
   kind: SpecialOrderLetterKind;
   order: PurchaseOrder;
   printData: PurchaseOrderPrintData | null;
+  /** Which copy this sheet is, e.g. "Lembar 1 · Asli untuk PBF". */
+  copyLabel?: string;
 }
 
-export function SpecialOrderLetter({ kind, order, printData }: SpecialOrderLetterProps): JSX.Element {
+export function SpecialOrderLetter({ kind, order, printData, copyLabel }: SpecialOrderLetterProps): JSX.Element {
   const goods = GOODS[kind];
   const pharmacy = printData?.pharmacy;
   const apj = printData?.headPharmacist;
@@ -57,11 +59,10 @@ export function SpecialOrderLetter({ kind, order, printData }: SpecialOrderLette
 
   return (
     <div
-      id="po-receipt"
       style={{
         fontFamily: "'Times New Roman', Times, serif",
         width: "210mm",
-        minHeight: "297mm",
+        minHeight: "296mm", // a hair under A4 so a sheet never spills onto a second page
         padding: "14mm 16mm",
         backgroundColor: "#ffffff",
         color: "#000000",
@@ -70,6 +71,11 @@ export function SpecialOrderLetter({ kind, order, printData }: SpecialOrderLette
         boxSizing: "border-box",
       }}
     >
+      {copyLabel && (
+        <div style={{ textAlign: "right", marginBottom: "4px" }}>
+          <span style={{ border: "1px solid #000", padding: "1px 6px", fontSize: "10px", fontWeight: "bold" }}>{copyLabel}</span>
+        </div>
+      )}
       {/* Letterhead */}
       <div style={{ textAlign: "center", borderBottom: "3px double #000", paddingBottom: "6px", marginBottom: "12px" }}>
         <div style={{ fontSize: "18px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "1px" }}>
