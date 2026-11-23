@@ -1,6 +1,8 @@
 import { axiosInstance } from "@/configs/axiosInstance";
 import type { ApiResponse } from "@/types/api";
 import type {
+  ControlledReport,
+  ControlledReportParams,
   ReportDateRangeParams,
   SalesSummaryResponse,
   SalesExportRow,
@@ -215,5 +217,10 @@ export async function getReturnExport(
     "/reports/returns/export",
     { params }
   );
+  return response.data;
+}
+
+export async function getControlledReport(params: ControlledReportParams): Promise<ApiResponse<ControlledReport>> {
+  const response = await axiosInstance.get<ApiResponse<ControlledReport>>("/reports/controlled", { params });
   return response.data;
 }

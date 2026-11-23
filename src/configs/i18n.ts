@@ -824,6 +824,10 @@ export interface Translations {
   orderLetterCertainDrug: string;
   orderLetterFollowType: string;
   orderLetterMedicineHint: string;
+  typeRxLockedHint: string;
+  orderLetterSuggestion: string;
+  orderLetterApplySuggestion: string;
+  orderLetterNeedsRxType: string;
   poKindMixed: string;
   poKindNarcoticOne: string;
   medicineCustomName: string;
@@ -1351,6 +1355,8 @@ export interface Translations {
   labelStock: string;
   labelAllBatches: string;
   labelStockCard: string;
+  lockedCabinet: string;
+  lockedCabinetHint: string;
   labelPackaging: string;
   labelLocation: string;
   labelMinStock: string;
@@ -1781,6 +1787,24 @@ export interface Translations {
   reportsStockMovementTab: string;
   reportsDisposalTab: string;
   reportsReturnsTab: string;
+  reportsControlledTab: string;
+  reportCtlIntro: string;
+  reportCtlPrevMonth: string;
+  reportCtlNextMonth: string;
+  reportCtlMedicines: string;
+  reportCtlTotalIn: string;
+  reportCtlTotalOut: string;
+  reportCtlMedicine: string;
+  reportCtlUnit: string;
+  reportCtlOpening: string;
+  reportCtlInDistributor: string;
+  reportCtlInOther: string;
+  reportCtlOutSales: string;
+  reportCtlOutOther: string;
+  reportCtlOutDisposal: string;
+  reportCtlClosing: string;
+  reportCtlEmpty: string;
+  reportCtlFooterNote: string;
   reportSummaryTitle: string;
   reportNoData: string;
   reportDays: string;
@@ -1913,6 +1937,8 @@ export interface Translations {
   invoiceSignedBy: string;
   invoiceSelectSignedBy: string;
   invoiceSignedByRequired: string;
+  invoiceReceiverHint: string;
+  invoiceReceiverHeadOnly: string;
   invoiceDescription: string;
   invoiceDescriptionPlaceholder: string;
   invoicePaymentStatus: string;
@@ -2151,6 +2177,9 @@ export interface Translations {
   posPriceLockedHint: string;
   posEditPriceHint: string;
   posRxRequiredBadge: string;
+  posRestrictedBadge: string;
+  posRestrictedBadgeHint: string;
+  posRestrictedOverLimit: string;
   posTabProducts: string;
   posTabCart: string;
   posShortcutSearch: string;
@@ -3244,6 +3273,10 @@ export const translations: Record<Language, Translations> = {
     orderLetterCertainDrug: "Obat-obat tertentu (OOT)",
     orderLetterFollowType: "Same as the type ({kind})",
     orderLetterMedicineHint: "Change it only for a precursor or an \"obat-obat tertentu\" in an ordinary type.",
+    typeRxLockedHint: "Always on for controlled medicines, narcotics and psychotropics.",
+    orderLetterSuggestion: "Its active ingredient looks like {kind}.",
+    orderLetterApplySuggestion: "Set it",
+    orderLetterNeedsRxType: "Narcotics and psychotropics must be in a prescription-only type. Pick another type or another order letter.",
     poKindMixed: "This medicine goes on another letter ({kind}). Make a separate purchase order for it.",
     poKindNarcoticOne: "A narcotics letter holds one medicine only.",
     medicineCustomName: "Use my own name",
@@ -3699,9 +3732,11 @@ export const translations: Record<Language, Translations> = {
     invoiceDistributorRequired: "Distributor is required",
     invoicePurchaseOrder: "Purchase Order",
     invoiceSelectPurchaseOrder: "Link to a purchase order (optional)",
-    invoiceSignedBy: "Authorized By",
+    invoiceSignedBy: "Received By",
     invoiceSelectSignedBy: "Select a signer",
-    invoiceSignedByRequired: "Signer is required",
+    invoiceSignedByRequired: "Choose who received the goods",
+    invoiceReceiverHint: "The pharmacist who checked and received the goods.",
+    invoiceReceiverHeadOnly: "This delivery has narcotics, psychotropics, precursors or obat-obat tertentu, so the Head Pharmacist receives it.",
     invoiceDescription: "Notes",
     invoiceDescriptionPlaceholder: "Additional notes about this invoice...",
     invoicePaymentStatus: "Payment Status",
@@ -3898,6 +3933,8 @@ export const translations: Record<Language, Translations> = {
     labelStock: "Stock",
     labelAllBatches: "All batches",
     labelStockCard: "Stock card",
+    lockedCabinet: "Locked cabinet",
+    lockedCabinetHint: "Narcotic or psychotropic: store it in the locked cabinet",
     labelPackaging: "Packaging",
     labelLocation: "Location",
     labelMinStock: "Min. stock",
@@ -4326,6 +4363,24 @@ export const translations: Record<Language, Translations> = {
     reportsStockMovementTab: "Inventory Movements",
     reportsDisposalTab: "Disposals",
     reportsReturnsTab: "Returns",
+    reportsControlledTab: "SIPNAP",
+    reportCtlIntro: "Monthly balance of narcotics, psychotropics, precursors and obat-obat tertentu, in the columns of the SIPNAP report. Quantities are in pieces.",
+    reportCtlPrevMonth: "Previous month",
+    reportCtlNextMonth: "Next month",
+    reportCtlMedicines: "Medicines",
+    reportCtlTotalIn: "Total received",
+    reportCtlTotalOut: "Total dispensed & out",
+    reportCtlMedicine: "Medicine",
+    reportCtlUnit: "Unit",
+    reportCtlOpening: "Opening",
+    reportCtlInDistributor: "In: PBF",
+    reportCtlInOther: "In: other",
+    reportCtlOutSales: "Out: sales",
+    reportCtlOutOther: "Out: other",
+    reportCtlOutDisposal: "Destroyed",
+    reportCtlClosing: "Closing",
+    reportCtlEmpty: "No medicines of this kind. Set the order letter kind on a medicine type or a medicine to include it.",
+    reportCtlFooterNote: "\"Other\" in: customer returns, transfers, donations, upward adjustments. \"Other\" out: returns to distributors, transfers, donations, downward adjustments.",
     reportSummaryTitle: "Summary",
     reportNoData: "No data available",
     reportDays: "days",
@@ -4580,6 +4635,9 @@ export const translations: Record<Language, Translations> = {
     posPriceLockedHint: "Price changes need the 'override price' permission",
     posEditPriceHint: "Click to change the price",
     posRxRequiredBadge: "Prescription required",
+    posRestrictedBadge: "Limited",
+    posRestrictedBadgeHint: "Precursor or obat-obat tertentu: limited per sale without a prescription",
+    posRestrictedOverLimit: "Without a prescription, at most {n} per sale. Lower the quantity or attach a prescription.",
     posTabProducts: "Products",
     posTabCart: "Cart",
     posShortcutSearch: "Search",
@@ -5669,6 +5727,10 @@ export const translations: Record<Language, Translations> = {
     orderLetterCertainDrug: "Obat-obat tertentu (OOT)",
     orderLetterFollowType: "Ikut golongan ({kind})",
     orderLetterMedicineHint: "Ubah hanya untuk prekursor atau obat-obat tertentu yang golongannya biasa.",
+    typeRxLockedHint: "Selalu wajib untuk obat terkendali, narkotika dan psikotropika.",
+    orderLetterSuggestion: "Zat aktifnya termasuk {kind}.",
+    orderLetterApplySuggestion: "Tandai",
+    orderLetterNeedsRxType: "Narkotika dan psikotropika harus di golongan yang wajib resep. Pilih golongan atau jenis surat pesanan lain.",
     poKindMixed: "Obat ini masuk surat pesanan lain ({kind}). Buat surat pesanan terpisah.",
     poKindNarcoticOne: "Satu SP narkotika hanya untuk satu obat.",
     medicineCustomName: "Pakai nama sendiri",
@@ -6124,9 +6186,11 @@ export const translations: Record<Language, Translations> = {
     invoiceDistributorRequired: "Distributor wajib dipilih",
     invoicePurchaseOrder: "Pesanan Pembelian",
     invoiceSelectPurchaseOrder: "Tautkan ke pesanan pembelian (opsional)",
-    invoiceSignedBy: "Ditandatangani Oleh",
+    invoiceSignedBy: "Diterima Oleh",
     invoiceSelectSignedBy: "Pilih penandatangan",
-    invoiceSignedByRequired: "Penandatangan wajib dipilih",
+    invoiceSignedByRequired: "Pilih apoteker yang menerima barang",
+    invoiceReceiverHint: "Apoteker yang memeriksa dan menerima barang.",
+    invoiceReceiverHeadOnly: "Pengiriman ini berisi narkotika, psikotropika, prekursor atau OOT, jadi harus diterima oleh Apoteker Penanggung Jawab.",
     invoiceDescription: "Catatan",
     invoiceDescriptionPlaceholder: "Catatan tambahan tentang faktur ini...",
     invoicePaymentStatus: "Status Pembayaran",
@@ -6323,6 +6387,8 @@ export const translations: Record<Language, Translations> = {
     labelStock: "Stok",
     labelAllBatches: "Semua batch",
     labelStockCard: "Kartu stok",
+    lockedCabinet: "Lemari khusus",
+    lockedCabinetHint: "Narkotika atau psikotropika: simpan di lemari khusus terkunci",
     labelPackaging: "Bentuk / kemasan",
     labelLocation: "Lokasi",
     labelMinStock: "Stok min.",
@@ -6751,6 +6817,24 @@ export const translations: Record<Language, Translations> = {
     reportsStockMovementTab: "Pergerakan Stok",
     reportsDisposalTab: "Disposal",
     reportsReturnsTab: "Retur",
+    reportsControlledTab: "SIPNAP",
+    reportCtlIntro: "Saldo bulanan narkotika, psikotropika, prekursor dan obat-obat tertentu, dengan kolom sesuai laporan SIPNAP. Jumlah dalam satuan terkecil.",
+    reportCtlPrevMonth: "Bulan sebelumnya",
+    reportCtlNextMonth: "Bulan berikutnya",
+    reportCtlMedicines: "Jumlah obat",
+    reportCtlTotalIn: "Total pemasukan",
+    reportCtlTotalOut: "Total pengeluaran",
+    reportCtlMedicine: "Nama obat",
+    reportCtlUnit: "Satuan",
+    reportCtlOpening: "Awal",
+    reportCtlInDistributor: "Masuk PBF",
+    reportCtlInOther: "Masuk lain",
+    reportCtlOutSales: "Resep/jual",
+    reportCtlOutOther: "Keluar lain",
+    reportCtlOutDisposal: "Musnah",
+    reportCtlClosing: "Akhir",
+    reportCtlEmpty: "Belum ada obat jenis ini. Atur jenis surat pesanan pada golongan obat atau pada obatnya agar masuk laporan.",
+    reportCtlFooterNote: "Masuk lainnya: retur pelanggan, mutasi, donasi, penyesuaian naik. Keluar lainnya: retur ke PBF, mutasi, donasi, penyesuaian turun.",
     reportSummaryTitle: "Ringkasan",
     reportNoData: "Tidak ada data tersedia",
     reportDays: "hari",
@@ -7005,6 +7089,9 @@ export const translations: Record<Language, Translations> = {
     posPriceLockedHint: "Ubah harga memerlukan izin 'ubah harga'",
     posEditPriceHint: "Klik untuk mengubah harga",
     posRxRequiredBadge: "Wajib resep",
+    posRestrictedBadge: "Terbatas",
+    posRestrictedBadgeHint: "Prekursor atau obat-obat tertentu: dibatasi per transaksi tanpa resep",
+    posRestrictedOverLimit: "Tanpa resep maksimal {n} per transaksi. Kurangi jumlahnya atau lampirkan resep.",
     posTabProducts: "Produk",
     posTabCart: "Keranjang",
     posShortcutSearch: "Cari",

@@ -1,3 +1,4 @@
+import type { OrderLetterKind } from "@/utils/orderLetter";
 // ── Detail Search Result ──────────────────────────────────────────────────────
 
 export interface StockDetailSearchResult {
@@ -20,7 +21,9 @@ export interface StockDetailSearchResult {
     unit: string;
     barcode?: string | null;
     shape: { name: string };
-    type: { name: string; requiredPrescription: boolean };
+    /** The medicine's own order letter kind; null follows its type. */
+    orderLetterKind?: OrderLetterKind | null;
+    type: { name: string; requiredPrescription: boolean; orderLetterKind?: OrderLetterKind };
   };
 }
 
@@ -74,7 +77,9 @@ export interface Stock {
     name: string;
     unit: string;
     shape: { name: string };
-    type: { name: string };
+    /** The medicine's own order letter kind; null follows its type. */
+    orderLetterKind?: OrderLetterKind | null;
+    type: { name: string; orderLetterKind?: OrderLetterKind };
     medicineClass: { name: string };
   };
   details: StockDetail[];
@@ -173,6 +178,8 @@ export interface StockCardMedicine {
   isControlled: boolean;
   requiredPrescription: boolean;
   therapeuticClass: string;
+  /** Effective order letter kind. */
+  orderLetterKind?: OrderLetterKind;
 }
 
 /** Data behind a printed batch, item or medicine label. */

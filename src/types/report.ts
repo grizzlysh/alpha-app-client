@@ -248,3 +248,36 @@ export interface ReturnReportParams extends ReportDateRangeParams {
 }
 
 export type ReturnListParams = ReturnReportParams & { page?: number; limit?: number };
+
+// ── Controlled medicines (SIPNAP) ─────────────────────────────
+
+export type ControlledReportKind = "NARCOTIC" | "PSYCHOTROPIC" | "PRECURSOR" | "CERTAIN_DRUG";
+
+/** One medicine's monthly balance; quantities in pieces. */
+export interface ControlledReportRow {
+  medicineUuid: string;
+  medicineName: string;
+  unit: string;
+  shape: string;
+  openingBalance: number;
+  inFromDistributor: number;
+  inOther: number;
+  outSales: number;
+  outOther: number;
+  outDisposal: number;
+  closingBalance: number;
+}
+
+export interface ControlledReport {
+  kind: ControlledReportKind;
+  month: string;
+  pharmacy: { name: string; code: string; businessLicenseNumber: string | null; address: string | null };
+  headPharmacist: { name: string; practiceLicenseNumber: string | null } | null;
+  rows: ControlledReportRow[];
+}
+
+export interface ControlledReportParams {
+  /** yyyy-MM */
+  month: string;
+  kind: ControlledReportKind;
+}
