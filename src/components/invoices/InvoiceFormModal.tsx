@@ -95,7 +95,8 @@ function makeSchema(t: Translations) {
         .min(1, t.invoiceItemsRequired),
     })
     .superRefine((data, ctx) => {
-      if (data.receiveDate && data.invoiceDate && data.receiveDate <= data.invoiceDate) {
+      // The goods can arrive the same day as the invoice, never before it.
+      if (data.receiveDate && data.invoiceDate && data.receiveDate < data.invoiceDate) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: t.invoiceReceiveDateAfterInvoice,
@@ -697,6 +698,10 @@ export function InvoiceFormModal({
   // Invoice-level computed totals
   const ppnEnabled = watch("ppnEnabled");
   const watchedPOUuid = watch("purchaseOrderUuid");
+  // Dates: invoice and receipt can't be in the future; receipt and due date not before the invoice.
+  const watchedInvoiceDate = watch("invoiceDate");
+  const today = useMemo(() => new Date(), []);
+  const invoiceDay = watchedInvoiceDate ? new Date(`${watchedInvoiceDate}T00:00:00`) : undefined;
   const subtotal = fields.reduce((sum, item) => {
     const gross = item.price * item.quantityBox;
     const disc = (item.discountPercentage / 100) * gross;
@@ -1022,8 +1027,12 @@ export function InvoiceFormModal({
                         if (v) {
                           setValue("dueDate", addOneMonth(v));
                           clearErrors("dueDate");
+                          // Received on the invoice date at the earliest.
+                          const received = getValues("receiveDate");
+                          if (received && received < v) setValue("receiveDate", v);
                         }
                       }}
+                      maxDate={today}
                       disabled={isPending}
                       placeholder={t.invoiceDate}
                       className={cn("rounded-xl", errors.invoiceDate && "border-destructive")}
@@ -1047,6 +1056,7 @@ export function InvoiceFormModal({
                     <DateInput
                       value={field.value}
                       onChange={field.onChange}
+                      minDate={invoiceDay}
                       disabled={isPending}
                       placeholder={t.invoiceDueDate}
                       className={cn("rounded-xl", errors.dueDate && "border-destructive")}
@@ -1071,7 +1081,12 @@ export function InvoiceFormModal({
                 render={({ field }) => (
                   <DateInput
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(v) => {
+                      field.onChange(v);
+                      clearErrors("receiveDate");
+                    }}
+                    minDate={invoiceDay}
+                    maxDate={today}
                     disabled={isPending}
                     placeholder={t.invoiceReceiveDate}
                     className={cn("rounded-xl", errors.receiveDate && "border-destructive")}
