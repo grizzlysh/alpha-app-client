@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { isSpecialOrderLetter } from "@/utils/orderLetter";
 import { useSelector } from "react-redux";
 import {
   useForm,
@@ -802,13 +803,22 @@ export function InvoiceFormModal({
     [fmt, medicines]
   );
 
+  // Narcotics, psychotropics, precursors and obat-obat tertentu are received by the Head Pharmacist.
+  const specialDelivery = fields.some((f) => isSpecialOrderLetter(medicines.find((m) => m.uuid === f.medicineUuid)?.orderLetterKind ?? "REGULAR"));
   const signerOptions = useMemo(
     () => [
       { value: "", label: t.invoiceSelectSignedBy },
-      ...(usersData?.data ?? []).map((u) => ({ value: u.uuid, label: u.name })),
+      ...(usersData?.data ?? [])
+        .filter((u) => !specialDelivery || u.isHeadPharmacist)
+        .map((u) => ({ value: u.uuid, label: u.isHeadPharmacist ? `${u.name} · ${t.roleTypeHeadPharmacist}` : u.name })),
     ],
-    [usersData?.data, t.invoiceSelectSignedBy]
+    [usersData?.data, t.invoiceSelectSignedBy, t.roleTypeHeadPharmacist, specialDelivery]
   );
+  // Drop a receiver who may no longer receive this delivery.
+  const watchedSigner = watch("signedByUuid");
+  useEffect(() => {
+    if (watchedSigner && usersData?.data && !signerOptions.some((o) => o.value === watchedSigner)) setValue("signedByUuid", "");
+  }, [signerOptions, watchedSigner, usersData?.data, setValue]);
 
   const purchaseOrderOptions = useMemo(
     () => [
@@ -1121,10 +1131,7 @@ export function InvoiceFormModal({
 
             {/* Signed by */}
             <div className="space-y-1.5">
-              <Label>
-                {t.invoiceSignedBy}
-                {/* <span className="ml-0.5 text-destructive">*</span> */}
-              </Label>
+              <Label>{t.invoiceSignedBy}</Label>
               <Controller
                 name="signedByUuid"
                 control={control}
@@ -1138,11 +1145,13 @@ export function InvoiceFormModal({
                   />
                 )}
               />
-              {errors.signedByUuid && (
+              {errors.signedByUuid ? (
                 <p className="flex items-center gap-1 text-xs text-destructive">
                   <AlertCircle className="h-3 w-3 shrink-0" />
                   {errors.signedByUuid.message}
                 </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">{specialDelivery ? t.invoiceReceiverHeadOnly : t.invoiceReceiverHint}</p>
               )}
             </div>
 
