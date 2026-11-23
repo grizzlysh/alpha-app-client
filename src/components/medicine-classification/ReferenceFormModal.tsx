@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getApiErrorMessage } from "@/utils/apiError";
-import { ORDER_LETTER_KINDS, type OrderLetterKind, orderLetterKindLabel } from "@/utils/orderLetter";
+import { ORDER_LETTER_KINDS, PRESCRIPTION_ONLY_KINDS, type OrderLetterKind, orderLetterKindLabel } from "@/utils/orderLetter";
 import type { ApiResponse } from "@/types/api";
 import type { ReferencePayload } from "@/types/medicine";
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
@@ -91,6 +91,10 @@ export function ReferenceFormModal({
     toast.error(getApiErrorMessage(error, language, labels.unexpectedError));
   }
 
+  // Controlled types, narcotics and psychotropics always need a prescription.
+  const [watchedKind, watchedControlled] = form.watch(["orderLetterKind", "isControlled"]);
+  const rxLocked = watchedControlled || PRESCRIPTION_ONLY_KINDS.includes(watchedKind);
+
   const mutation = useMutation({
     mutationFn: (values: FormValues) => {
       const payload: ReferencePayload = {
@@ -104,7 +108,11 @@ export function ReferenceFormModal({
           isControlled: values.isControlled,
           ...(values.isControlled && { requiredPrescription: true }),
         }),
-        ...(labels.orderLetterKindLabel !== undefined && { orderLetterKind: values.orderLetterKind }),
+        ...(labels.orderLetterKindLabel !== undefined && {
+          orderLetterKind: values.orderLetterKind,
+          // Narcotics and psychotropics are prescription-only.
+          ...(PRESCRIPTION_ONLY_KINDS.includes(values.orderLetterKind) && { requiredPrescription: true }),
+        }),
       };
       return mode === "create"
         ? createFn(payload)
@@ -211,7 +219,8 @@ export function ReferenceFormModal({
                   control={form.control}
                   render={({ field }) => (
                     <Combobox
-                      value={String(field.value)}
+                      value={String(field.value || rxLocked)}
+                      disabled={rxLocked}
                       onValueChange={(v) => field.onChange(v === "true")}
                       options={[
                         { value: "false", label: labels.requiredPrescriptionNo! },
@@ -221,6 +230,7 @@ export function ReferenceFormModal({
                     />
                   )}
                 />
+                {rxLocked && <p className="text-xs text-muted-foreground">{t.typeRxLockedHint}</p>}
               </div>
             )}
 

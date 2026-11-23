@@ -28,7 +28,13 @@ import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
 import { getMedicineClassesDropdown } from "@/service/medicineClassService";
 import { useMedicineNameFormat, useNameFormat } from "@/hooks/useNameFormat";
 import { buildMedicineName } from "@/utils/medicineName";
-import { ORDER_LETTER_KINDS, type OrderLetterKind, orderLetterKindLabel } from "@/utils/orderLetter";
+import {
+  ORDER_LETTER_KINDS,
+  PRESCRIPTION_ONLY_KINDS,
+  type OrderLetterKind,
+  orderLetterKindLabel,
+  suggestOrderLetterKind,
+} from "@/utils/orderLetter";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -147,7 +153,14 @@ export function MedicineFormModal({
     "ingredients",
   ]);
   const shapeName = shapes.find((s) => s.uuid === shapeUuid)?.name ?? "";
-  const selectedTypeKind = types.find((tp) => tp.uuid === form.watch("medicineTypeUuid"))?.orderLetterKind ?? "REGULAR";
+  const selectedType = types.find((tp) => tp.uuid === form.watch("medicineTypeUuid"));
+  const selectedTypeKind = selectedType?.orderLetterKind ?? "REGULAR";
+  const kindOverride = form.watch("orderLetterKind");
+  const effectiveKind: OrderLetterKind = kindOverride || selectedTypeKind;
+  // Ingredients such as tramadol or pseudoephedrine point to a special letter the type doesn't give.
+  const suggestedKind = effectiveKind === "REGULAR" ? suggestOrderLetterKind(ingredientValues.map((i) => i.value)) : null;
+  // Narcotics and psychotropics are prescription-only, so their type must be too.
+  const kindNeedsRxType = !!selectedType && PRESCRIPTION_ONLY_KINDS.includes(effectiveKind) && !selectedType.requiredPrescription;
   const previewName = isCustomName
     ? ""
     : buildMedicineName(nameFormat, {
@@ -193,6 +206,7 @@ export function MedicineFormModal({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   function onSubmit(values: FormValues): void {
+    if (kindNeedsRxType) return;
     const ingredients = values.ingredients
       .filter((i) => i.value.trim())
       .map((i) => ({ name: i.value.trim(), strength: i.strength.trim() || null }));
@@ -399,7 +413,25 @@ export function MedicineFormModal({
                     />
                   )}
                 />
-                <p className="text-xs text-muted-foreground">{t.orderLetterMedicineHint}</p>
+                {kindNeedsRxType ? (
+                  <p className="flex items-start gap-1 text-xs text-destructive">
+                    <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                    {t.orderLetterNeedsRxType}
+                  </p>
+                ) : suggestedKind ? (
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-warning/40 bg-warning/10 px-2.5 py-1.5 text-xs text-foreground">
+                    <span>{t.orderLetterSuggestion.replace("{kind}", orderLetterKindLabel(suggestedKind, t))}</span>
+                    <button
+                      type="button"
+                      className="font-semibold text-primary underline-offset-2 hover:underline"
+                      onClick={() => form.setValue("orderLetterKind", suggestedKind, { shouldDirty: true })}
+                    >
+                      {t.orderLetterApplySuggestion}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">{t.orderLetterMedicineHint}</p>
+                )}
               </div>
 
               {/* Therapeutic Class */}
