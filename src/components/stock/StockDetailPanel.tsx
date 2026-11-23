@@ -26,6 +26,8 @@ import {
   daysUntilExpiry,
 } from "./stockUtils";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
+import { LockedCabinetBadge } from "@/components/shared/LockedCabinetBadge";
+import { needsLockedCabinet } from "@/utils/orderLetter";
 import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Batch table ───────────────────────────────────────────────────────────────
@@ -319,6 +321,9 @@ export function StockDetailPanel({
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {fmt(stock.medicine.shape.name)} · {fmt(stock.medicine.type.name)}
               </p>
+              {needsLockedCabinet(stock.medicine.orderLetterKind ?? stock.medicine.type.orderLetterKind) && (
+                <LockedCabinetBadge className="mt-1 mr-1" />
+              )}
               <span
                 className={cn(
                   "mt-1 inline-block rounded-full px-3 py-1 text-xs font-semibold",

@@ -1,4 +1,5 @@
 import { barcodeSvg } from "@/utils/barcode";
+import { needsLockedCabinet } from "@/utils/orderLetter";
 import type { BatchLabel, MedicineStockCard } from "@/types/stock";
 
 /**
@@ -27,6 +28,8 @@ export interface LabelText {
   box: string;
   allBatches: string;
   stockCard: string;
+  /** "Locked cabinet": printed on narcotics and psychotropics. */
+  lockedCabinet: string;
   packaging: string;
   location: string;
   minStock: string;
@@ -141,6 +144,7 @@ export function labelHtml(kind: LabelKind, card: BatchLabel, text: LabelText, op
   const svg = code ? barcodeSvg(code, { height: small ? 34 : 40, width: 1.4, fontSize: small ? 9 : 10 }) : null;
   const mark = drugClassMark(m.type, m.isControlled, small ? 3.4 : 4.4);
   const name = esc(opts.formatName(m.name));
+  const locked = needsLockedCabinet(m.orderLetterKind);
 
   const rows: string[] = [];
   if (kind !== "medicine-label") {
@@ -172,7 +176,7 @@ export function labelHtml(kind: LabelKind, card: BatchLabel, text: LabelText, op
       <div class="id">
         ${small ? "" : `<div class="shop">${esc(card.pharmacy.name)}</div>`}
         <div class="name">${name}</div>
-        ${small ? "" : `<div class="sub">${esc(m.shape)} · ${esc(m.unit)}</div>`}
+        ${small ? "" : `<div class="sub">${esc(m.shape)} · ${esc(m.unit)}${locked ? ` · <b>${esc(text.lockedCabinet.toUpperCase())}</b>` : ""}</div>`}
       </div>
       ${mark}
     </div>
@@ -294,7 +298,7 @@ export function stockCardDocument(card: MedicineStockCard, text: LabelText, opts
       <div>
         <div class="title">${text.stockCard.toUpperCase()}</div>
         <div class="muted">${esc(card.pharmacy.name)} · ${esc(card.pharmacy.code)}</div>
-        <div class="med">${mark}<div><div class="mname">${esc(opts.formatName(m.name))}</div><div class="muted">${esc(m.type)} · ${esc(m.therapeuticClass)}</div></div></div>
+        <div class="med">${mark}<div><div class="mname">${esc(opts.formatName(m.name))}</div><div class="muted">${esc(m.type)} · ${esc(m.therapeuticClass)}${needsLockedCabinet(m.orderLetterKind) ? ` · <b style="color:#b91c1c">${esc(text.lockedCabinet.toUpperCase())}</b>` : ""}</div></div></div>
       </div>
       ${svg ? `<div class="bcbox">${svg}</div>` : ""}
     </div>
