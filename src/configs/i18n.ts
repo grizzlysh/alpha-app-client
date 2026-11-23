@@ -815,6 +815,17 @@ export interface Translations {
   medicineDelete: string;
   medicineName: string;
   medicineNamePlaceholder: string;
+  orderLetterKind: string;
+  orderLetterKindHint: string;
+  orderLetterRegular: string;
+  orderLetterNarcotic: string;
+  orderLetterPsychotropic: string;
+  orderLetterPrecursor: string;
+  orderLetterCertainDrug: string;
+  orderLetterFollowType: string;
+  orderLetterMedicineHint: string;
+  poKindMixed: string;
+  poKindNarcoticOne: string;
   medicineCustomName: string;
   medicineCustomNameHint: string;
   medicineBaseNamePlaceholder: string;
@@ -3222,6 +3233,17 @@ export const translations: Record<Language, Translations> = {
     medicineDelete: "Delete",
     medicineName: "Medicine Name",
     medicineNamePlaceholder: "e.g. Racikan Batuk Anak",
+    orderLetterKind: "Order letter",
+    orderLetterKindHint: "Each kind is ordered on its own letter; a narcotics letter holds one medicine.",
+    orderLetterRegular: "Regular",
+    orderLetterNarcotic: "Narcotics",
+    orderLetterPsychotropic: "Psychotropics",
+    orderLetterPrecursor: "Pharmaceutical precursors",
+    orderLetterCertainDrug: "Obat-obat tertentu (OOT)",
+    orderLetterFollowType: "Same as the type ({kind})",
+    orderLetterMedicineHint: "Change it only for a precursor or an \"obat-obat tertentu\" in an ordinary type.",
+    poKindMixed: "This medicine goes on another letter ({kind}). Make a separate purchase order for it.",
+    poKindNarcoticOne: "A narcotics letter holds one medicine only.",
     medicineCustomName: "Use my own name",
     medicineCustomNameHint: "Saved exactly as typed; the name format does not apply.",
     medicineBaseNamePlaceholder: "Name, e.g. Amlodipin",
@@ -5634,6 +5656,17 @@ export const translations: Record<Language, Translations> = {
     medicineDelete: "Hapus",
     medicineName: "Nama Obat",
     medicineNamePlaceholder: "cth. Racikan Batuk Anak",
+    orderLetterKind: "Surat pesanan",
+    orderLetterKindHint: "Tiap jenis dipesan di surat pesanan sendiri; SP narkotika hanya untuk satu obat.",
+    orderLetterRegular: "Reguler",
+    orderLetterNarcotic: "Narkotika",
+    orderLetterPsychotropic: "Psikotropika",
+    orderLetterPrecursor: "Prekursor farmasi",
+    orderLetterCertainDrug: "Obat-obat tertentu (OOT)",
+    orderLetterFollowType: "Ikut golongan ({kind})",
+    orderLetterMedicineHint: "Ubah hanya untuk prekursor atau obat-obat tertentu yang golongannya biasa.",
+    poKindMixed: "Obat ini masuk surat pesanan lain ({kind}). Buat surat pesanan terpisah.",
+    poKindNarcoticOne: "Satu SP narkotika hanya untuk satu obat.",
     medicineCustomName: "Pakai nama sendiri",
     medicineCustomNameHint: "Disimpan persis seperti diketik, tidak mengikuti format nama.",
     medicineBaseNamePlaceholder: "Nama, cth. Amlodipin",

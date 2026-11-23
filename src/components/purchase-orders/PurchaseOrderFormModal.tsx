@@ -46,6 +46,8 @@ import {
 } from "@/service/purchaseOrderService";
 import { getDistributorsDropdown } from "@/service/distributorService";
 import { getMedicinesDropdown } from "@/service/medicineService";
+import { OrderLetterBadge } from "./OrderLetterBadge";
+import { type OrderLetterKind, isSpecialOrderLetter, orderLetterKindLabel } from "@/utils/orderLetter";
 import { getSigners } from "@/service/userService";
 
 // ── Main form schema ──────────────────────────────────────────────────────────
@@ -410,6 +412,7 @@ export function PurchaseOrderFormModal({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -462,20 +465,32 @@ export function PurchaseOrderFormModal({
     [medicinesData?.data]
   );
 
+  // Special medicines show their letter, so it's clear they go on their own order.
   const medicineOptions = useMemo(
-    () => medicines.map((m) => ({ value: m.uuid, label: m.name })),
-    [medicines]
+    () =>
+      medicines.map((m) => ({
+        value: m.uuid,
+        label: isSpecialOrderLetter(m.orderLetterKind) ? `${m.name} · ${orderLetterKindLabel(m.orderLetterKind, t)}` : m.name,
+      })),
+    [medicines, t]
   );
 
+  // The letter this order is: the kind of its items (all the same).
+  const watchedDetails = watch("details");
+  const kindOf = (medicineUuid: string): OrderLetterKind =>
+    medicines.find((m) => m.uuid === medicineUuid)?.orderLetterKind ?? "REGULAR";
+  const orderKind: OrderLetterKind | null = watchedDetails.length ? kindOf(watchedDetails[0].medicineUuid) : null;
+
+  // A special letter is signed by the Head Pharmacist (the pharmacist in charge).
   const signerOptions = useMemo(
     () => [
       { value: "", label: t.poSelectSignedBy },
-      ...(usersData?.data ?? []).map((u) => ({
+      ...(usersData?.data ?? []).filter((u) => !orderKind || !isSpecialOrderLetter(orderKind) || u.isHeadPharmacist).map((u) => ({
         value: u.uuid,
         label: u.isHeadPharmacist ? `${u.name} · ${t.roleTypeHeadPharmacist}` : u.name,
       })),
     ],
-    [usersData?.data, t.poSelectSignedBy, t.roleTypeHeadPharmacist]
+    [usersData?.data, t.poSelectSignedBy, t.roleTypeHeadPharmacist, orderKind]
   );
 
   // ── Item sub-form handlers ──────────────────────────────────────────────────
@@ -500,6 +515,17 @@ export function PurchaseOrderFormModal({
       errs.quantity = t.poItemQuantityRequired;
     }
     if (!itemForm.unit.trim()) errs.unit = t.poItemUnitRequired;
+    // Each kind goes on its own letter; a narcotics letter holds one medicine.
+    const others = watchedDetails.filter((_, i) => i !== editingIndex);
+    if (itemForm.medicineUuid && others.length > 0) {
+      const kind = kindOf(itemForm.medicineUuid);
+      const otherKind = kindOf(others[0].medicineUuid);
+      if (kind !== otherKind) {
+        errs.medicineUuid = t.poKindMixed.replace("{kind}", orderLetterKindLabel(kind, t));
+      } else if (kind === "NARCOTIC" && others.some((d) => d.medicineUuid !== itemForm.medicineUuid)) {
+        errs.medicineUuid = t.poKindNarcoticOne;
+      }
+    }
     setItemErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -715,6 +741,7 @@ export function PurchaseOrderFormModal({
                     </span>
                   )}
                 </p>
+                {orderKind && <OrderLetterBadge kind={orderKind} />}
               </div>
 
               {/* Item sub-form */}

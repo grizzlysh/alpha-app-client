@@ -4,6 +4,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useLanguage } from "@/hooks/useLanguage";
+import { orderLetterKindLabel } from "@/utils/orderLetter";
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 import { getInitials, getAvatarColor, formatDate } from "./referenceUtils";
 import { useNameFormat } from "@/hooks/useNameFormat";
@@ -80,6 +81,9 @@ export function ReferenceDetailPanel({
           <InfoPair label={labels.controlledLabel}>
             <span className="text-sm text-foreground">{item.isControlled ? labels.controlledBadge : "—"}</span>
           </InfoPair>
+        )}
+        {item.orderLetterKind && labels.orderLetterKindLabel && (
+          <InfoPair label={labels.orderLetterKindLabel} value={orderLetterKindLabel(item.orderLetterKind, t)} />
         )}
       </div>
 

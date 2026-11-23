@@ -1,3 +1,5 @@
+import type { OrderLetterKind } from "@/utils/orderLetter";
+
 // ── Reference entities (Shape, Type, Class) ───────────────────────────────────
 
 export interface MedicineShape {
@@ -16,6 +18,8 @@ export interface MedicineType {
   requiredPrescription: boolean;
   /** Narcotics/psychotropics/precursors: documents need the Head Pharmacist. */
   isControlled: boolean;
+  /** The surat pesanan its medicines go on. */
+  orderLetterKind: OrderLetterKind;
   status: "ACTIVE" | "INACTIVE";
   /** Medicines using it; it can only be deleted at 0. */
   medicineCount: number;
@@ -27,6 +31,8 @@ export interface MedicineTypeDropdownItem {
   uuid: string;
   name: string;
   requiredPrescription: boolean;
+  isControlled: boolean;
+  orderLetterKind: OrderLetterKind;
 }
 
 export interface MedicineClass {
@@ -43,6 +49,8 @@ export interface MedicineDropdownItem {
   uuid: string;
   name: string;
   unit: string;
+  /** The order letter it goes on (its own, else its type's). */
+  orderLetterKind: OrderLetterKind;
 }
 
 export interface ReferenceListParams {
@@ -57,6 +65,7 @@ export interface ReferencePayload {
   status: "ACTIVE" | "INACTIVE";
   requiredPrescription?: boolean;
   isControlled?: boolean;
+  orderLetterKind?: OrderLetterKind;
 }
 
 // ── Medicine ──────────────────────────────────────────────────────────────────
@@ -87,7 +96,10 @@ export interface Medicine {
   barcode: string | null;
   status: "ACTIVE" | "INACTIVE";
   medicineShape: { uuid: string; name: string };
-  medicineType: { uuid: string; name: string };
+  medicineType: { uuid: string; name: string; orderLetterKind: OrderLetterKind };
+  /** Its own order letter kind; null follows the type. */
+  orderLetterKind: OrderLetterKind | null;
+  effectiveOrderLetterKind: OrderLetterKind;
   medicineClass: { uuid: string; name: string };
   ingredients: MedicineIngredient[];
   createdAt: string;
@@ -112,6 +124,7 @@ export interface CreateMedicinePayload {
   baseName?: string;
   variant?: string | null;
   isCustomName: boolean;
+  orderLetterKind?: OrderLetterKind | null;
   medicineShapeUuid: string;
   medicineTypeUuid: string;
   medicineClassUuid: string;
@@ -125,6 +138,7 @@ export interface UpdateMedicinePayload {
   baseName?: string;
   variant?: string | null;
   isCustomName?: boolean;
+  orderLetterKind?: OrderLetterKind | null;
   medicineShapeUuid?: string;
   medicineTypeUuid?: string;
   medicineClassUuid?: string;

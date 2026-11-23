@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getApiErrorMessage } from "@/utils/apiError";
+import { ORDER_LETTER_KINDS, type OrderLetterKind, orderLetterKindLabel } from "@/utils/orderLetter";
 import type { ApiResponse } from "@/types/api";
 import type { ReferencePayload } from "@/types/medicine";
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
@@ -28,6 +29,7 @@ interface FormValues {
   status: "ACTIVE" | "INACTIVE";
   requiredPrescription: boolean;
   isControlled: boolean;
+  orderLetterKind: OrderLetterKind;
 }
 
 export interface ReferenceFormModalProps {
@@ -57,7 +59,7 @@ export function ReferenceFormModal({
   updateFn,
 }: ReferenceFormModalProps): JSX.Element {
   const queryClient = useQueryClient();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
@@ -69,6 +71,7 @@ export function ReferenceFormModal({
         status: z.enum(["ACTIVE", "INACTIVE"]),
         requiredPrescription: z.boolean(),
         isControlled: z.boolean(),
+        orderLetterKind: z.enum(ORDER_LETTER_KINDS),
       }),
     [labels.nameRequired]
   );
@@ -80,6 +83,7 @@ export function ReferenceFormModal({
       status: item?.status ?? "ACTIVE",
       requiredPrescription: item?.requiredPrescription ?? false,
       isControlled: item?.isControlled ?? false,
+      orderLetterKind: item?.orderLetterKind ?? "REGULAR",
     },
   });
 
@@ -100,6 +104,7 @@ export function ReferenceFormModal({
           isControlled: values.isControlled,
           ...(values.isControlled && { requiredPrescription: true }),
         }),
+        ...(labels.orderLetterKindLabel !== undefined && { orderLetterKind: values.orderLetterKind }),
       };
       return mode === "create"
         ? createFn(payload)
@@ -239,6 +244,26 @@ export function ReferenceFormModal({
                   </label>
                 )}
               />
+            )}
+
+            {/* Order letter kind (medicine types only) */}
+            {labels.orderLetterKindLabel !== undefined && (
+              <div className="space-y-1.5">
+                <Label htmlFor="ref-order-letter">{labels.orderLetterKindLabel}</Label>
+                <Controller
+                  name="orderLetterKind"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Combobox
+                      value={field.value}
+                      onValueChange={(v) => field.onChange(v as OrderLetterKind)}
+                      options={ORDER_LETTER_KINDS.map((k) => ({ value: k, label: orderLetterKindLabel(k, t) }))}
+                      className="rounded-xl"
+                    />
+                  )}
+                />
+                <p className="text-xs text-muted-foreground">{t.orderLetterKindHint}</p>
+              </div>
             )}
           </div>
 

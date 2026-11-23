@@ -5,6 +5,8 @@ import { translations } from "@/configs/i18n";
 import { BiLabel, sl } from "@/utils/bilingualDoc";
 import { formatName } from "@/utils/nameFormat";
 import { currentNameCase } from "@/hooks/useNameFormat";
+import { ORDER_LETTER_TITLE } from "@/utils/orderLetter";
+import { SpecialOrderLetter } from "./SpecialOrderLetter";
 
 /** Names follow the pharmacy's display setting; read at render (this may print outside the app tree). */
 const nm = (name: string): string => formatName(name, currentNameCase());
@@ -29,6 +31,9 @@ export function PurchaseOrderReceipt({
   order,
   printData,
 }: PurchaseOrderReceiptProps): JSX.Element {
+  // Narcotics, psychotropics, precursors and obat-obat tertentu have their own letter.
+  if (order.kind !== "REGULAR") return <SpecialOrderLetter kind={order.kind} order={order} printData={printData} />;
+
   const headPharmacist = printData?.headPharmacist ?? null;
   const pharmacy = printData?.pharmacy ?? null;
 
@@ -121,6 +126,11 @@ export function PurchaseOrderReceipt({
             {pharmacy.address}
           </div>
         )}
+      </div>
+
+      {/* Title */}
+      <div style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", letterSpacing: "1px", marginBottom: "10px" }}>
+        {ORDER_LETTER_TITLE.REGULAR}
       </div>
 
       {/* Recipient */}

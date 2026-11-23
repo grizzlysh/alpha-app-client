@@ -1,10 +1,12 @@
 import type { Translations } from "@/configs/i18n";
+import type { OrderLetterKind } from "@/utils/orderLetter";
 
 export interface ReferenceItem {
   uuid: string;
   name: string;
   requiredPrescription?: boolean;
   isControlled?: boolean;
+  orderLetterKind?: OrderLetterKind;
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string;
@@ -62,6 +64,8 @@ export interface ReferenceLabels {
   controlledLabel?: string;
   controlledHint?: string;
   controlledBadge?: string;
+  // Order letter kind (medicine types only)
+  orderLetterKindLabel?: string;
   // Success / error
   createSuccess: (t: Translations) => string;
   updateSuccess: (t: Translations) => string;
