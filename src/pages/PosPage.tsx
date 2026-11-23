@@ -22,6 +22,7 @@ import type { Sale, SaleType, CreateSalePayload, UpdateSalePayload, PaymentMetho
 import { createSale, updateSale, completeSale, cancelSale } from "@/service/saleService";
 import { getPrescriptionsQueue } from "@/service/prescriptionService";
 import { getBusinessParameters } from "@/service/businessParameterService";
+import { RESTRICTED_SALE_KINDS, RESTRICTED_SALE_LIMIT_KEY, overRestrictedLimit } from "@/utils/orderLetter";
 import { BarcodeScannerModal } from "@/components/sales/BarcodeScannerModal";
 import { PosProductGrid } from "@/components/sales/PosProductGrid";
 import { PosCartPanel, type CartItem } from "@/components/sales/PosCartPanel";
@@ -182,6 +183,12 @@ export default function PosPage(): JSX.Element {
   );
   const ppnPercentage = numericParam(PPN_PARAMETER_KEY);
   const maxDiscountPercentage = numericParam(MAX_DISCOUNT_PARAMETER_KEY);
+  // Precursors / obat-obat tertentu: capped per sale unless a prescription is attached.
+  const restrictedLimit = numericParam(RESTRICTED_SALE_LIMIT_KEY);
+  const overLimitMedicines = useMemo(
+    () => (prescriptionUuid ? new Set<string>() : overRestrictedLimit(cart, restrictedLimit)),
+    [cart, restrictedLimit, prescriptionUuid]
+  );
 
   // Cart totals before any checkout discount — the same formula the server uses.
   const { subtotal, ppnAmount, grandTotal: total } = computeTotals(cart, 0, ppnPercentage);
@@ -225,6 +232,7 @@ export default function PosPage(): JSX.Element {
           availablePieces: available,
           quantityPerBox: detail.quantityPerBox ?? 0,
           requiresPrescription: detail.medicine.type.requiredPrescription ?? false,
+          restricted: RESTRICTED_SALE_KINDS.includes(detail.medicine.orderLetterKind ?? detail.medicine.type.orderLetterKind ?? "REGULAR"),
         };
         return [...prev, newItem];
       });
@@ -519,6 +527,11 @@ export default function PosPage(): JSX.Element {
       toast.error(<LiveToastMessage getMessage={(t) => t.posRxNoPrescriptionWarning} />);
       return;
     }
+    if (overLimitMedicines.size > 0) {
+      setMobileTab("cart");
+      toast.error(<LiveToastMessage getMessage={(t) => t.posRestrictedOverLimit.replace("{n}", String(restrictedLimit))} />);
+      return;
+    }
     setPaymentModalOpen(true);
   }
 
@@ -649,6 +662,8 @@ export default function PosPage(): JSX.Element {
             isHolding={holdMutation.isPending}
             isCheckingOut={checkoutMutation.isPending}
             onReset={resetSale}
+            restrictedLimit={restrictedLimit}
+            overLimitMedicines={overLimitMedicines}
             onOpenHeldSales={() => setHeldModalOpen(true)}
           />
         </div>
