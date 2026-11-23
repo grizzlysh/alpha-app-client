@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { MedicineNameFormat } from "@/utils/medicineName";
 import type {
   AuthState,
   LoginResponse,
@@ -73,6 +74,9 @@ const authSlice = createSlice({
     setNameCase(state, action: PayloadAction<NameCase>) {
       if (state.currentPharmacy) state.currentPharmacy.nameCase = action.payload;
     },
+    setMedicineNameFormat(state, action: PayloadAction<MedicineNameFormat>) {
+      if (state.currentPharmacy) state.currentPharmacy.medicineNameFormat = action.payload;
+    },
     clearPharmacy(state) {
       state.currentPharmacy = null;
       state.permissions = {};
@@ -94,5 +98,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setLoginCredentials, setPharmacy, setFullAuth, restoreSession, updateUserProfile, setNameCase, clearPharmacy, logout, setAccessToken } = authSlice.actions;
+export const { setLoginCredentials, setPharmacy, setFullAuth, restoreSession, updateUserProfile, setNameCase, setMedicineNameFormat, clearPharmacy, logout, setAccessToken } = authSlice.actions;
 export const authReducer = authSlice.reducer;

@@ -62,6 +62,8 @@ export function MedicineDetailPanel({
         <InfoPair label={t.medicineShapeLabel} value={medicine.medicineShape?.name != null ? fmt(medicine.medicineShape.name) : undefined} />
         <InfoPair label={t.medicineTypeLabel} value={medicine.medicineType?.name != null ? fmt(medicine.medicineType.name) : undefined} />
         <InfoPair label={t.medicineClassLabel} value={medicine.medicineClass?.name != null ? fmt(medicine.medicineClass.name) : undefined} />
+        <InfoPair label={t.medicineStrength} value={medicine.strength || undefined} />
+        {medicine.variant && <InfoPair label={t.medicineVariant} value={medicine.variant} />}
         <InfoPair label={t.medicineUnit} value={medicine.unit} />
         <InfoPair label={t.medicineBarcode} value={medicine.barcode} valueClassName="font-mono" />
         {medicine.ingredients.length > 0 && (
@@ -74,6 +76,7 @@ export function MedicineDetailPanel({
                   className="rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-foreground"
                 >
                   {ing.name}
+                  {ing.strength && <span className="ml-1 text-muted-foreground">{ing.strength}</span>}
                 </span>
               ))}
             </div>

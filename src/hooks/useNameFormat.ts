@@ -2,12 +2,21 @@ import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { store, type RootState } from "@/store";
 import { formatName, isNameCase, type NameCase } from "@/utils/nameFormat";
+import { isMedicineNameFormat, type MedicineNameFormat } from "@/utils/medicineName";
 
 /** The selected pharmacy's name case; UPPER when none is selected. */
 export function useNameCase(): NameCase {
   return useSelector((state: RootState) => {
     const v = state.auth.currentPharmacy?.nameCase;
     return isNameCase(v) ? v : "UPPER";
+  });
+}
+
+/** The selected pharmacy's medicine name format (name · strength · shape by default). */
+export function useMedicineNameFormat(): MedicineNameFormat {
+  return useSelector((state: RootState) => {
+    const v = state.auth.currentPharmacy?.medicineNameFormat;
+    return isMedicineNameFormat(v) ? v : "NAME_STRENGTH_SHAPE";
   });
 }
 

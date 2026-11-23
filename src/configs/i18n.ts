@@ -815,6 +815,21 @@ export interface Translations {
   medicineDelete: string;
   medicineName: string;
   medicineNamePlaceholder: string;
+  medicineCustomName: string;
+  medicineCustomNameHint: string;
+  medicineBaseNamePlaceholder: string;
+  medicineVariant: string;
+  medicineVariantPlaceholder: string;
+  medicineNamePreview: string;
+  medicineNamePreviewHint: string;
+  medicineStrength: string;
+  medicineStrengthPlaceholder: string;
+  medicineIngredientsHint: string;
+  medicineNameFormatLabel: string;
+  medicineFormatNameStrengthShape: string;
+  medicineFormatNameShapeStrength: string;
+  medicineFormatNameStrength: string;
+  medicineFormatNote: string;
   medicineGenericName: string;
   medicineGenericNamePlaceholder: string;
   medicineBarcode: string;
@@ -3206,7 +3221,22 @@ export const translations: Record<Language, Translations> = {
     medicineEdit: "Edit",
     medicineDelete: "Delete",
     medicineName: "Medicine Name",
-    medicineNamePlaceholder: "e.g. Paracetamol 500mg",
+    medicineNamePlaceholder: "e.g. Racikan Batuk Anak",
+    medicineCustomName: "Use my own name",
+    medicineCustomNameHint: "Saved exactly as typed; the name format does not apply.",
+    medicineBaseNamePlaceholder: "Name, e.g. Amlodipin",
+    medicineVariant: "Variant",
+    medicineVariantPlaceholder: "Variant (optional)",
+    medicineNamePreview: "Shown as",
+    medicineNamePreviewHint: "Name, strength and shape follow the format in Business Parameters.",
+    medicineStrength: "Strength",
+    medicineStrengthPlaceholder: "e.g. 500 mg",
+    medicineIngredientsHint: "Active ingredient and its strength (optional).",
+    medicineNameFormatLabel: "Medicine name format",
+    medicineFormatNameStrengthShape: "Name · strength · shape",
+    medicineFormatNameShapeStrength: "Name · shape · strength",
+    medicineFormatNameStrength: "Name · strength",
+    medicineFormatNote: "All medicines with a structured name are renamed. Custom names stay as typed.",
     medicineGenericName: "Generic Name",
     medicineGenericNamePlaceholder: "e.g. Acetaminophen",
     medicineBarcode: "Barcode",
@@ -5603,7 +5633,22 @@ export const translations: Record<Language, Translations> = {
     medicineEdit: "Edit",
     medicineDelete: "Hapus",
     medicineName: "Nama Obat",
-    medicineNamePlaceholder: "cth. Paracetamol 500mg",
+    medicineNamePlaceholder: "cth. Racikan Batuk Anak",
+    medicineCustomName: "Pakai nama sendiri",
+    medicineCustomNameHint: "Disimpan persis seperti diketik, tidak mengikuti format nama.",
+    medicineBaseNamePlaceholder: "Nama, cth. Amlodipin",
+    medicineVariant: "Varian",
+    medicineVariantPlaceholder: "Varian (opsional)",
+    medicineNamePreview: "Tampil sebagai",
+    medicineNamePreviewHint: "Nama, kekuatan, dan bentuk mengikuti format di Parameter Bisnis.",
+    medicineStrength: "Kekuatan",
+    medicineStrengthPlaceholder: "cth. 500 mg",
+    medicineIngredientsHint: "Zat aktif dan kekuatannya (opsional).",
+    medicineNameFormatLabel: "Format nama obat",
+    medicineFormatNameStrengthShape: "Nama · kekuatan · bentuk",
+    medicineFormatNameShapeStrength: "Nama · bentuk · kekuatan",
+    medicineFormatNameStrength: "Nama · kekuatan",
+    medicineFormatNote: "Semua obat dengan nama terstruktur ikut berganti. Nama sendiri tidak berubah.",
     medicineGenericName: "Nama Generik",
     medicineGenericNamePlaceholder: "cth. Asetaminofen",
     medicineBarcode: "Barcode",

@@ -48,11 +48,13 @@ const DEPENDENCIES: Record<string, string[]> = {
   roles: ["roles", "role", "roles-ddl", "users", "user-placements"],
   permissions: ["permissions-all", "roles", "role"],
   "system-parameters": ["system-parameters"],
-  "business-parameters": ["business-parameters"],
+  // The medicine name format renames medicines; the margin reprices stock.
+  "business-parameters": ["business-parameters", "medicines", "medicines-dropdown", ...STOCK],
   distributors: ["distributors", "distributors-dropdown", "purchase-orders", "invoices"],
   customers: [...CUSTOMERS, "medical-record", "medical-visits", "examinations", "examination"],
   medicines: ["medicines", "medicines-dropdown", "purchase-orders", ...STOCK],
-  "medicine-shapes": ["medicine-shapes-dropdown", "medicines", "medicines-dropdown"],
+  // Structured medicine names include the shape.
+  "medicine-shapes": ["medicine-shapes-dropdown", "medicines", "medicines-dropdown", ...STOCK],
   "medicine-types": ["medicine-types-dropdown", "medicines", "medicines-dropdown", "stock-catalog"],
   "medicine-classes": ["medicine-classes-dropdown", "medicines", "medicines-dropdown"],
   // Spreadsheet imports of starting data; opening stock is booked as receipts.

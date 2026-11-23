@@ -52,7 +52,7 @@ export function MedicineRow({
             </p>
             {medicine.ingredients.length > 0 && (
               <p className="truncate text-xs text-muted-foreground">
-                {medicine.ingredients.map((i) => i.name).join(", ")}
+                {medicine.ingredients.map((i) => (i.strength ? `${i.name} ${i.strength}` : i.name)).join(", ")}
               </p>
             )}
           </div>
