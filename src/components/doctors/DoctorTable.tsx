@@ -142,7 +142,7 @@ function DoctorRow({ doctor, t, onDetails, onEdit, onDelete }: DoctorRowProps): 
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: Name */}
-      <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky left-0 z-[1] min-w-[160px] sm:min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
             <Stethoscope className="h-4 w-4 text-primary" />
@@ -192,7 +192,7 @@ function DoctorRow({ doctor, t, onDetails, onEdit, onDelete }: DoctorRowProps): 
       </td>
 
       {/* Sticky right: actions */}
-      <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
         <RowMenu t={t} onDetails={onDetails} onEdit={onEdit} onDelete={onDelete} />
       </td>
     </tr>
@@ -283,7 +283,7 @@ export function DoctorTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    name: "min-w-[220px]",
+    name: "min-w-[160px] sm:min-w-[220px]",
     licenseNumber: "min-w-[160px]",
     clinicName: "min-w-[200px]",
     phone: "min-w-[150px]",
@@ -307,7 +307,7 @@ export function DoctorTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -317,7 +317,7 @@ export function DoctorTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 min-w-[220px] border-r border-border/40"
+                          ? "sticky left-0 z-10 min-w-[160px] sm:min-w-[220px] border-r border-border/40"
                           : colVisibility[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",
                         colMinWidth[header.column.id] ?? "",

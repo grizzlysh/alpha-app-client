@@ -192,7 +192,7 @@ export function VisitFormModal({
 
   return (
     <Dialog open onOpenChange={(open) => !open && !isPending && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="sm:max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? t.medicalRecordVisitEdit : t.medicalRecordVisitAdd}</DialogTitle>
         </DialogHeader>
@@ -200,7 +200,7 @@ export function VisitFormModal({
         <Form {...form}>
           {/* One 4-column grid for every section so field edges line up. */}
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
               <FormField
                 control={form.control}
                 name="visitDate"
@@ -390,7 +390,7 @@ export function VisitFormModal({
 
             <div className="space-y-4">
               <FormSectionLabel>{t.medicalRecordVisitSectionAssessment}</FormSectionLabel>
-              <div className="grid gap-4 sm:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
                 <FormField
                   control={form.control}
                   name="findings"

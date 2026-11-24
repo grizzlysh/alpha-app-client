@@ -19,6 +19,7 @@ export function SearchInput({
 }: SearchInputProps): JSX.Element {
   return (
     <div
+      data-slot="search"
       className={cn(
         "flex h-10 flex-1 items-center gap-2 rounded-xl border border-border bg-background px-3",
         "transition-all duration-150",

@@ -119,7 +119,7 @@ export function DisposalReportTab(): JSX.Element {
         <div className="space-y-6">
           {/* Summary — always visible */}
           <ReportSection title={t.reportSummaryTitle}>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <StatCard label={t.reportDisposalTotalDisposals} value={String(summary.summary.totalDisposals)} />
               <StatCard label={t.reportDisposalTotalItems} value={String(summary.summary.totalItems)} />
               <StatCard label={t.reportDisposalTotalQty} value={summary.summary.totalQuantityPieces.toLocaleString("id-ID")} />

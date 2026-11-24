@@ -30,7 +30,7 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps): JSX
   return (
     <span
       className={cn(
-        "inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold",
+        "inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold",
         statusClass,
         className
       )}

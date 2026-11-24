@@ -610,7 +610,7 @@ export function PurchaseOrderFormModal({
       }}
     >
       <DialogContent
-        className="flex max-h-[90vh] max-w-2xl flex-col gap-0 p-0"
+        className="flex sm:max-h-[90vh] max-w-2xl flex-col gap-0 p-0"
         onInteractOutside={(e) => {
           if (isPending) e.preventDefault();
         }}

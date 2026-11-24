@@ -75,7 +75,7 @@ export default function ExaminationsPage(): JSX.Element {
     : "";
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] flex-col space-y-4 overflow-hidden">
+    <div className="flex h-[calc(100dvh-6rem)] flex-col space-y-4 overflow-hidden md:h-[calc(100dvh-7rem)]">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 ref={pageTitleRef} className="text-2xl font-bold tracking-tight text-foreground">

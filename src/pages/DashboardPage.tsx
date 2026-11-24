@@ -85,7 +85,7 @@ export default function DashboardPage(): JSX.Element {
 
       {/* Row 2 (management): Sales Trend + OTC vs Rx */}
       {isManagement && (
-        <div className="grid gap-6 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           <div className="lg:col-span-3">
             <DashboardSalesTrendChart
               t={t}
@@ -118,7 +118,7 @@ export default function DashboardPage(): JSX.Element {
 
       {/* Row 4 (management): Purchase Spend + Payment Schedule */}
       {isManagement && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <DashboardPurchaseSpendCard
             t={t}
             data={advanced?.purchaseSpend ?? null}
@@ -133,7 +133,7 @@ export default function DashboardPage(): JSX.Element {
       )}
 
       {/* Row 5: Inventory alerts — 3 cols */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <DashboardRestockCard
           t={t}
           items={inventoryAlerts?.restockNeeded ?? []}
@@ -160,7 +160,7 @@ export default function DashboardPage(): JSX.Element {
       </div>
 
       {/* Row 6: Slow Movers + Stock Runway — all roles */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DashboardSlowMoversCard
           t={t}
           items={slowMovers?.items ?? []}
@@ -176,7 +176,7 @@ export default function DashboardPage(): JSX.Element {
       {/* Row 7: Top products */}
       {isManagement ? (
         <>
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <DashboardTopByQuantityCard
               t={t}
               data={topProducts?.byQuantity ?? []}
@@ -202,7 +202,7 @@ export default function DashboardPage(): JSX.Element {
           />
 
           {/* Row 9: Credit sales outstanding + Recent transactions */}
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Row 9: Credit sales outstanding */}
             <DashboardCreditSalesCard
               t={t}
@@ -219,7 +219,7 @@ export default function DashboardPage(): JSX.Element {
           </div>
         </>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <DashboardTopByQuantityCard
             t={t}
             data={topProducts?.byQuantity ?? []}

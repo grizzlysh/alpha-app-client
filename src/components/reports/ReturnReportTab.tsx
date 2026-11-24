@@ -150,7 +150,7 @@ export function ReturnReportTab(): JSX.Element {
         <div className="space-y-6">
           {/* Summary — always visible */}
           <ReportSection title={t.reportSummaryTitle}>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <StatCard label={t.reportReturnTotalReturns} value={String(summary.summary.totalReturns)} />
               <StatCard label={t.reportReturnTotalItems} value={String(summary.summary.totalItems)} />
               <StatCard label={t.reportReturnTotalQty} value={summary.summary.totalQuantityPieces.toLocaleString("id-ID")} />

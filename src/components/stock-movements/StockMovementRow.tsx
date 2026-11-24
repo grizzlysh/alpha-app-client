@@ -32,7 +32,7 @@ export function StockMovementRow({
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: avatar + medicine name + batch */}
-      <td className="md:sticky md:left-0 z-[1] min-w-[240px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky left-0 z-[1] min-w-[170px] sm:min-w-[240px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="flex items-center gap-3">
           <div
             className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-xs font-bold ${getSMAvatarColor(movement.medicine.uuid)}`}
@@ -94,7 +94,7 @@ export function StockMovementRow({
       </td>
 
       {/* Sticky right: action menu */}
-      <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

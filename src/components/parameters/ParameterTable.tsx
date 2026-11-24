@@ -111,7 +111,7 @@ export function ParameterTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    key: "min-w-[220px]",
+    key: "min-w-[160px] sm:min-w-[220px]",
     value: "min-w-[180px]",
     description: "min-w-[200px]",
     updatedAt: "min-w-[140px]",
@@ -134,7 +134,7 @@ export function ParameterTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -144,7 +144,7 @@ export function ParameterTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 border-r border-border/40"
+                          ? "sticky left-0 z-10 border-r border-border/40"
                           : (colVisibility[header.column.id] ?? ""),
                         colMinWidth[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",

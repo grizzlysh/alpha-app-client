@@ -149,7 +149,7 @@ export function CabinetFormModal({
 
         <form onSubmit={form.handleSubmit(onSubmit as SubmitHandler<FormValues>)}>
           <div className="px-6 py-5">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
               {/* Name */}
               <div className="space-y-1.5 sm:col-span-2">

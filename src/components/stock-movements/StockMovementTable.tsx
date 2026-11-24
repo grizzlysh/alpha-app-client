@@ -94,7 +94,7 @@ export function StockMovementTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    medicine: "min-w-[240px]",
+    medicine: "min-w-[170px] sm:min-w-[240px]",
     type: "min-w-[110px]",
     reason: "min-w-[140px]",
     quantity: "min-w-[120px]",
@@ -119,7 +119,7 @@ export function StockMovementTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -129,7 +129,7 @@ export function StockMovementTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 border-r border-border/40"
+                          ? "sticky left-0 z-10 border-r border-border/40"
                           : (colVisibility[header.column.id] ?? ""),
                         colMinWidth[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",

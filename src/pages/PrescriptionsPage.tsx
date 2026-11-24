@@ -204,8 +204,8 @@ export default function PrescriptionsPage(): JSX.Element {
 
         {/* Toolbar — only on "all" tab */}
         {activeTab === "all" && (
-          <div className="overflow-x-auto border-b border-border">
-            <div className="flex w-max min-w-full items-center gap-2 px-5 py-3">
+          <div className="border-b border-border md:overflow-x-auto">
+            <div className="table-toolbar">
               <Combobox
                 value={filterStatus}
                 onValueChange={handleFilterStatus}

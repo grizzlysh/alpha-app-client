@@ -112,7 +112,7 @@ export function InvoiceDetailPanel({
       title={t.invoiceDetailsTitle}
       onClose={onClose}
       className="max-w-5xl sm:max-w-5xl"
-      bodyClassName="flex flex-1 flex-row overflow-hidden"
+      bodyClassName="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden"
     >
       {/* ── Left: Items table ──────────────────────────────────────────── */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -205,10 +205,10 @@ export function InvoiceDetailPanel({
       </div>
 
       {/* Divider */}
-      <div className="w-px flex-shrink-0 bg-border" />
+      <div className="-order-1 h-px w-full flex-shrink-0 bg-border md:order-none md:h-auto md:w-px" />
 
       {/* ── Right: Invoice info ─────────────────────────────────────────── */}
-      <div className="flex w-96 flex-shrink-0 flex-col">
+      <div className="order-first flex w-full flex-shrink-0 flex-col md:order-none md:w-96">
         <div className="flex-1 overflow-y-auto">
 
           {/* Hero */}

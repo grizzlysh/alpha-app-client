@@ -64,7 +64,7 @@ export function SalePrintModal({ type, meta, onClose }: SalePrintModalProps): JS
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="flex max-h-[90vh] max-w-3xl flex-col gap-0 p-0">
+      <DialogContent className="flex sm:max-h-[90vh] max-w-3xl flex-col gap-0 p-0">
         <DialogHeader className="flex flex-row items-center gap-3 space-y-0 border-b border-border px-6 py-4">
           <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
             <Icon className="h-4 w-4 text-primary" />

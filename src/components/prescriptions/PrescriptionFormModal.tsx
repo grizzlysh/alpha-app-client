@@ -372,7 +372,7 @@ export function PrescriptionFormModal({
                 <span className="truncate font-medium text-foreground">{fromVisit.visitLabel}</span>
               </div>
             )}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* Patient */}
               <div className="space-y-1.5 sm:col-span-2">
                 <Label>
@@ -504,7 +504,7 @@ export function PrescriptionFormModal({
                   <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {t.prescriptionItemAdd}
                   </p>
-                  <div className="grid gap-2 sm:grid-cols-4">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
                     {/* Medicine name — 3 cols */}
                     <div className="space-y-1 sm:col-span-3">
                       <Label className="text-xs">{t.prescriptionItemMedicine} *</Label>

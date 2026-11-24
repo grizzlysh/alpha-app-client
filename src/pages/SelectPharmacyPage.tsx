@@ -92,9 +92,9 @@ export default function SelectPharmacyPage(): JSX.Element {
 
   const filterTabs: FilterTab[] = useMemo(
     () => [
-      { key: "all", label: t.filterAll, count: pharmacyCount, className: "w-[7.5rem] shrink-0" },
-      { key: "open", label: t.filterOpen, count: pharmacyCount, className: "w-[7.5rem] shrink-0" },
-      { key: "attention", label: t.filterNeedsAttention, count: 0, className: "w-[11.5rem] shrink-0" },
+      { key: "all", label: t.filterAll, count: pharmacyCount, className: "shrink-0 sm:w-[7.5rem]" },
+      { key: "open", label: t.filterOpen, count: pharmacyCount, className: "shrink-0 sm:w-[7.5rem]" },
+      { key: "attention", label: t.filterNeedsAttention, count: 0, className: "shrink-0 sm:w-[11.5rem]" },
     ],
     [t, pharmacyCount]
   );
@@ -243,7 +243,7 @@ export default function SelectPharmacyPage(): JSX.Element {
         </header>
 
         {/* ── Page content ─────────────────────────────────────────── */}
-        <main className="mx-auto w-full max-w-5xl px-6 py-8">
+        <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
           {/* Greeting + daily summary button */}
           <div className="flex items-start justify-between gap-4">
             <div>

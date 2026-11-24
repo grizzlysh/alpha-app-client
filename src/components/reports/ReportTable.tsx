@@ -111,7 +111,7 @@ export function ReportTable<T>({
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={cn("px-4 py-2.5 text-foreground", col.className)}
+                    className={cn("whitespace-nowrap px-4 py-2.5 text-foreground", col.className)}
                   >
                     {col.render(row, i)}
                   </td>

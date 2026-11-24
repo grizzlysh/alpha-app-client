@@ -102,7 +102,7 @@ export function PatientTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    name: "min-w-[220px]",
+    name: "min-w-[160px] sm:min-w-[220px]",
     phone: "min-w-[150px]",
     address: "min-w-[200px]",
     partyType: "min-w-[130px]",
@@ -126,7 +126,7 @@ export function PatientTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -136,7 +136,7 @@ export function PatientTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 min-w-[220px] border-r border-border/40"
+                          ? "sticky left-0 z-10 min-w-[160px] sm:min-w-[220px] border-r border-border/40"
                           : colVisibility[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",
                         colMinWidth[header.column.id] ?? "",

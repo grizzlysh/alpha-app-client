@@ -155,7 +155,7 @@ export default function InventoryPage(): JSX.Element {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col gap-4 p-6 h-full">
+    <div className="flex h-full flex-col gap-4 md:p-6">
       {/* Page title */}
       <div ref={pageTitleRef}>
         <h1 className="text-2xl font-semibold tracking-tight">{t.navInventory}</h1>
@@ -199,10 +199,10 @@ export default function InventoryPage(): JSX.Element {
         />
       </Card>
 
-      {/* Bottom split: explorer + bin items */}
-      <div className="flex gap-4 flex-1 min-h-[380px]">
+      {/* Bottom split: explorer + bin items (stacked on phones) */}
+      <div className="flex flex-1 flex-col gap-4 md:min-h-[380px] md:flex-row">
         {/* Left — hierarchical explorer */}
-        <div className="w-[320px] flex-shrink-0">
+        <div className="w-full md:w-[320px] md:flex-shrink-0">
           <InventoryExplorer
             cabinets={cabinets}
             selectedCabinet={selectedCabinet}
@@ -216,7 +216,7 @@ export default function InventoryPage(): JSX.Element {
         </div>
 
         {/* Right — bin item cards */}
-        <div className="flex-1 min-w-0">
+        <div className="min-h-[240px] min-w-0 flex-1">
           <InventoryBinItems
             binItems={binItems}
             isLoading={binItemsLoading}

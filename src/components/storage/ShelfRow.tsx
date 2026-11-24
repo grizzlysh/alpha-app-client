@@ -32,7 +32,7 @@ export function ShelfRow({
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: level badge + code + name */}
-      <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky left-0 z-[1] min-w-[160px] sm:min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="flex items-center gap-3">
           {shelf.level !== null && (
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
@@ -76,7 +76,7 @@ export function ShelfRow({
       </td>
 
       {/* Sticky right: action menu */}
-      <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

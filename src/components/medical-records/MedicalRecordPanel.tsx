@@ -90,7 +90,7 @@ function useLabels(t: Translations) {
 }
 
 const TAB_TRIGGER =
-  "flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none";
+  "flex flex-1 items-center justify-center gap-1.5 rounded-none border-b-2 border-transparent px-2 py-3 text-sm sm:gap-2 sm:px-4 [&>svg]:hidden sm:[&>svg]:block font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none";
 
 function CountBadge({ n, alert }: { n: number; alert?: boolean }): JSX.Element | null {
   if (n <= 0) return null;
@@ -270,7 +270,7 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
 
             {/* ── Tabs ── */}
             <Tabs defaultValue="visits" className="mt-2 flex min-h-0 flex-1 flex-col gap-0">
-              <div className="border-b border-border px-5">
+              <div className="border-b border-border px-2 sm:px-5">
                 <TabsList className="flex h-auto w-full gap-0 rounded-none bg-transparent p-0">
                   <TabsTrigger value="visits" className={TAB_TRIGGER}>
                     <Stethoscope className="h-4 w-4" />

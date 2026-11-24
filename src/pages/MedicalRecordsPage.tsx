@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { ClipboardPlus, UserRound } from "lucide-react";
+import { ArrowLeft, ClipboardPlus, UserRound } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -52,7 +52,7 @@ export default function MedicalRecordsPage(): JSX.Element {
   }
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] flex-col space-y-4 overflow-hidden">
+    <div className="flex h-[calc(100dvh-6rem)] flex-col space-y-4 overflow-hidden md:h-[calc(100dvh-7rem)]">
       {/* Page header */}
       <div>
         <h2
@@ -64,10 +64,15 @@ export default function MedicalRecordsPage(): JSX.Element {
         <p className="mt-0.5 text-sm text-muted-foreground">{t.medicalRecordsSubtitle}</p>
       </div>
 
-      {/* Split layout */}
+      {/* Split layout — phones show the list or the record, one at a time */}
       <div className="flex min-h-0 flex-1 gap-4">
         {/* Patient list */}
-        <Card className="flex w-72 flex-shrink-0 flex-col overflow-hidden">
+        <Card
+          className={cn(
+            "w-full flex-col overflow-hidden md:flex md:w-72 md:flex-shrink-0",
+            selectedCustomer ? "hidden" : "flex"
+          )}
+        >
           {/* Search */}
           <div className="border-b border-border p-3">
             <SearchInput
@@ -109,7 +114,22 @@ export default function MedicalRecordsPage(): JSX.Element {
         </Card>
 
         {/* Medical record panel */}
-        <Card className="flex flex-1 flex-col overflow-hidden">
+        <Card
+          className={cn(
+            "min-w-0 flex-1 flex-col overflow-hidden md:flex",
+            selectedCustomer ? "flex" : "hidden"
+          )}
+        >
+          {selectedCustomer && (
+            <button
+              type="button"
+              onClick={() => setSelectedCustomer(null)}
+              className="flex items-center gap-2 border-b border-border px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:hidden"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t.backToList}
+            </button>
+          )}
           {selectedCustomer ? (
             <MedicalRecordPanel customer={selectedCustomer} />
           ) : (

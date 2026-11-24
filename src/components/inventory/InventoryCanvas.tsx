@@ -427,6 +427,17 @@ export function InventoryCanvas({
   const { t } = useLanguage();
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  // The floor plan keeps its saved pixel layout. On a screen narrower than the
+  // layout, the canvas keeps this width and its wrapper scrolls sideways.
+  const contentWidth = useMemo(
+    () =>
+      Object.values(localPositions).reduce((max, pos) => {
+        const rect = getVisualRect(pos);
+        return Math.max(max, rect.posX + rect.width + PLACEMENT_MARGIN);
+      }, 0),
+    [localPositions]
+  );
+
   // Runs synchronously inside dnd-kit — no React state, no re-renders during drag.
   const snapModifier = useMemo<Modifier>(
     () =>
@@ -498,10 +509,11 @@ export function InventoryCanvas({
 
   return (
     <DndContext modifiers={[snapModifier]} onDragEnd={handleDragEnd}>
+      <div className="overflow-x-auto">
       <div
         ref={canvasRef}
         className="relative bg-muted/20 overflow-hidden m-3 rounded-lg"
-        style={{ height: CANVAS_HEIGHT }}
+        style={{ height: CANVAS_HEIGHT, minWidth: contentWidth }}
       >
         {/* Dot-grid — full canvas coverage */}
         <div
@@ -531,6 +543,7 @@ export function InventoryCanvas({
             />
           );
         })}
+      </div>
       </div>
     </DndContext>
   );

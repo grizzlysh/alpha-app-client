@@ -102,7 +102,7 @@ export function SaleTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    saleNumber: "min-w-[220px]",
+    saleNumber: "min-w-[160px] sm:min-w-[220px]",
     status: "min-w-[120px]",
     saleType: "min-w-[100px]",
     totalAmount: "min-w-[120px]",
@@ -127,7 +127,7 @@ export function SaleTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -137,7 +137,7 @@ export function SaleTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 border-r border-border/40"
+                          ? "sticky left-0 z-10 border-r border-border/40"
                           : (colVisibility[header.column.id] ?? ""),
                         colMinWidth[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",

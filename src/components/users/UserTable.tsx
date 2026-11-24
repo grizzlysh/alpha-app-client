@@ -102,7 +102,7 @@ export function UserTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    name: "min-w-[220px]",
+    name: "min-w-[160px] sm:min-w-[220px]",
     platformRole: "min-w-[160px]",
     status: "min-w-[110px]",
     placementCount: "min-w-[130px]",
@@ -125,7 +125,7 @@ export function UserTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -135,7 +135,7 @@ export function UserTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 border-r border-border/40"
+                          ? "sticky left-0 z-10 border-r border-border/40"
                           : (colVisibility[header.column.id] ?? ""),
                         colMinWidth[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",

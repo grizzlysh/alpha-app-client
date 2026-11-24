@@ -186,27 +186,27 @@ export default function MedicineClassificationPage(): JSX.Element {
         <Tabs defaultValue="shapes">
           {/* Tab bar */}
           <div className="overflow-x-auto border-b border-border">
-          <div className="w-max min-w-full px-5 pt-4 pb-0">
+          <div className="w-max min-w-full px-2 pt-4 pb-0 sm:px-5">
             <TabsList className="flex h-auto w-full gap-0 rounded-none bg-transparent p-0 justify-around">
               <TabsTrigger
                 value="shapes"
-                className="flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-3 py-2.5 sm:px-4 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                <Shapes className="h-4 w-4" />
+                <Shapes className="hidden h-4 w-4 sm:block" />
                 {t.medicineShapeLabel}
               </TabsTrigger>
               <TabsTrigger
                 value="types"
-                className="flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-3 py-2.5 sm:px-4 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                <Tag className="h-4 w-4" />
+                <Tag className="hidden h-4 w-4 sm:block" />
                 {t.medicineTypeLabel}
               </TabsTrigger>
               <TabsTrigger
                 value="classes"
-                className="flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="flex flex-1 items-center justify-center gap-2 rounded-none border-b-2 border-transparent px-3 py-2.5 sm:px-4 text-sm font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                <Shield className="h-4 w-4" />
+                <Shield className="hidden h-4 w-4 sm:block" />
                 {t.medicineClassLabel}
               </TabsTrigger>
             </TabsList>

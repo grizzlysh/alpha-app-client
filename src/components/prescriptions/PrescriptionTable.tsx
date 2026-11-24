@@ -192,7 +192,7 @@ function PrescriptionRow({
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: Patient */}
-      <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky left-0 z-[1] min-w-[160px] sm:min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="min-w-0">
           <p className="truncate font-medium name-case text-foreground">{prescription.customer.name}</p>
           {prescription.prescriptionNumber && (
@@ -227,7 +227,7 @@ function PrescriptionRow({
       </td>
 
       {/* Sticky right: actions */}
-      <td className="md:sticky md:right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
+      <td className="sticky right-0 z-[1] w-14 border-l border-border/40 bg-card px-3 py-4 transition-colors group-hover:bg-accent">
         <RowMenu
           t={t}
           status={prescription.status}
@@ -323,7 +323,7 @@ export function PrescriptionTable({
   };
 
   const colMinWidth: Record<string, string> = {
-    patient: "min-w-[220px]",
+    patient: "min-w-[160px] sm:min-w-[220px]",
     doctor: "min-w-[180px]",
     prescribedAt: "min-w-[140px]",
     status: "min-w-[120px]",
@@ -346,7 +346,7 @@ export function PrescriptionTable({
                     return (
                       <th
                         key={header.id}
-                        className="md:sticky md:right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
+                        className="sticky right-0 z-10 w-14 border-l border-border/40 bg-muted px-3 py-3"
                       />
                     );
                   }
@@ -356,7 +356,7 @@ export function PrescriptionTable({
                       key={header.id}
                       className={[
                         isFirst
-                          ? "md:sticky md:left-0 z-10 min-w-[220px] border-r border-border/40"
+                          ? "sticky left-0 z-10 min-w-[160px] sm:min-w-[220px] border-r border-border/40"
                           : colVisibility[header.column.id] ?? "",
                         "bg-muted px-5 py-3 text-left",
                         colMinWidth[header.column.id] ?? "",
