@@ -161,6 +161,8 @@ export default function RolesPage(): JSX.Element {
                 { value: "PHARMACIST", label: t.roleTypePharmacist },
                 { value: "HEAD_PHARMACIST", label: t.roleTypeHeadPharmacist },
                 { value: "CASHIER", label: t.roleTypeCashier },
+                { value: "DOCTOR", label: t.roleTypeDoctor },
+                { value: "NURSE", label: t.roleTypeNurse },
               ]}
               placeholder={t.roleType}
               className="h-10 w-[12rem] shrink-0 rounded-xl text-sm"

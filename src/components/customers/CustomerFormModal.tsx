@@ -108,7 +108,8 @@ export interface CustomerFormModalProps {
   mode: "create" | "edit";
   customer?: Customer;
   onClose: () => void;
-  onSuccess: () => void;
+  /** Receives the saved customer (when the API returns it). */
+  onSuccess: (customer?: Customer) => void;
 }
 
 export function CustomerFormModal({
@@ -160,7 +161,7 @@ export function CustomerFormModal({
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["customers"] });
         queryClient.invalidateQueries({ queryKey: ["customers-dropdown"] });
-        onSuccessRef.current();
+        onSuccessRef.current(res.data ?? undefined);
       } else {
         toast.error(res.message[language]);
       }

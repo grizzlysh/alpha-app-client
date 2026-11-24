@@ -40,15 +40,21 @@ export interface MedicalVisitPrescription {
 
 export interface MedicalVisit {
   uuid: string;
+  status: "WAITING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  queueNumber: number | null;
   visitDate: string;
   chiefComplaint: string | null;
+  findings: string | null;
   diagnosis: string | null;
+  advice: string | null;
   notes: string | null;
   weightKg: number | null;
   heightCm: number | null;
   bloodPressure: string | null;
   temperatureCelsius: number | null;
   pulsePerMinute: number | null;
+  oxygenSaturation: number | null;
+  triagedAt: string | null;
   prescription: MedicalVisitPrescription | null;
   doctor: MedicalVisitDoctor | null;
   createdAt: string;
@@ -74,13 +80,16 @@ export type UpdateAllergyPayload = Partial<CreateAllergyPayload>;
 export interface CreateVisitPayload {
   visitDate: string;
   chiefComplaint?: string;
+  findings?: string;
   diagnosis?: string;
+  advice?: string;
   notes?: string;
   weightKg?: number;
   heightCm?: number;
   bloodPressure?: string;
   temperatureCelsius?: number;
   pulsePerMinute?: number;
+  oxygenSaturation?: number;
   prescriptionUuid?: string;
   doctorUuid?: string;
 }

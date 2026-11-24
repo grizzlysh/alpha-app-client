@@ -45,7 +45,7 @@ const DEPENDENCIES: Record<string, string[]> = {
   "system-parameters": ["system-parameters"],
   "business-parameters": ["business-parameters"],
   distributors: ["distributors", "distributors-dropdown", "purchase-orders", "invoices"],
-  customers: [...CUSTOMERS, "medical-record", "medical-visits"],
+  customers: [...CUSTOMERS, "medical-record", "medical-visits", "examinations", "examination"],
   medicines: ["medicines", "medicines-dropdown", "purchase-orders", ...STOCK],
   "medicine-shapes": ["medicine-shapes-dropdown", "medicines", "medicines-dropdown"],
   "medicine-types": ["medicine-types-dropdown", "medicines", "medicines-dropdown", "stock-catalog"],
@@ -66,8 +66,9 @@ const DEPENDENCIES: Record<string, string[]> = {
   ],
   inventory: STOCK,
   doctors: ["doctors", "doctors-dropdown", ...PRESCRIPTIONS, "medical-visits"],
-  prescriptions: [...PRESCRIPTIONS, "medical-visits", "sales", "sale", ...STOCK],
-  "medical-records": ["medical-record", "medical-visits", ...CUSTOMERS],
+  prescriptions: [...PRESCRIPTIONS, "medical-visits", "examinations", "examination", "sales", "sale", ...STOCK],
+  "medical-records": ["medical-record", "medical-visits", "examinations", "examination", ...CUSTOMERS],
+  examinations: ["examinations", "examination", "medical-record", "medical-visits", ...PRESCRIPTIONS, "customers-patients"],
 };
 
 // Aggregates computed from everything: refresh after any write.

@@ -41,6 +41,7 @@ const InventoryPage = lazy(() => import("@/pages/InventoryPage"));
 const DoctorsPage = lazy(() => import("@/pages/DoctorsPage"));
 const PrescriptionsPage = lazy(() => import("@/pages/PrescriptionsPage"));
 const MedicalRecordsPage = lazy(() => import("@/pages/MedicalRecordsPage"));
+const ExaminationsPage = lazy(() => import("@/pages/ExaminationsPage"));
 import StatusPage from "@/pages/StatusPage";
 import { PermissionGate } from "@/components/shared/PermissionGate";
 
@@ -113,6 +114,7 @@ function AppRoutes(): JSX.Element {
             <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/examinations" element={<ExaminationsPage />} />
             <Route path="/medical-records" element={<MedicalRecordsPage />} />
             <Route path="/distributors" element={<DistributorsPage />} />
             <Route path="/reports" element={<ReportsPage />} />

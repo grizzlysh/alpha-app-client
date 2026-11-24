@@ -1,4 +1,4 @@
-export type PharmacyRole = "OWNER" | "ADMIN" | "PHARMACIST" | "HEAD_PHARMACIST" | "CASHIER";
+export type PharmacyRole = "OWNER" | "ADMIN" | "PHARMACIST" | "HEAD_PHARMACIST" | "CASHIER" | "DOCTOR" | "NURSE";
 export type RecordStatus = "ACTIVE" | "INACTIVE" | "DELETED";
 
 export interface Permission {
