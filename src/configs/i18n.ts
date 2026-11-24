@@ -2501,6 +2501,76 @@ export interface Translations {
   examGenderFemale: string;
   examLineRequired: string;
   examUnsaved: string;
+  navShifts: string;
+  shiftSubtitle: string;
+  shiftTitle: string;
+  shiftOpen: string;
+  shiftOpening: string;
+  shiftClose: string;
+  shiftClosing: string;
+  shiftCashMovement: string;
+  shiftNotOpenTitle: string;
+  shiftNotOpenDesc: string;
+  shiftOpenSince: string;
+  shiftStatusOpen: string;
+  shiftStatusClosed: string;
+  shiftOpeningCash: string;
+  shiftOpeningCashHint: string;
+  shiftNote: string;
+  shiftNoteOptional: string;
+  shiftOpenSuccess: string;
+  shiftCloseSuccess: string;
+  shiftCashMovementSuccess: string;
+  shiftCashIn: string;
+  shiftCashOut: string;
+  shiftCashInHint: string;
+  shiftCashOutHint: string;
+  shiftAmount: string;
+  shiftAmountRequired: string;
+  shiftNoteRequired: string;
+  shiftCountedCash: string;
+  shiftCountedCashHint: string;
+  shiftExpectedCash: string;
+  shiftDifference: string;
+  shiftDifferenceOver: string;
+  shiftDifferenceShort: string;
+  shiftDifferenceNone: string;
+  shiftDifferenceNoteNeeded: string;
+  shiftBlindCloseNote: string;
+  shiftSaleCount: string;
+  shiftCashSales: string;
+  shiftNonCashSales: string;
+  shiftCashRefunds: string;
+  shiftCashier: string;
+  shiftNumber: string;
+  shiftOpenedAt: string;
+  shiftClosedAt: string;
+  shiftClosedBy: string;
+  shiftMovements: string;
+  shiftSales: string;
+  shiftRefundedHere: string;
+  shiftNone: string;
+  shiftNoneDesc: string;
+  shiftFilterAll: string;
+  shiftAllCashiers: string;
+  shiftDetail: string;
+  shiftHidden: string;
+  shiftCloseConfirm: string;
+  shiftSettings: string;
+  shiftSettingsDesc: string;
+  shiftSettingEnabled: string;
+  shiftSettingEnabledDesc: string;
+  shiftSettingOpeningCash: string;
+  shiftSettingOpeningCashDesc: string;
+  shiftSettingBlindClose: string;
+  shiftSettingBlindCloseDesc: string;
+  shiftSettingTolerance: string;
+  shiftSettingToleranceDesc: string;
+  shiftSettingsSaved: string;
+  shiftSettingsSave: string;
+  shiftSettingsMissing: string;
+  shiftDisabledInfo: string;
+  shiftView: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -4959,6 +5029,76 @@ export const translations: Record<Language, Translations> = {
     examGenderFemale: "F",
     examLineRequired: "Fill in the medicine name and quantity",
     examUnsaved: "Unsaved changes",
+    navShifts: "Cashier Shifts",
+    shiftSubtitle: "Opening cash, takings and the drawer count for every shift",
+    shiftTitle: "Shift",
+    shiftOpen: "Open shift",
+    shiftOpening: "Opening…",
+    shiftClose: "Close shift",
+    shiftClosing: "Closing…",
+    shiftCashMovement: "Cash in / out",
+    shiftNotOpenTitle: "Your shift is not open",
+    shiftNotOpenDesc: "Open a shift with the cash in the drawer before taking payments.",
+    shiftOpenSince: "Open since",
+    shiftStatusOpen: "Open",
+    shiftStatusClosed: "Closed",
+    shiftOpeningCash: "Opening cash",
+    shiftOpeningCashHint: "Count the cash in the drawer before the first sale.",
+    shiftNote: "Note",
+    shiftNoteOptional: "Note (optional)",
+    shiftOpenSuccess: "Shift opened",
+    shiftCloseSuccess: "Shift closed",
+    shiftCashMovementSuccess: "Cash movement recorded",
+    shiftCashIn: "Cash in",
+    shiftCashOut: "Cash out",
+    shiftCashInHint: "e.g. extra change from the owner",
+    shiftCashOutHint: "e.g. a purchase paid from the drawer, a deposit to the owner",
+    shiftAmount: "Amount",
+    shiftAmountRequired: "Enter an amount above 0",
+    shiftNoteRequired: "A note is required",
+    shiftCountedCash: "Cash counted in the drawer",
+    shiftCountedCashHint: "Count every note and coin in the drawer.",
+    shiftExpectedCash: "Expected cash",
+    shiftDifference: "Difference",
+    shiftDifferenceOver: "Over",
+    shiftDifferenceShort: "Short",
+    shiftDifferenceNone: "Balanced",
+    shiftDifferenceNoteNeeded: "The difference is over the tolerance: explain it in the note.",
+    shiftBlindCloseNote: "Blind close: the expected cash is shown after the shift is closed.",
+    shiftSaleCount: "Transactions",
+    shiftCashSales: "Cash takings",
+    shiftNonCashSales: "Non-cash takings",
+    shiftCashRefunds: "Cash refunds",
+    shiftCashier: "Cashier",
+    shiftNumber: "Shift no.",
+    shiftOpenedAt: "Opened",
+    shiftClosedAt: "Closed",
+    shiftClosedBy: "Closed by",
+    shiftMovements: "Cash in / out",
+    shiftSales: "Transactions in this shift",
+    shiftRefundedHere: "Refunded in this shift",
+    shiftNone: "No shifts yet",
+    shiftNoneDesc: "Shifts appear here once a cashier opens one.",
+    shiftFilterAll: "All statuses",
+    shiftAllCashiers: "All cashiers",
+    shiftDetail: "Shift details",
+    shiftHidden: "Hidden until closed",
+    shiftCloseConfirm: "Close this shift? Takings are frozen and its payments can no longer be changed.",
+    shiftSettings: "Shift settings",
+    shiftSettingsDesc: "Choose whether cashiers work in shifts and how the drawer is closed.",
+    shiftSettingEnabled: "Use cashier shifts",
+    shiftSettingEnabledDesc: "Cashiers must open a shift before taking payments.",
+    shiftSettingOpeningCash: "Suggested opening cash",
+    shiftSettingOpeningCashDesc: "Filled in when a shift is opened; the cashier can change it.",
+    shiftSettingBlindClose: "Blind close",
+    shiftSettingBlindCloseDesc: "The cashier counts the drawer without seeing what it should hold.",
+    shiftSettingTolerance: "Difference tolerance",
+    shiftSettingToleranceDesc: "A larger difference needs a note when closing.",
+    shiftSettingsSaved: "Shift settings saved",
+    shiftSettingsSave: "Save settings",
+    shiftSettingsMissing: "Shift settings are not available for this pharmacy yet.",
+    shiftDisabledInfo: "Cashier shifts are off: the till works without opening a shift.",
+    shiftView: "View shift",
   },
   id: {
     appName: "PharmaCare",
@@ -7413,6 +7553,76 @@ export const translations: Record<Language, Translations> = {
     examGenderFemale: "P",
     examLineRequired: "Isi nama obat dan jumlahnya",
     examUnsaved: "Ada perubahan belum disimpan",
+    navShifts: "Shift Kasir",
+    shiftSubtitle: "Modal awal, penerimaan, dan hitungan laci kas setiap shift",
+    shiftTitle: "Shift",
+    shiftOpen: "Buka shift",
+    shiftOpening: "Membuka…",
+    shiftClose: "Tutup shift",
+    shiftClosing: "Menutup…",
+    shiftCashMovement: "Kas masuk / keluar",
+    shiftNotOpenTitle: "Shift Anda belum dibuka",
+    shiftNotOpenDesc: "Buka shift dengan uang di laci sebelum menerima pembayaran.",
+    shiftOpenSince: "Dibuka sejak",
+    shiftStatusOpen: "Terbuka",
+    shiftStatusClosed: "Ditutup",
+    shiftOpeningCash: "Modal awal",
+    shiftOpeningCashHint: "Hitung uang di laci sebelum transaksi pertama.",
+    shiftNote: "Catatan",
+    shiftNoteOptional: "Catatan (opsional)",
+    shiftOpenSuccess: "Shift dibuka",
+    shiftCloseSuccess: "Shift ditutup",
+    shiftCashMovementSuccess: "Kas masuk/keluar dicatat",
+    shiftCashIn: "Kas masuk",
+    shiftCashOut: "Kas keluar",
+    shiftCashInHint: "mis. tambahan uang kembalian dari owner",
+    shiftCashOutHint: "mis. belanja dibayar dari laci, setoran ke owner",
+    shiftAmount: "Jumlah",
+    shiftAmountRequired: "Isi jumlah lebih dari 0",
+    shiftNoteRequired: "Catatan wajib diisi",
+    shiftCountedCash: "Uang terhitung di laci",
+    shiftCountedCashHint: "Hitung semua uang kertas dan koin di laci.",
+    shiftExpectedCash: "Kas seharusnya",
+    shiftDifference: "Selisih",
+    shiftDifferenceOver: "Lebih",
+    shiftDifferenceShort: "Kurang",
+    shiftDifferenceNone: "Pas",
+    shiftDifferenceNoteNeeded: "Selisih melebihi batas toleransi: jelaskan di catatan.",
+    shiftBlindCloseNote: "Tutup buta: kas seharusnya baru ditampilkan setelah shift ditutup.",
+    shiftSaleCount: "Transaksi",
+    shiftCashSales: "Penerimaan tunai",
+    shiftNonCashSales: "Penerimaan non-tunai",
+    shiftCashRefunds: "Pengembalian tunai",
+    shiftCashier: "Kasir",
+    shiftNumber: "No. shift",
+    shiftOpenedAt: "Dibuka",
+    shiftClosedAt: "Ditutup",
+    shiftClosedBy: "Ditutup oleh",
+    shiftMovements: "Kas masuk / keluar",
+    shiftSales: "Transaksi di shift ini",
+    shiftRefundedHere: "Dikembalikan di shift ini",
+    shiftNone: "Belum ada shift",
+    shiftNoneDesc: "Shift akan muncul di sini setelah kasir membukanya.",
+    shiftFilterAll: "Semua status",
+    shiftAllCashiers: "Semua kasir",
+    shiftDetail: "Detail shift",
+    shiftHidden: "Disembunyikan sampai ditutup",
+    shiftCloseConfirm: "Tutup shift ini? Rekap dikunci dan pembayarannya tidak bisa diubah lagi.",
+    shiftSettings: "Pengaturan shift",
+    shiftSettingsDesc: "Atur apakah kasir bekerja per shift dan bagaimana laci kas ditutup.",
+    shiftSettingEnabled: "Gunakan shift kasir",
+    shiftSettingEnabledDesc: "Kasir wajib membuka shift sebelum menerima pembayaran.",
+    shiftSettingOpeningCash: "Saran modal awal",
+    shiftSettingOpeningCashDesc: "Terisi otomatis saat membuka shift; kasir tetap bisa mengubahnya.",
+    shiftSettingBlindClose: "Tutup buta",
+    shiftSettingBlindCloseDesc: "Kasir menghitung laci tanpa melihat jumlah yang seharusnya.",
+    shiftSettingTolerance: "Toleransi selisih",
+    shiftSettingToleranceDesc: "Selisih di atas nilai ini wajib diberi catatan saat menutup.",
+    shiftSettingsSaved: "Pengaturan shift disimpan",
+    shiftSettingsSave: "Simpan pengaturan",
+    shiftSettingsMissing: "Pengaturan shift belum tersedia untuk apotek ini.",
+    shiftDisabledInfo: "Shift kasir tidak aktif: kasir bisa berjualan tanpa membuka shift.",
+    shiftView: "Lihat shift",
   },
 };
 

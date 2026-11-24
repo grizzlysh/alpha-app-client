@@ -34,6 +34,8 @@ import { PurchaseHistory } from "@/components/customers/PurchaseHistory";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { PurchaseMedicine } from "@/types/customer";
 import { useNameFormat } from "@/hooks/useNameFormat";
+import { CURRENT_SHIFT_KEY, useCurrentShift } from "@/hooks/useCurrentShift";
+import { PosShiftBar } from "@/components/shifts/PosShiftBar";
 
 const PPN_PARAMETER_KEY = "PPN_PERCENTAGE_SELL";
 const MAX_DISCOUNT_PARAMETER_KEY = "MAX_DISCOUNT_PERCENTAGE";
@@ -86,6 +88,7 @@ export default function PosPage(): JSX.Element {
   const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const can = useCan();
+  const { mustOpen: shiftRequired } = useCurrentShift();
   const canOverridePrice = can("sales.override_price");
   const queryClient = useQueryClient();
   const pageTitleRef = useScrollAwareTitle();
@@ -425,6 +428,7 @@ export default function PosPage(): JSX.Element {
       queryClient.invalidateQueries({ queryKey: ["stock-catalog"] });
       queryClient.invalidateQueries({ queryKey: ["stock-details-search"] });
       queryClient.invalidateQueries({ queryKey: ["prescriptions-queue"] });
+      queryClient.invalidateQueries({ queryKey: [CURRENT_SHIFT_KEY] });
       setCompletedSale(sale);
       setPaidAmount(amountReceived);
       setPaymentModalOpen(false);
@@ -508,6 +512,12 @@ export default function PosPage(): JSX.Element {
 
   function openPaymentModal(): void {
     if (cart.length === 0) return;
+    if (shiftRequired) {
+      toast.error(<LiveToastMessage getMessage={(t) => t.shiftNotOpenTitle} />, {
+        description: <LiveToastMessage getMessage={(t) => t.shiftNotOpenDesc} />,
+      });
+      return;
+    }
     const overstock = cart.filter((item) => item.quantityPieces > item.availablePieces);
     if (overstock.length > 0) {
       toast.error(
@@ -592,6 +602,8 @@ export default function PosPage(): JSX.Element {
           <span><kbd className="rounded border border-border bg-muted px-1">F9</kbd> {t.posShortcutPay}</span>
         </div>
       </div>
+
+      <PosShiftBar />
 
       {/* Mobile / tablet: tabs */}
       <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1 lg:hidden" role="tablist">

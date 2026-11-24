@@ -25,6 +25,7 @@ import {
   HeartPulse,
   Timer,
   ScanBarcode,
+  Wallet,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -105,6 +106,7 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
     items: [
       { key: "pos", labelKey: "navPOS", icon: ShoppingCart, path: "/pos", permission: "sales.create" },
       { key: "sales", labelKey: "navSales", icon: History, path: "/sales", permission: "sales.read" },
+      { key: "shifts", labelKey: "navShifts", icon: Wallet, path: "/shifts", permission: ["shifts.read", "shifts.manage"] },
       { key: "prescriptions", labelKey: "navPrescriptions", icon: FileText, path: "/prescriptions", permission: "prescriptions.read" },
       { key: "customers", labelKey: "navCustomers", icon: Users, path: "/customers", permission: "customers.read" },
       { key: "examinations", labelKey: "navExaminations", icon: HeartPulse, path: "/examinations", permission: "examinations.read" },
