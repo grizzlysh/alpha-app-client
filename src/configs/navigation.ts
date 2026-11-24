@@ -26,6 +26,7 @@ import {
   Timer,
   ScanBarcode,
   Wallet,
+  ScrollText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -148,6 +149,7 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
     items: [
       { key: "reports", labelKey: "navReports", icon: BarChart2, path: "/reports", permission: "reports.read" },
       { key: "business-parameters", labelKey: "navBusinessParameters", icon: BriefcaseBusiness, path: "/business-parameters", permission: "business_parameters.read" },
+      { key: "audit-logs", labelKey: "navAuditLogs", icon: ScrollText, path: "/audit-logs", permission: "audit_logs.read" },
       // The selected pharmacy's own details and business licenses.
       { key: "pharmacy-profile", labelKey: "navPharmacyProfile", icon: Hospital, path: "/pharmacy-profile", permission: "pharmacies.update" },
     ],

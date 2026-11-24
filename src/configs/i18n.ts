@@ -2571,6 +2571,59 @@ export interface Translations {
   shiftSettingsMissing: string;
   shiftDisabledInfo: string;
   shiftView: string;
+  navAuditLogs: string;
+  auditSubtitle: string;
+  auditAllActions: string;
+  auditSearchPlaceholder: string;
+  auditDateFrom: string;
+  auditDateTo: string;
+  auditTime: string;
+  auditUser: string;
+  auditAction: string;
+  auditRecord: string;
+  auditDetails: string;
+  auditSystem: string;
+  auditEmpty: string;
+  auditEmptyDesc: string;
+  auditAdded: string;
+  auditRemoved: string;
+  auditEmptyValue: string;
+  auditShowDetails: string;
+  auditHideDetails: string;
+  auditModule_users: string;
+  auditModule_placements: string;
+  auditModule_roles: string;
+  auditModule_business_parameters: string;
+  auditModule_stock: string;
+  auditModule_sales: string;
+  auditModule_shifts: string;
+  auditModule_medicines: string;
+  auditModule_pharmacies: string;
+  auditModule_auth: string;
+  audit_users_create: string;
+  audit_users_update: string;
+  audit_users_delete: string;
+  audit_users_reset_password: string;
+  audit_placements_create: string;
+  audit_placements_update: string;
+  audit_placements_delete: string;
+  audit_roles_create: string;
+  audit_roles_update: string;
+  audit_roles_delete: string;
+  audit_roles_set_permissions: string;
+  audit_business_parameters_update: string;
+  audit_stock_update_price: string;
+  audit_stock_adjust: string;
+  audit_sales_cancel: string;
+  audit_sales_refund: string;
+  audit_shifts_open: string;
+  audit_shifts_close: string;
+  audit_shifts_cash_in: string;
+  audit_shifts_cash_out: string;
+  audit_medicines_delete: string;
+  audit_pharmacies_update: string;
+  audit_auth_enter_pharmacy: string;
+  audit_auth_account_locked: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -5099,6 +5152,59 @@ export const translations: Record<Language, Translations> = {
     shiftSettingsMissing: "Shift settings are not available for this pharmacy yet.",
     shiftDisabledInfo: "Cashier shifts are off: the till works without opening a shift.",
     shiftView: "View shift",
+    navAuditLogs: "Activity Log",
+    auditSubtitle: "Who changed what, and when",
+    auditAllActions: "All activities",
+    auditSearchPlaceholder: "Search record…",
+    auditDateFrom: "From",
+    auditDateTo: "To",
+    auditTime: "Time",
+    auditUser: "User",
+    auditAction: "Activity",
+    auditRecord: "Record",
+    auditDetails: "Details",
+    auditSystem: "System",
+    auditEmpty: "No activity yet",
+    auditEmptyDesc: "Changes to staff, roles, settings, stock and sales appear here.",
+    auditAdded: "Added",
+    auditRemoved: "Removed",
+    auditEmptyValue: "(empty)",
+    auditShowDetails: "Show details",
+    auditHideDetails: "Hide details",
+    auditModule_users: "Staff",
+    auditModule_placements: "Placements",
+    auditModule_roles: "Roles",
+    auditModule_business_parameters: "Settings",
+    auditModule_stock: "Stock",
+    auditModule_sales: "Sales",
+    auditModule_shifts: "Cashier shifts",
+    auditModule_medicines: "Medicines",
+    auditModule_pharmacies: "Pharmacy",
+    auditModule_auth: "Sign-in",
+    audit_users_create: "Added staff",
+    audit_users_update: "Edited staff",
+    audit_users_delete: "Deleted staff",
+    audit_users_reset_password: "Reset a password",
+    audit_placements_create: "Placed staff",
+    audit_placements_update: "Changed a placement",
+    audit_placements_delete: "Ended a placement",
+    audit_roles_create: "Created a role",
+    audit_roles_update: "Edited a role",
+    audit_roles_delete: "Deleted a role",
+    audit_roles_set_permissions: "Changed role permissions",
+    audit_business_parameters_update: "Changed a setting",
+    audit_stock_update_price: "Changed a selling price",
+    audit_stock_adjust: "Adjusted stock",
+    audit_sales_cancel: "Cancelled a sale",
+    audit_sales_refund: "Refunded a sale",
+    audit_shifts_open: "Opened a shift",
+    audit_shifts_close: "Closed a shift",
+    audit_shifts_cash_in: "Cash into the drawer",
+    audit_shifts_cash_out: "Cash out of the drawer",
+    audit_medicines_delete: "Deleted a medicine",
+    audit_pharmacies_update: "Edited the pharmacy profile",
+    audit_auth_enter_pharmacy: "Entered the pharmacy",
+    audit_auth_account_locked: "Account locked after failed sign-ins",
   },
   id: {
     appName: "PharmaCare",
@@ -7623,6 +7729,59 @@ export const translations: Record<Language, Translations> = {
     shiftSettingsMissing: "Pengaturan shift belum tersedia untuk apotek ini.",
     shiftDisabledInfo: "Shift kasir tidak aktif: kasir bisa berjualan tanpa membuka shift.",
     shiftView: "Lihat shift",
+    navAuditLogs: "Log Aktivitas",
+    auditSubtitle: "Siapa mengubah apa, dan kapan",
+    auditAllActions: "Semua aktivitas",
+    auditSearchPlaceholder: "Cari data…",
+    auditDateFrom: "Dari",
+    auditDateTo: "Sampai",
+    auditTime: "Waktu",
+    auditUser: "Pengguna",
+    auditAction: "Aktivitas",
+    auditRecord: "Data",
+    auditDetails: "Rincian",
+    auditSystem: "Sistem",
+    auditEmpty: "Belum ada aktivitas",
+    auditEmptyDesc: "Perubahan staf, peran, pengaturan, stok, dan penjualan akan muncul di sini.",
+    auditAdded: "Ditambah",
+    auditRemoved: "Dihapus",
+    auditEmptyValue: "(kosong)",
+    auditShowDetails: "Lihat rincian",
+    auditHideDetails: "Tutup rincian",
+    auditModule_users: "Staf",
+    auditModule_placements: "Penempatan",
+    auditModule_roles: "Peran",
+    auditModule_business_parameters: "Pengaturan",
+    auditModule_stock: "Stok",
+    auditModule_sales: "Penjualan",
+    auditModule_shifts: "Shift kasir",
+    auditModule_medicines: "Obat",
+    auditModule_pharmacies: "Apotek",
+    auditModule_auth: "Akses masuk",
+    audit_users_create: "Menambah staf",
+    audit_users_update: "Mengubah data staf",
+    audit_users_delete: "Menghapus staf",
+    audit_users_reset_password: "Mereset kata sandi",
+    audit_placements_create: "Menempatkan staf",
+    audit_placements_update: "Mengubah penempatan",
+    audit_placements_delete: "Mengakhiri penempatan",
+    audit_roles_create: "Membuat peran",
+    audit_roles_update: "Mengubah peran",
+    audit_roles_delete: "Menghapus peran",
+    audit_roles_set_permissions: "Mengubah izin peran",
+    audit_business_parameters_update: "Mengubah pengaturan",
+    audit_stock_update_price: "Mengubah harga jual",
+    audit_stock_adjust: "Menyesuaikan stok",
+    audit_sales_cancel: "Membatalkan penjualan",
+    audit_sales_refund: "Mengembalikan penjualan",
+    audit_shifts_open: "Membuka shift",
+    audit_shifts_close: "Menutup shift",
+    audit_shifts_cash_in: "Kas masuk laci",
+    audit_shifts_cash_out: "Kas keluar laci",
+    audit_medicines_delete: "Menghapus obat",
+    audit_pharmacies_update: "Mengubah profil apotek",
+    audit_auth_enter_pharmacy: "Masuk ke apotek",
+    audit_auth_account_locked: "Akun dikunci karena gagal masuk berulang",
   },
 };
 

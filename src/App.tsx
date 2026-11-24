@@ -39,6 +39,7 @@ const StockMovementsPage = lazy(() => import("@/pages/StockMovementsPage"));
 const PosPage = lazy(() => import("@/pages/PosPage"));
 const SalesPage = lazy(() => import("@/pages/SalesPage"));
 const ShiftsPage = lazy(() => import("@/pages/ShiftsPage"));
+const AuditLogsPage = lazy(() => import("@/pages/AuditLogsPage"));
 const ProfileSettingsPage = lazy(() => import("@/pages/ProfileSettingsPage"));
 const ReportsPage = lazy(() => import("@/pages/ReportsPage"));
 const StoragePage = lazy(() => import("@/pages/StoragePage"));
@@ -109,6 +110,7 @@ function AppRoutes(): JSX.Element {
             <Route path="/pos" element={<PosPage />} />
             <Route path="/sales" element={<SalesPage />} />
             <Route path="/shifts" element={<ShiftsPage />} />
+            <Route path="/audit-logs" element={<AuditLogsPage />} />
             <Route path="/stock" element={<StockPage />} />
             <Route path="/stock-labels" element={<StockLabelsPage />} />
             <Route path="/stock-disposals" element={<StockDisposalsPage />} />
