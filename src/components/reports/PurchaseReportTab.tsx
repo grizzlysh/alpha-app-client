@@ -103,7 +103,7 @@ export function PurchaseReportTab(): JSX.Element {
     try {
       const resp = await getPurchaseExport(filterParams);
       const rows = resp.data ?? [];
-      exportToXlsx("purchase-report.xlsx", [
+      await exportToXlsx("purchase-report.xlsx", [
         {
           name: t.reportPurchaseInvoiceList,
           headers: [t.reportPurchaseInvoiceNumber, t.reportPurchaseDate, t.reportPurchaseDistributor, t.reportPurchasePONumber, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseStatus],

@@ -103,7 +103,7 @@ export function ReturnReportTab(): JSX.Element {
     try {
       const resp = await getReturnExport(filterParams);
       const rows = resp.data ?? [];
-      exportToXlsx("return-report.xlsx", [
+      await exportToXlsx("return-report.xlsx", [
         {
           name: t.reportReturnList,
           headers: [t.reportReturnNumber, t.reportReturnDate, t.reportReturnDistributor, t.reportReturnMedicine, t.reportReturnBatch, t.reportReturnQty, t.reportReturnReason, t.reportReturnStatus],

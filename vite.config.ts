@@ -89,6 +89,8 @@ export default defineConfig({
           // return "vendor";
           if (!id.includes("node_modules")) return;
           if (id.includes("recharts") || id.includes("d3-")) return "charts";
+          // Loaded on demand by src/utils/excel.ts — keep it out of the startup bundle.
+          if (id.includes("exceljs")) return "excel";
           return "vendor";
         },
       },

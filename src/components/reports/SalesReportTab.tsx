@@ -102,7 +102,7 @@ export function SalesReportTab(): JSX.Element {
     try {
       const resp = await getSalesExport(dateParams);
       const txRows = resp.data ?? [];
-      exportToXlsx("sales-report.xlsx", [
+      await exportToXlsx("sales-report.xlsx", [
         {
           name: t.reportSalesTransactions,
           headers: [t.reportSalesSaleNumber, t.reportSalesDate, t.reportSalesPatient, t.reportSalesSaleType, t.reportSalesStatus, t.reportSalesTotalAmount, t.reportSalesDiscountPct, t.reportSalesDiscountAmt, t.reportSalesPPN, t.reportSalesGrandTotal, t.reportSalesPaidAmount, t.reportSalesPaymentStatus],

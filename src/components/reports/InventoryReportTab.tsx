@@ -107,7 +107,7 @@ export function InventoryReportTab(): JSX.Element {
     try {
       const resp = await getInventoryExport({});
       const allRows = resp.data ?? [];
-      exportToXlsx("inventory-report.xlsx", [
+      await exportToXlsx("inventory-report.xlsx", [
         {
           name: t.reportInventoryStockLevels,
           headers: [t.reportInventoryMedicine, t.reportInventoryUnit, t.reportInventoryPieces, t.reportInventoryReorderLevel, t.reportInventoryStatus, t.reportInventoryBasePrice, t.reportInventorySellingPrice],

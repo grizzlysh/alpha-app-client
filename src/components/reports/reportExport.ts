@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import { addSheet, downloadWorkbook, newWorkbook } from "@/utils/excel";
 
 export interface ExportSheet {
   name: string;
@@ -33,11 +33,8 @@ export function exportToCsv(filename: string, headers: string[], rows: (string |
   triggerDownload(blob, filename);
 }
 
-export function exportToXlsx(filename: string, sheets: ExportSheet[]): void {
-  const wb = XLSX.utils.book_new();
-  for (const sheet of sheets) {
-    const ws = XLSX.utils.aoa_to_sheet([sheet.headers, ...sheet.rows]);
-    XLSX.utils.book_append_sheet(wb, ws, sheet.name.slice(0, 31));
-  }
-  XLSX.writeFile(wb, filename);
+export async function exportToXlsx(filename: string, sheets: ExportSheet[]): Promise<void> {
+  const wb = await newWorkbook();
+  for (const sheet of sheets) addSheet(wb, sheet.name, [sheet.headers, ...sheet.rows]);
+  await downloadWorkbook(wb, filename);
 }

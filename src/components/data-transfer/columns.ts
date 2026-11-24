@@ -38,14 +38,14 @@ const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").
 
 export async function downloadDistributors(pharmacyName: string): Promise<void> {
   const rows = (await exportDistributors()).data ?? [];
-  writeSheet(`distributor-${slug(pharmacyName)}-${today()}.xlsx`, "Distributor", DISTRIBUTOR_COLUMNS,
+  await writeSheet(`distributor-${slug(pharmacyName)}-${today()}.xlsx`, "Distributor", DISTRIBUTOR_COLUMNS,
     rows.map((d) => [d.name, d.phone, d.email, d.address, d.contactPerson, d.permitNumber]));
 }
 
 export async function downloadCustomers(pharmacyName: string): Promise<void> {
   const rows = (await exportCustomers()).data ?? [];
   const genderLabel = (g: string | null) => (g === "MALE" || g === "L" ? "L" : g === "FEMALE" || g === "P" ? "P" : g);
-  writeSheet(`pasien-${slug(pharmacyName)}-${today()}.xlsx`, "Pasien",
+  await writeSheet(`pasien-${slug(pharmacyName)}-${today()}.xlsx`, "Pasien",
     [...CUSTOMER_COLUMNS, { field: "medicalRecordNumber", header: "No. Rekam Medis" }],
     rows.map((c) => [c.name, c.phone, c.address, genderLabel(c.gender), c.dateOfBirth, c.nik, c.bpjsNumber, c.medicalRecordNumber]));
 }

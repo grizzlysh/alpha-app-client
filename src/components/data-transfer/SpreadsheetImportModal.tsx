@@ -139,7 +139,7 @@ export function SpreadsheetImportModal({
               </button>
               <button
                 type="button"
-                onClick={() => writeSheet(template.filename, template.sheet, columns, template.rows)}
+                onClick={() => void writeSheet(template.filename, template.sheet, columns, template.rows)}
                 className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
               >
                 <Download className="h-3.5 w-3.5" />

@@ -81,7 +81,7 @@ export function DisposalReportTab(): JSX.Element {
     try {
       const resp = await getDisposalExport(dateParams);
       const rows = resp.data ?? [];
-      exportToXlsx("disposal-report.xlsx", [
+      await exportToXlsx("disposal-report.xlsx", [
         {
           name: t.reportDisposalList,
           headers: [t.reportDisposalNumber, t.reportDisposalDate, t.reportDisposalMedicine, t.reportDisposalBatch, t.reportDisposalQty, t.reportDisposalReason, t.reportDisposalStatus],

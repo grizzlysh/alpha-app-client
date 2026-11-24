@@ -82,7 +82,7 @@ export function StockMovementReportTab(): JSX.Element {
     try {
       const resp = await getStockMovementExport(filterParams);
       const rows = resp.data ?? [];
-      exportToXlsx("stock-movement-report.xlsx", [
+      await exportToXlsx("stock-movement-report.xlsx", [
         {
           name: t.reportSMMovementList,
           headers: [t.reportSMDate, t.reportSMMedicine, t.reportSMBatch, t.reportSMType, t.reportSMReason, t.reportSMQty, t.reportSMBefore, t.reportSMAfter, t.reportSMReference],

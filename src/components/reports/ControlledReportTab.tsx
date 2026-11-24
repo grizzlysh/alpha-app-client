@@ -81,7 +81,7 @@ export function ControlledReportTab(): JSX.Element {
     exportToCsv(`${fileBase(report)}.csv`, headers, rows.map(toCells));
   }
 
-  function handleExcel(): void {
+  async function handleExcel(): Promise<void> {
     if (!report) return;
     // The sheet opens with the pharmacy block the SIPNAP form asks for.
     const info: (string | number)[][] = [
@@ -94,7 +94,7 @@ export function ControlledReportTab(): JSX.Element {
       ["Periode", monthLabel],
       [],
     ];
-    exportToXlsx(`${fileBase(report)}.xlsx`, [
+    await exportToXlsx(`${fileBase(report)}.xlsx`, [
       { name: orderLetterKindLabel(report.kind, t), headers: info[0].map(String), rows: [...info.slice(1), headers, ...rows.map(toCells)] },
     ]);
   }

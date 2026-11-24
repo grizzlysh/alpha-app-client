@@ -173,7 +173,7 @@ export default function MedicineClassificationPage(): JSX.Element {
         <DataTransferButtons
           onExport={async () => {
             const res = await exportCatalog();
-            if (res.data) downloadCatalog(res.data);
+            if (res.data) await downloadCatalog(res.data);
           }}
           onImport={can("medicines.create") ? () => setImporting(true) : undefined}
           exportHint={t.catalogExportHint}

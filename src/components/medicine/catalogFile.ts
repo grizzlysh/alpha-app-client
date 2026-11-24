@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import { addSheet, downloadWorkbook, findSheet, loadWorkbook, newWorkbook, sheetToGrid, type Worksheet } from "@/utils/excel";
 import type { CatalogExport, CatalogImportMedicine, CatalogImportPayload } from "@/types/catalog";
 
 // The medicine-catalog spreadsheet. Sheet and column names are Indonesian (the
@@ -27,10 +27,9 @@ const COLS = {
 
 const norm = (v: unknown): string => String(v ?? "").trim().toLowerCase();
 
-export function downloadCatalog(catalog: CatalogExport): void {
-  const wb = XLSX.utils.book_new();
-  const add = (name: string, rows: (string | number)[][]) =>
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name);
+export async function downloadCatalog(catalog: CatalogExport): Promise<void> {
+  const wb = await newWorkbook();
+  const add = (name: string, rows: (string | number)[][]): void => void addSheet(wb, name, rows);
 
   // A structured name is written as its parts ("Nama" is then the name part only);
   // "Komposisi" carries each ingredient's strength: "Paracetamol 500 mg, Kafein 50 mg".
@@ -55,18 +54,12 @@ export function downloadCatalog(catalog: CatalogExport): void {
   add("Kelas", [["Nama"], ...catalog.classes.map((c) => [c.name])]);
 
   const date = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(wb, `daftar-obat-${catalog.pharmacy.code}-${date}.xlsx`);
-}
-
-function findSheet(wb: XLSX.WorkBook, names: string[]): XLSX.WorkSheet | undefined {
-  const hit = wb.SheetNames.find((n) => names.includes(norm(n)));
-  return hit ? wb.Sheets[hit] : undefined;
+  await downloadWorkbook(wb, `daftar-obat-${catalog.pharmacy.code}-${date}.xlsx`);
 }
 
 /** Rows as objects keyed by our column ids; unknown columns are ignored. */
-function readRows(ws: XLSX.WorkSheet | undefined): Record<keyof typeof COLS, string>[] {
-  if (!ws) return [];
-  const grid = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, blankrows: false, defval: "" });
+function readRows(ws: Worksheet | undefined): Record<keyof typeof COLS, string>[] {
+  const grid = sheetToGrid(ws);
   if (grid.length === 0) return [];
   const header = grid[0].map(norm);
   const index = Object.fromEntries(
@@ -85,8 +78,8 @@ function readRows(ws: XLSX.WorkSheet | undefined): Record<keyof typeof COLS, str
 export class CatalogFileError extends Error {}
 
 export async function parseCatalogFile(file: File): Promise<CatalogImportPayload> {
-  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
-  const medicineSheet = findSheet(wb, SHEETS.medicines) ?? wb.Sheets[wb.SheetNames[0]];
+  const wb = await loadWorkbook(file);
+  const medicineSheet = findSheet(wb, SHEETS.medicines) ?? wb.worksheets[0];
   const medicineRows = readRows(medicineSheet);
   if (medicineRows.length === 0 || !medicineRows.some((r) => r.name)) {
     throw new CatalogFileError("NO_MEDICINES");

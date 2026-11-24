@@ -57,7 +57,7 @@ export default function MedicinesPage(): JSX.Element {
     setExporting(true);
     try {
       const res = await exportCatalog();
-      if (res.data) downloadCatalog(res.data);
+      if (res.data) await downloadCatalog(res.data);
     } catch (err) {
       toast.error(getApiErrorMessage(err, language, t.unexpectedError));
     } finally {

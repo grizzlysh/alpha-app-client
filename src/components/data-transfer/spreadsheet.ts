@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import { addSheet, downloadWorkbook, loadWorkbook, newWorkbook, sheetToGrid } from "@/utils/excel";
 import type { ImportRow } from "@/types/dataTransfer";
 
 /** One column of an import/export sheet: its field, Indonesian header and accepted header spellings. */
@@ -31,9 +31,8 @@ export function parseNumber(v: unknown): number | undefined {
 
 /** Reads the first sheet; columns are matched by header text, unknown columns are ignored. */
 export async function readSheet(file: File, columns: SheetColumn[]): Promise<ImportRow[]> {
-  const wb = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const grid = ws ? XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, blankrows: false, defval: "" }) : [];
+  const wb = await loadWorkbook(file);
+  const grid = sheetToGrid(wb.worksheets[0]);
   if (grid.length < 2) throw new SheetEmptyError();
   const header = grid[0].map(norm);
   const idx = columns.map((c) => header.findIndex((h) => [c.header, c.field, ...(c.aliases ?? [])].map(norm).includes(h)));
@@ -52,8 +51,13 @@ export async function readSheet(file: File, columns: SheetColumn[]): Promise<Imp
   return rows;
 }
 
-export function writeSheet(filename: string, sheetName: string, columns: SheetColumn[], rows: (string | number | null)[][]): void {
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([columns.map((c) => c.header), ...rows]), sheetName);
-  XLSX.writeFile(wb, filename);
+export async function writeSheet(
+  filename: string,
+  sheetName: string,
+  columns: SheetColumn[],
+  rows: (string | number | null)[][]
+): Promise<void> {
+  const wb = await newWorkbook();
+  addSheet(wb, sheetName, [columns.map((c) => c.header), ...rows]);
+  await downloadWorkbook(wb, filename);
 }
