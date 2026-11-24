@@ -19,6 +19,9 @@ import {
   getPurchaseOrderPrint,
 } from "@/service/purchaseOrderService";
 import { openPrintTab } from "@/utils/printTab";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { loadOrderLetterCopies, orderLetterCopyLabel, saveOrderLetterCopies } from "@/utils/orderLetter";
 import { PurchaseOrderReceipt } from "./PurchaseOrderReceipt";
 
 export interface PurchaseOrderPrintModalProps {
@@ -38,8 +41,11 @@ export function PurchaseOrderPrintModal({
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
 
-  const receiptRef = useRef<HTMLDivElement>(null);
+  // The sheets actually printed: every copy, each marked with what it is for.
+  const printRef = useRef<HTMLDivElement>(null);
   const [isPending, setIsPending] = useState(false);
+  const [copiesInput, setCopiesInput] = useState(() => String(loadOrderLetterCopies(order.kind)));
+  const copies = Math.max(1, Math.min(10, Number(copiesInput) || 1));
 
   const isDraft = order.status === "DRAFT";
 
@@ -50,7 +56,8 @@ export function PurchaseOrderPrintModal({
   });
 
   function triggerBrowserPrint(): void {
-    if (receiptRef.current) openPrintTab(order.orderNumber, receiptRef.current);
+    saveOrderLetterCopies(order.kind, copies);
+    if (printRef.current) openPrintTab(order.orderNumber, printRef.current, "@page { size: A4; margin: 0; }");
   }
 
   async function handlePrint(): Promise<void> {
@@ -118,19 +125,47 @@ export function PurchaseOrderPrintModal({
           </div>
         )}
 
-        {/* Receipt preview */}
+        <div className="flex items-center gap-3 border-b border-border px-6 py-3">
+          <Label htmlFor="po-copies" className="shrink-0">{t.poCopies}</Label>
+          <Input
+            id="po-copies"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={10}
+            value={copiesInput}
+            onChange={(e) => setCopiesInput(e.target.value)}
+            onBlur={() => setCopiesInput(String(copies))}
+            className="w-20 rounded-xl"
+          />
+          {copies > 1 && <p className="min-w-0 text-xs text-muted-foreground">{t.poCopiesHint}</p>}
+        </div>
+
+        {/* Preview of the first sheet */}
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4">
           <div className="flex justify-center">
-            <div
-              ref={receiptRef}
-              className="shadow-md"
-              style={{ transform: "scale(0.85)", transformOrigin: "top center" }}
-            >
+            <div className="shadow-md" style={{ transform: "scale(0.85)", transformOrigin: "top center" }}>
               <PurchaseOrderReceipt
                 order={order}
                 printData={printData?.data ?? null}
+                copyLabel={orderLetterCopyLabel(0, copies)}
               />
             </div>
+          </div>
+        </div>
+
+        {/* Off-screen: what is sent to the printer, one page per copy */}
+        <div aria-hidden style={{ position: "fixed", left: "-10000px", top: 0 }}>
+          <div ref={printRef}>
+            {Array.from({ length: copies }, (_, i) => (
+              <div key={i} style={i < copies - 1 ? { breakAfter: "page", pageBreakAfter: "always" } : undefined}>
+                <PurchaseOrderReceipt
+                  order={order}
+                  printData={printData?.data ?? null}
+                  copyLabel={orderLetterCopyLabel(i, copies)}
+                />
+              </div>
+            ))}
           </div>
         </div>
 

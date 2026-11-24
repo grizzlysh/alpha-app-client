@@ -106,6 +106,7 @@ export default function MedicineClassificationPage(): JSX.Element {
     controlledLabel: t.medicineTypeControlled,
     controlledHint: t.medicineTypeControlledHint,
     controlledBadge: t.medicineTypeControlledBadge,
+    orderLetterKindLabel: t.orderLetterKind,
     createSuccess: (t) => t.medicineTypeCreateSuccess,
     updateSuccess: (t) => t.medicineTypeUpdateSuccess,
     deleteSuccess: (t) => t.medicineTypeDeleteSuccess,

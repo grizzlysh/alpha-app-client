@@ -27,6 +27,8 @@ export interface CartItem {
   availablePieces: number;
   quantityPerBox: number;
   requiresPrescription: boolean;
+  /** A precursor or obat-obat tertentu, capped per sale without a prescription. */
+  restricted?: boolean;
 }
 
 export interface PosCartPanelProps {
@@ -57,6 +59,9 @@ export interface PosCartPanelProps {
   isCheckingOut: boolean;
   onReset: () => void;
   onOpenHeldSales: () => void;
+  /** No-prescription cap for restricted medicines, and the medicines over it. */
+  restrictedLimit: number;
+  overLimitMedicines: Set<string>;
 }
 
 export function PosCartPanel({
@@ -85,6 +90,8 @@ export function PosCartPanel({
   isCheckingOut,
   onReset,
   onOpenHeldSales,
+  restrictedLimit,
+  overLimitMedicines,
 }: PosCartPanelProps): JSX.Element {
   const [draftCode] = useState(() => `DRAFT-${Date.now().toString(36).toUpperCase()}`);
   const transactionCode = resumedSaleNumber ?? draftCode;
@@ -243,6 +250,7 @@ export function PosCartPanel({
                 onPriceKeyDown={(e) => handlePriceKeyDown(e, index)}
                 onQuantityChange={(q) => onQuantityChange(index, q)}
                 onRemove={() => onRemove(index)}
+                overRestrictedLimit={item.medicineUuid && overLimitMedicines.has(item.medicineUuid) ? restrictedLimit : undefined}
               />
             ))
           )}
@@ -321,6 +329,8 @@ interface CartRowProps {
   onPriceKeyDown: (e: React.KeyboardEvent) => void;
   onQuantityChange: (quantity: number) => void;
   onRemove: () => void;
+  /** Set to the cap when this medicine is over it without a prescription. */
+  overRestrictedLimit?: number;
 }
 
 function CartRow({
@@ -337,6 +347,7 @@ function CartRow({
   onPriceKeyDown,
   onQuantityChange,
   onRemove,
+  overRestrictedLimit,
 }: CartRowProps): JSX.Element {
   // Local text state so the cashier can clear the field and type a new number.
   const [qtyText, setQtyText] = useState(String(item.quantityPieces));
@@ -360,13 +371,21 @@ function CartRow({
     <div
       className={cn(
         "rounded-xl border bg-muted/30 px-3 py-2.5",
-        overStock ? "border-destructive/60" : "border-border"
+        overStock ? "border-destructive/60" : overRestrictedLimit ? "border-warning/60" : "border-border"
       )}
     >
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <p className="truncate text-sm font-medium name-case text-foreground">{item.medicineName}</p>
+            {item.restricted && !item.requiresPrescription && (
+              <span
+                title={t.posRestrictedBadgeHint}
+                className="shrink-0 rounded-md bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold text-warning"
+              >
+                {t.posRestrictedBadge}
+              </span>
+            )}
             {item.requiresPrescription && (
               <span
                 title={t.posRxRequiredBadge}
@@ -495,6 +514,9 @@ function CartRow({
         <p className="mt-1 text-xs font-medium text-destructive">
           {t.posStockInsufficient} — {t.posAvailableShort.replace("{n}", String(item.availablePieces))}
         </p>
+      )}
+      {!overStock && overRestrictedLimit !== undefined && (
+        <p className="mt-1 text-xs font-medium text-warning">{t.posRestrictedOverLimit.replace("{n}", String(overRestrictedLimit))}</p>
       )}
     </div>
   );

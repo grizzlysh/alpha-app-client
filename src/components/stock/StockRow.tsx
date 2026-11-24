@@ -18,6 +18,8 @@ import {
   getStockStatusClass,
   getStockStatusKey,
 } from "./stockUtils";
+import { LockedCabinetBadge } from "@/components/shared/LockedCabinetBadge";
+import { needsLockedCabinet } from "@/utils/orderLetter";
 import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface StockRowProps {
@@ -36,6 +38,7 @@ export function StockRow({
   onSetReorder,
 }: StockRowProps): JSX.Element {
   const fmt = useNameFormat();
+  const lockedCabinet = needsLockedCabinet(stock.medicine.orderLetterKind ?? stock.medicine.type.orderLetterKind);
   const statusClass = getStockStatusClass(stock);
   const statusLabel = t[getStockStatusKey(stock)];
 
@@ -59,6 +62,8 @@ export function StockRow({
             <p className="truncate text-xs text-muted-foreground">
               {fmt(stock.medicine.shape.name)} · {fmt(stock.medicine.medicineClass.name)}
             </p>
+            {/* The type column is hidden below md, so the cabinet mark moves here */}
+            {lockedCabinet && <LockedCabinetBadge className="mt-1 md:hidden" />}
           </div>
         </div>
       </td>
@@ -82,7 +87,10 @@ export function StockRow({
 
       {/* Type — md+ */}
       <td className="hidden min-w-[120px] px-5 py-4 md:table-cell">
-        <span className="text-sm text-foreground">{fmt(stock.medicine.type.name)}</span>
+        <div className="flex flex-col items-start gap-1">
+          <span className="text-sm text-foreground">{fmt(stock.medicine.type.name)}</span>
+          {lockedCabinet && <LockedCabinetBadge />}
+        </div>
       </td>
 
       {/* Reorder level — sm+ */}

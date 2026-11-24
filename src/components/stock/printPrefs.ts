@@ -66,6 +66,7 @@ export function labelText(t: Translations): LabelText {
     box: t.labelBox,
     allBatches: t.labelAllBatches,
     stockCard: t.labelStockCard,
+    lockedCabinet: t.lockedCabinet,
     packaging: t.labelPackaging,
     location: t.labelLocation,
     minStock: t.labelMinStock,

@@ -1,4 +1,5 @@
-export function openPrintTab(title: string, contentEl: HTMLElement): void {
+/** `pageCss` adds print rules such as `@page { size: A4; margin: 0 }`. */
+export function openPrintTab(title: string, contentEl: HTMLElement, pageCss = ""): void {
   const win = window.open("", "_blank", "width=900,height=900");
   if (!win) return;
 
@@ -7,7 +8,7 @@ export function openPrintTab(title: string, contentEl: HTMLElement): void {
   <head>
     <meta charset="utf-8" />
     <title>${title}</title>
-    <style>body { margin: 0; }</style>
+    <style>body { margin: 0; } ${pageCss}</style>
   </head>
   <body>
     ${contentEl.outerHTML}

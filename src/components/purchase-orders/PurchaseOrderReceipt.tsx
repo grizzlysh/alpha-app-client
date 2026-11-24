@@ -5,6 +5,8 @@ import { translations } from "@/configs/i18n";
 import { BiLabel, sl } from "@/utils/bilingualDoc";
 import { formatName } from "@/utils/nameFormat";
 import { currentNameCase } from "@/hooks/useNameFormat";
+import { ORDER_LETTER_TITLE } from "@/utils/orderLetter";
+import { SpecialOrderLetter } from "./SpecialOrderLetter";
 
 /** Names follow the pharmacy's display setting; read at render (this may print outside the app tree). */
 const nm = (name: string): string => formatName(name, currentNameCase());
@@ -15,6 +17,8 @@ const ID = translations.id;
 export interface PurchaseOrderReceiptProps {
   order: PurchaseOrder;
   printData: PurchaseOrderPrintData | null;
+  /** Which copy this sheet is, e.g. "Lembar 1 · Asli untuk PBF". */
+  copyLabel?: string;
 }
 
 function fmtDate(value: string | Date): string {
@@ -28,7 +32,11 @@ function fmtDate(value: string | Date): string {
 export function PurchaseOrderReceipt({
   order,
   printData,
+  copyLabel,
 }: PurchaseOrderReceiptProps): JSX.Element {
+  // Narcotics, psychotropics, precursors and obat-obat tertentu have their own letter.
+  if (order.kind !== "REGULAR") return <SpecialOrderLetter kind={order.kind} order={order} printData={printData} copyLabel={copyLabel} />;
+
   const headPharmacist = printData?.headPharmacist ?? null;
   const pharmacy = printData?.pharmacy ?? null;
 
@@ -37,7 +45,6 @@ export function PurchaseOrderReceipt({
 
   return (
     <div
-      id="po-receipt"
       style={{
         fontFamily: "'Courier New', Courier, monospace",
         width: "210mm",
@@ -49,6 +56,11 @@ export function PurchaseOrderReceipt({
         lineHeight: "1.6",
       }}
     >
+      {copyLabel && (
+        <div style={{ textAlign: "right", marginBottom: "4px" }}>
+          <span style={{ border: "1px solid #000", padding: "1px 6px", fontSize: "10px", fontWeight: "bold" }}>{copyLabel}</span>
+        </div>
+      )}
       {/* Header row: pharmacist info (left) + order reference (right) */}
       <div
         style={{
@@ -121,6 +133,11 @@ export function PurchaseOrderReceipt({
             {pharmacy.address}
           </div>
         )}
+      </div>
+
+      {/* Title */}
+      <div style={{ textAlign: "center", fontSize: "14px", fontWeight: "bold", letterSpacing: "1px", marginBottom: "10px" }}>
+        {ORDER_LETTER_TITLE.REGULAR}
       </div>
 
       {/* Recipient */}

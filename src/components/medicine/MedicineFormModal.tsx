@@ -28,6 +28,13 @@ import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
 import { getMedicineClassesDropdown } from "@/service/medicineClassService";
 import { useMedicineNameFormat, useNameFormat } from "@/hooks/useNameFormat";
 import { buildMedicineName } from "@/utils/medicineName";
+import {
+  ORDER_LETTER_KINDS,
+  PRESCRIPTION_ONLY_KINDS,
+  type OrderLetterKind,
+  orderLetterKindLabel,
+  suggestOrderLetterKind,
+} from "@/utils/orderLetter";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -44,6 +51,8 @@ function makeSchema(t: Translations) {
     barcode: z.string().trim().max(64).regex(/^[0-9A-Za-z\-./]*$/, t.medicineBarcodeInvalid),
     status: z.enum(["ACTIVE", "INACTIVE"]),
     ingredients: z.array(z.object({ value: z.string(), strength: z.string().max(50) })),
+    /** "" follows the type. */
+    orderLetterKind: z.string(),
   }).superRefine((v, ctx) => {
     // A custom name is typed whole; otherwise only the name part is required.
     const field = v.isCustomName ? "name" : "baseName";
@@ -63,6 +72,7 @@ interface FormValues {
   barcode: string;
   status: "ACTIVE" | "INACTIVE";
   ingredients: { value: string; strength: string }[];
+  orderLetterKind: "" | OrderLetterKind;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -107,6 +117,7 @@ export function MedicineFormModal({
       barcode: medicine?.barcode ?? "",
       status: medicine?.status ?? "ACTIVE",
       ingredients: defaultIngredients,
+      orderLetterKind: medicine?.orderLetterKind ?? "",
     },
   });
 
@@ -142,6 +153,14 @@ export function MedicineFormModal({
     "ingredients",
   ]);
   const shapeName = shapes.find((s) => s.uuid === shapeUuid)?.name ?? "";
+  const selectedType = types.find((tp) => tp.uuid === form.watch("medicineTypeUuid"));
+  const selectedTypeKind = selectedType?.orderLetterKind ?? "REGULAR";
+  const kindOverride = form.watch("orderLetterKind");
+  const effectiveKind: OrderLetterKind = kindOverride || selectedTypeKind;
+  // Ingredients such as tramadol or pseudoephedrine point to a special letter the type doesn't give.
+  const suggestedKind = effectiveKind === "REGULAR" ? suggestOrderLetterKind(ingredientValues.map((i) => i.value)) : null;
+  // Narcotics and psychotropics are prescription-only, so their type must be too.
+  const kindNeedsRxType = !!selectedType && PRESCRIPTION_ONLY_KINDS.includes(effectiveKind) && !selectedType.requiredPrescription;
   const previewName = isCustomName
     ? ""
     : buildMedicineName(nameFormat, {
@@ -187,9 +206,11 @@ export function MedicineFormModal({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   function onSubmit(values: FormValues): void {
+    if (kindNeedsRxType) return;
     const ingredients = values.ingredients
       .filter((i) => i.value.trim())
       .map((i) => ({ name: i.value.trim(), strength: i.strength.trim() || null }));
+    const orderLetterKind = values.orderLetterKind || null;
     const naming = values.isCustomName
       ? { isCustomName: true, name: values.name.trim() }
       : { isCustomName: false, baseName: values.baseName.trim(), variant: values.variant.trim() || null };
@@ -197,6 +218,7 @@ export function MedicineFormModal({
     if (mode === "create") {
       const payload: CreateMedicinePayload = {
         ...naming,
+        orderLetterKind,
         medicineShapeUuid: values.medicineShapeUuid,
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
@@ -208,6 +230,7 @@ export function MedicineFormModal({
     } else if (medicine) {
       const payload: UpdateMedicinePayload = {
         ...naming,
+        orderLetterKind,
         medicineShapeUuid: values.medicineShapeUuid,
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
@@ -367,6 +390,47 @@ export function MedicineFormModal({
                     <AlertCircle className="h-3 w-3 shrink-0" />
                     {fieldError("medicineTypeUuid")}
                   </p>
+                )}
+              </div>
+
+              {/* Order letter: follows the type unless this medicine is a precursor or OOT in an ordinary type */}
+              <div className="space-y-1.5">
+                <Label htmlFor="med-order-letter">{t.orderLetterKind}</Label>
+                <Controller
+                  name="orderLetterKind"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Combobox
+                      value={field.value || "TYPE"}
+                      onValueChange={(v) => field.onChange(v === "TYPE" ? "" : v)}
+                      options={[
+                        {
+                          value: "TYPE",
+                          label: t.orderLetterFollowType.replace("{kind}", orderLetterKindLabel(selectedTypeKind, t)),
+                        },
+                        ...ORDER_LETTER_KINDS.map((k) => ({ value: k, label: orderLetterKindLabel(k, t) })),
+                      ]}
+                    />
+                  )}
+                />
+                {kindNeedsRxType ? (
+                  <p className="flex items-start gap-1 text-xs text-destructive">
+                    <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                    {t.orderLetterNeedsRxType}
+                  </p>
+                ) : suggestedKind ? (
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-warning/40 bg-warning/10 px-2.5 py-1.5 text-xs text-foreground">
+                    <span>{t.orderLetterSuggestion.replace("{kind}", orderLetterKindLabel(suggestedKind, t))}</span>
+                    <button
+                      type="button"
+                      className="font-semibold text-primary underline-offset-2 hover:underline"
+                      onClick={() => form.setValue("orderLetterKind", suggestedKind, { shouldDirty: true })}
+                    >
+                      {t.orderLetterApplySuggestion}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">{t.orderLetterMedicineHint}</p>
                 )}
               </div>
 

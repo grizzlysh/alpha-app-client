@@ -23,6 +23,7 @@ import {
   canRepurchase,
   formatDate,
 } from "./purchaseOrderUtils";
+import { OrderLetterBadge } from "./OrderLetterBadge";
 
 // ── PurchaseOrderDetailPanel ──────────────────────────────────────────────────
 
@@ -105,11 +106,10 @@ export function PurchaseOrderDetailPanel({
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-lg font-bold text-foreground">{order.orderNumber}</p>
-          <StatusBadge
-            status={order.status}
-            label={getPOStatusLabel(order.status, t)}
-            className="mt-1"
-          />
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <StatusBadge status={order.status} label={getPOStatusLabel(order.status, t)} />
+            <OrderLetterBadge kind={order.kind} />
+          </div>
         </div>
       </div>
 

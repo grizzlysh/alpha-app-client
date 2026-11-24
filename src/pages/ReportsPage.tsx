@@ -11,6 +11,7 @@ import { InventoryReportTab } from "@/components/reports/InventoryReportTab";
 import { StockMovementReportTab } from "@/components/reports/StockMovementReportTab";
 import { DisposalReportTab } from "@/components/reports/DisposalReportTab";
 import { ReturnReportTab } from "@/components/reports/ReturnReportTab";
+import { ControlledReportTab } from "@/components/reports/ControlledReportTab";
 
 export default function ReportsPage(): JSX.Element {
   const { t } = useLanguage();
@@ -39,6 +40,7 @@ export default function ReportsPage(): JSX.Element {
           <TabsTrigger value="stock-movement">{t.reportsStockMovementTab}</TabsTrigger>
           <TabsTrigger value="disposal">{t.reportsDisposalTab}</TabsTrigger>
           <TabsTrigger value="returns">{t.reportsReturnsTab}</TabsTrigger>
+          <TabsTrigger value="controlled">{t.reportsControlledTab}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sales">
@@ -74,6 +76,12 @@ export default function ReportsPage(): JSX.Element {
         <TabsContent value="returns">
           <Card className="p-6">
             <ReturnReportTab />
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="controlled">
+          <Card className="p-6">
+            <ControlledReportTab />
           </Card>
         </TabsContent>
       </Tabs>

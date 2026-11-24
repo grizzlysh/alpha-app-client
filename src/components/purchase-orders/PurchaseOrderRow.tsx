@@ -32,6 +32,7 @@ import {
   canRepurchase,
   formatDate,
 } from "./purchaseOrderUtils";
+import { OrderLetterBadge } from "./OrderLetterBadge";
 
 export interface PurchaseOrderRowProps {
   order: PurchaseOrder;
@@ -73,6 +74,7 @@ export function PurchaseOrderRow({
             <p className="truncate text-xs text-muted-foreground">
               <span className="name-case">{order.distributor.name}</span>
             </p>
+            {order.kind !== "REGULAR" && <OrderLetterBadge kind={order.kind} className="mt-1" />}
           </div>
         </div>
       </td>

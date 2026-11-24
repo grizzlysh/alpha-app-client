@@ -1,14 +1,18 @@
+import type { OrderLetterKind } from "@/utils/orderLetter";
+
 export type PurchaseOrderStatus = "DRAFT" | "SENT" | "COMPLETED" | "CANCELLED";
 
 export interface PurchaseOrderPrintData {
   orderNumber: string;
   orderedAt: string;
-  distributor: { name: string };
+  kind: OrderLetterKind;
+  distributor: { name: string; address: string | null; phone: string; permitNumber: string | null };
   details: PurchaseOrderDetail[];
   pharmacy: {
     name: string;
     address: string;
     location: string;
+    phone: string;
     businessLicenseNumber: string;
   };
   headPharmacist: {
@@ -21,6 +25,8 @@ export interface PurchaseOrderMedicine {
   uuid: string;
   name: string;
   unit: string;
+  shape: { name: string };
+  ingredients: { name: string; strength: string | null }[];
 }
 
 export interface PurchaseOrderDetail {
@@ -39,6 +45,8 @@ export interface PurchaseOrderParty {
 export interface PurchaseOrder {
   uuid: string;
   orderNumber: string;
+  /** Which surat pesanan (from its items). */
+  kind: OrderLetterKind;
   status: PurchaseOrderStatus;
   description: string | null;
   cancellationReason: string | null;
