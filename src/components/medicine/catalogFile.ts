@@ -15,6 +15,7 @@ const SHEETS = {
 const COLS = {
   name: ["nama", "name", "nama obat"],
   variant: ["varian", "variant"],
+  strength: ["kekuatan", "strength", "dosis"],
   customName: ["nama sendiri", "custom name"],
   unit: ["satuan", "unit"],
   shape: ["bentuk", "shape"],
@@ -57,8 +58,35 @@ export async function downloadCatalog(catalog: CatalogExport): Promise<void> {
   await downloadWorkbook(wb, `daftar-obat-${catalog.pharmacy.code}-${date}.xlsx`);
 }
 
+type Row = Record<keyof typeof COLS, string>;
+
+/** The column ids present in a sheet's header row. */
+function headerColumns(ws: Worksheet | undefined): Set<keyof typeof COLS> {
+  const header = (sheetToGrid(ws)[0] ?? []).map(norm);
+  return new Set((Object.keys(COLS) as (keyof typeof COLS)[]).filter((k) => header.some((h) => COLS[k].includes(h))));
+}
+
+/**
+ * The ingredients of a structured row. "Zat Aktif" without strengths is paired
+ * with "Kekuatan" by position ("Paracetamol; Kafein" + "500 mg; 50 mg");
+ * with no ingredient given, the name itself is the ingredient.
+ */
+function structuredIngredients(r: Row): string[] {
+  const names = splitList(r.ingredients);
+  const strengths = r.strength.split(/[;+]/).map((s) => s.trim()).filter(Boolean);
+  if (names.length === 0) return r.strength ? [`${r.name} ${r.strength}`.trim()] : [];
+  return names.map((n, i) => (/\d/.test(n) || !strengths[i] ? n : `${n} ${strengths[i]}`));
+}
+
+/** "a; b" or "a, b" — but a decimal comma ("2,5 %") stays inside its item. */
+const splitList = (v: string): string[] =>
+  v
+    .split(/[;]|,(?!\d)/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
 /** Rows as objects keyed by our column ids; unknown columns are ignored. */
-function readRows(ws: Worksheet | undefined): Record<keyof typeof COLS, string>[] {
+function readRows(ws: Worksheet | undefined): Row[] {
   const grid = sheetToGrid(ws);
   if (grid.length === 0) return [];
   const header = grid[0].map(norm);
@@ -86,10 +114,12 @@ export async function parseCatalogFile(file: File): Promise<CatalogImportPayload
   }
 
   const isYes = (v: string) => ["ya", "yes", "y", "true", "1"].includes(norm(v));
-  // "Nama Sendiri" = Tidak: "Nama" is the name part, and the name follows the
-  // pharmacy's format. Without that column, names are kept exactly as written.
+  // "Nama Sendiri" = Tidak, or a "Kekuatan" column (the template with separate
+  // strength): "Nama" is the name part and the name follows the pharmacy's
+  // format. Otherwise names are kept exactly as written.
+  const hasStrengthColumn = headerColumns(medicineSheet).has("strength");
   const medicines: CatalogImportMedicine[] = medicineRows.map((r) => {
-    const structured = r.customName !== "" && !isYes(r.customName);
+    const structured = r.customName !== "" ? !isYes(r.customName) : hasStrengthColumn;
     return {
       name: structured ? "" : r.name,
       ...(structured ? { baseName: r.name, variant: r.variant || null, isCustomName: false } : { isCustomName: true }),
@@ -97,10 +127,7 @@ export async function parseCatalogFile(file: File): Promise<CatalogImportPayload
       shape: r.shape,
       type: r.type,
       class: r.class,
-      ingredients: r.ingredients
-        .split(/[;]|,(?!\d)/)
-        .map((s) => s.trim())
-        .filter(Boolean),
+      ingredients: structured && hasStrengthColumn ? structuredIngredients(r) : splitList(r.ingredients),
     };
   });
 

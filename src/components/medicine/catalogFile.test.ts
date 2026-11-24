@@ -41,3 +41,22 @@ describe("parseCatalogFile", () => {
     await expect(parseCatalogFile(await catalogFile({ Obat: [HEADER] }))).rejects.toBeInstanceOf(CatalogFileError);
   });
 });
+
+describe("parseCatalogFile with the separate-strength template", () => {
+  const HEAD = ["Nama", "Kekuatan", "Varian", "Satuan", "Bentuk", "Golongan", "Kelas", "Zat Aktif", "Pratinjau Nama"];
+
+  it("treats rows as structured names and pairs ingredients with strengths", async () => {
+    const file = await catalogFile({
+      Obat: [
+        HEAD,
+        ["Amoxicillin", "500 mg", "", "Strip", "Kapsul", "Obat Keras", "Antibiotik", "", ""],
+        ["Panadol Extra", "500 mg; 65 mg", "", "Strip", "Tablet", "Obat Bebas", "Analgesik", "Paracetamol; Kafein", ""],
+        ["Salep Kulit", "2,5 %", "", "Tube", "Salep", "Obat Keras", "Kulit", "Hidrokortison", ""],
+      ],
+    });
+    const { medicines } = await parseCatalogFile(file);
+    expect(medicines[0]).toMatchObject({ baseName: "Amoxicillin", isCustomName: false, ingredients: ["Amoxicillin 500 mg"] });
+    expect(medicines[1].ingredients).toEqual(["Paracetamol 500 mg", "Kafein 65 mg"]);
+    expect(medicines[2].ingredients).toEqual(["Hidrokortison 2,5 %"]);
+  });
+});

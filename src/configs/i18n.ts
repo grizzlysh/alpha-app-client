@@ -2624,6 +2624,14 @@ export interface Translations {
   audit_pharmacies_update: string;
   audit_auth_enter_pharmacy: string;
   audit_auth_account_locked: string;
+  catalogTemplateTitle: string;
+  catalogTemplateStructured: string;
+  catalogTemplateStructuredHint: string;
+  catalogTemplateWholeHint: string;
+  catalogTemplateDropdownNote: string;
+  catalogTemplateDownload: string;
+  importTemplateFailed: string;
+  importStockTemplateNote: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -4931,9 +4939,9 @@ export const translations: Record<Language, Translations> = {
     catalogExportHint: "Download the medicine list and classifications as Excel — import it at another branch",
     catalogImport: "Import",
     catalogImportTitle: "Import medicine list",
-    catalogImportDesc: "From an Excel file exported at another branch. Only medicines and classifications not here yet are added.",
+    catalogImportDesc: "From the template below or a file exported at another branch. Only medicines and classifications not here yet are added.",
     catalogPickFile: "Choose an Excel file",
-    catalogPickFileHint: "Sheet \"Obat\": Nama, Satuan, Bentuk, Golongan, Kelas, Komposisi",
+    catalogPickFileHint: "Sheet \"Obat\" (template below), or a file exported from another branch",
     catalogFileEmpty: "No medicines found in this file",
     catalogFileUnreadable: "This file can't be read. Use the .xlsx from Export.",
     catalogWillAddMedicines: "{n} medicines will be added",
@@ -5205,6 +5213,14 @@ export const translations: Record<Language, Translations> = {
     audit_pharmacies_update: "Edited the pharmacy profile",
     audit_auth_enter_pharmacy: "Entered the pharmacy",
     audit_auth_account_locked: "Account locked after failed sign-ins",
+    catalogTemplateTitle: "Excel template",
+    catalogTemplateStructured: "Separate strength from the name (follows the pharmacy's name format)",
+    catalogTemplateStructuredHint: "Name, strength and variant in their own columns; the full name is put together for you.",
+    catalogTemplateWholeHint: "One full-name column, written exactly as it should appear.",
+    catalogTemplateDropdownNote: "Shape, type and class are drop-downs of this pharmacy's classifications.",
+    catalogTemplateDownload: "Download template",
+    importTemplateFailed: "The template could not be made. Please try again.",
+    importStockTemplateNote: "The template lists this pharmacy's medicines and distributors as drop-downs.",
   },
   id: {
     appName: "PharmaCare",
@@ -7508,9 +7524,9 @@ export const translations: Record<Language, Translations> = {
     catalogExportHint: "Unduh daftar obat & klasifikasi (Excel) — bisa diimpor di cabang lain",
     catalogImport: "Impor",
     catalogImportTitle: "Impor daftar obat",
-    catalogImportDesc: "Dari file Excel hasil ekspor cabang lain. Hanya obat & klasifikasi yang belum ada yang ditambahkan.",
+    catalogImportDesc: "Dari template di bawah atau file ekspor cabang lain. Hanya obat & klasifikasi yang belum ada yang ditambahkan.",
     catalogPickFile: "Pilih file Excel",
-    catalogPickFileHint: "Sheet \"Obat\": Nama, Satuan, Bentuk, Golongan, Kelas, Komposisi",
+    catalogPickFileHint: "Sheet \"Obat\" (template di bawah), atau file ekspor dari cabang lain",
     catalogFileEmpty: "Tidak ada data obat di file ini",
     catalogFileUnreadable: "File tidak bisa dibaca. Gunakan file .xlsx hasil Ekspor.",
     catalogWillAddMedicines: "{n} obat akan ditambahkan",
@@ -7782,6 +7798,14 @@ export const translations: Record<Language, Translations> = {
     audit_pharmacies_update: "Mengubah profil apotek",
     audit_auth_enter_pharmacy: "Masuk ke apotek",
     audit_auth_account_locked: "Akun dikunci karena gagal masuk berulang",
+    catalogTemplateTitle: "Template Excel",
+    catalogTemplateStructured: "Pisahkan kekuatan dari nama (ikuti format nama apotek)",
+    catalogTemplateStructuredHint: "Kolom Nama, Kekuatan, dan Varian terpisah; nama lengkap disusun otomatis.",
+    catalogTemplateWholeHint: "Satu kolom nama lengkap, ditulis persis seperti yang ingin ditampilkan.",
+    catalogTemplateDropdownNote: "Bentuk, golongan, dan kelas berupa pilihan dari klasifikasi apotek ini.",
+    catalogTemplateDownload: "Unduh template",
+    importTemplateFailed: "Template gagal dibuat. Silakan coba lagi.",
+    importStockTemplateNote: "Template berisi pilihan obat dan distributor apotek ini.",
   },
 };
 

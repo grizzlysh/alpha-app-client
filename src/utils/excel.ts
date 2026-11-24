@@ -1,6 +1,6 @@
 // Thin wrapper over exceljs. The library is ~1 MB, so it is loaded on first use
 // rather than with the page that offers an export or import button.
-import type { Workbook, Worksheet, CellValue } from "exceljs";
+import type { CellValue, DataValidation, Workbook, Worksheet } from "exceljs";
 
 export type { Workbook, Worksheet };
 export type Cell = string | number | boolean | Date | null | undefined;
@@ -48,6 +48,8 @@ export function plain(v: CellValue): Cell {
   if (v instanceof Date || typeof v !== "object") return v as Cell;
   if ("richText" in v) return v.richText.map((t) => t.text).join("");
   if ("text" in v && typeof v.text === "string") return v.text;
+  // A formula Excel never calculated (e.g. written by this app) has no result yet.
+  if ("formula" in v || "sharedFormula" in v) return "result" in v ? plain(v.result as CellValue) : "";
   if ("result" in v) return plain(v.result as CellValue);
   if ("error" in v) return "";
   return String(v);
@@ -72,6 +74,13 @@ export function findSheet(wb: Workbook, names: string[]): Worksheet | undefined 
   return wb.worksheets.find((ws) => wanted.includes(ws.name.trim().toLowerCase()));
 }
 
+/** Applies one validation to rows `fromRow`..`toRow` of a column. */
+export function addValidation(ws: Worksheet, column: number, validation: DataValidation, opts: { fromRow?: number; toRow?: number } = {}): void {
+  const from = opts.fromRow ?? 2;
+  const to = opts.toRow ?? 1000;
+  for (let r = from; r <= to; r++) ws.getCell(r, column).dataValidation = validation;
+}
+
 /**
  * A drop-down on a column, fed from a range (usually a hidden list sheet).
  * Excel caps an inline list at 255 characters, so lists always go through a range.
@@ -82,21 +91,23 @@ export function addListValidation(
   sourceRange: string,
   opts: { fromRow?: number; toRow?: number; strict?: boolean; prompt?: string } = {}
 ): void {
-  const from = opts.fromRow ?? 2;
-  const to = opts.toRow ?? 1000;
   const strict = opts.strict ?? true;
-  for (let r = from; r <= to; r++) {
-    ws.getCell(r, column).dataValidation = {
+  addValidation(
+    ws,
+    column,
+    {
       type: "list",
       allowBlank: true,
       formulae: [sourceRange],
-      showErrorMessage: strict,
+      // A warning still lets a value outside the list through (after a prompt).
+      showErrorMessage: true,
       errorStyle: strict ? "stop" : "warning",
       errorTitle: "Pilihan tidak valid",
-      error: "Pilih salah satu nilai dari daftar.",
+      error: strict ? "Pilih salah satu nilai dari daftar." : "Nilai ini tidak ada di daftar. Tetap pakai?",
       ...(opts.prompt ? { showInputMessage: true, prompt: opts.prompt } : {}),
-    };
-  }
+    },
+    opts
+  );
 }
 
 /**

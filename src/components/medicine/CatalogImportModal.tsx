@@ -2,10 +2,12 @@ import type { JSX } from "react";
 import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { AlertTriangle, CheckCircle2, FileSpreadsheet, Loader2, Upload } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download, FileSpreadsheet, Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useMedicineNameFormat } from "@/hooks/useNameFormat";
+import { downloadMedicineTemplate } from "@/components/data-transfer/importTemplates";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { cn } from "@/utils/cn";
 import { importCatalog } from "@/service/catalogService";
@@ -36,6 +38,21 @@ export function CatalogImportModal({ onClose }: { onClose: () => void }): JSX.El
   const [preview, setPreview] = useState<CatalogImportResult | null>(null);
   const [done, setDone] = useState<CatalogImportResult | null>(null);
   const [parsing, setParsing] = useState(false);
+  const nameFormat = useMedicineNameFormat();
+  const [structuredTemplate, setStructuredTemplate] = useState(true);
+  const [templateBusy, setTemplateBusy] = useState(false);
+
+  async function downloadTemplate(): Promise<void> {
+    setTemplateBusy(true);
+    try {
+      await downloadMedicineTemplate(structuredTemplate, nameFormat);
+    } catch (err) {
+      console.error(err);
+      toast.error(t.importTemplateFailed);
+    } finally {
+      setTemplateBusy(false);
+    }
+  }
 
   const previewMutation = useMutation({
     mutationFn: (p: CatalogImportPayload) => importCatalog({ ...p, dryRun: true }),
@@ -102,6 +119,30 @@ export function CatalogImportModal({ onClose }: { onClose: () => void }): JSX.El
               <span className="text-sm font-medium text-foreground">{fileName ?? t.catalogPickFile}</span>
               <span className="text-xs text-muted-foreground">{t.catalogPickFileHint}</span>
             </button>
+          )}
+          {!done && (
+            <section className="space-y-2 rounded-2xl border border-border px-4 py-3">
+              <p className="text-sm font-medium text-foreground">{t.catalogTemplateTitle}</p>
+              <label className="flex items-start gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={structuredTemplate}
+                  onChange={(e) => setStructuredTemplate(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[hsl(var(--primary))]"
+                />
+                <span>
+                  {t.catalogTemplateStructured}
+                  <span className="block text-xs text-muted-foreground">
+                    {structuredTemplate ? t.catalogTemplateStructuredHint : t.catalogTemplateWholeHint}
+                  </span>
+                </span>
+              </label>
+              <p className="text-xs text-muted-foreground">{t.catalogTemplateDropdownNote}</p>
+              <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => void downloadTemplate()} disabled={templateBusy}>
+                {templateBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                {t.catalogTemplateDownload}
+              </Button>
+            </section>
           )}
           <input
             ref={inputRef}

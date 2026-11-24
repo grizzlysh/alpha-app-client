@@ -10,6 +10,7 @@ import { getSigners } from "@/service/userService";
 import { getDistributorsDropdown } from "@/service/distributorService";
 import { SpreadsheetImportModal } from "./SpreadsheetImportModal";
 import { CUSTOMER_COLUMNS, DISTRIBUTOR_COLUMNS, OPENING_STOCK_COLUMNS } from "./columns";
+import { downloadOpeningStockTemplate } from "./importTemplates";
 
 export function DistributorImportModal({ onClose }: { onClose: () => void }): JSX.Element {
   const { t } = useLanguage();
@@ -77,11 +78,7 @@ export function OpeningStockImportModal({ onClose }: { onClose: () => void }): J
       title={t.importOpeningStockTitle}
       description={t.importOpeningStockDesc}
       columns={OPENING_STOCK_COLUMNS}
-      template={{
-        filename: "template-saldo-stok-awal.xlsx",
-        sheet: "Saldo Awal",
-        rows: [["Paracetamol 500mg", "B12345", "2027-12-31", 100, 350, 500, "PT Contoh Farma"]],
-      }}
+      template={{ download: downloadOpeningStockTemplate, note: t.importStockTemplateNote }}
       run={(rows, dryRun) =>
         importOpeningStock(rows, dryRun, { signedByUuid, defaultDistributorUuid: defaultDistributorUuid || undefined })
       }

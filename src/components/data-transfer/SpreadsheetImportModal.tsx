@@ -33,8 +33,13 @@ export interface SpreadsheetImportModalProps {
   title: string;
   description: string;
   columns: SheetColumn[];
-  /** File name and example rows for "Download template". */
-  template: { filename: string; sheet: string; rows: (string | number | null)[][] };
+  /**
+   * "Download template": file name and example rows, or a `download` that
+   * builds a richer template itself (drop-downs from the pharmacy's data).
+   */
+  template:
+    | { filename: string; sheet: string; rows: (string | number | null)[][] }
+    | { download: () => Promise<void>; note?: string };
   run: (rows: ImportRow[], dryRun: boolean) => Promise<ApiResponse<ImportResult>>;
   /** Extra inputs shown above the file picker (e.g. signer for opening stock). */
   children?: ReactNode;
@@ -69,6 +74,20 @@ export function SpreadsheetImportModal({
   const [preview, setPreview] = useState<ImportResult | null>(null);
   const [done, setDone] = useState<ImportResult | null>(null);
   const [parsing, setParsing] = useState(false);
+  const [templateBusy, setTemplateBusy] = useState(false);
+
+  async function downloadTemplate(): Promise<void> {
+    setTemplateBusy(true);
+    try {
+      if ("download" in template) await template.download();
+      else await writeSheet(template.filename, template.sheet, columns, template.rows);
+    } catch (err) {
+      console.error(err);
+      toast.error(t.importTemplateFailed);
+    } finally {
+      setTemplateBusy(false);
+    }
+  }
 
   const previewMutation = useMutation({
     mutationFn: (r: ImportRow[]) => run(r, true),
@@ -137,14 +156,18 @@ export function SpreadsheetImportModal({
                 <span className="text-sm font-medium text-foreground">{fileName ?? t.catalogPickFile}</span>
                 <span className="text-xs text-muted-foreground">{columns.map((c) => c.header).join(", ")}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => void writeSheet(template.filename, template.sheet, columns, template.rows)}
-                className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-              >
-                <Download className="h-3.5 w-3.5" />
-                {t.importDownloadTemplate}
-              </button>
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => void downloadTemplate()}
+                  disabled={templateBusy}
+                  className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline disabled:opacity-60"
+                >
+                  {templateBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                  {t.importDownloadTemplate}
+                </button>
+                {"note" in template && template.note && <p className="text-xs text-muted-foreground">{template.note}</p>}
+              </div>
               {rows && !preview && !ready && <p className="text-xs text-amber-700 dark:text-amber-400">{t.importCompleteFields}</p>}
               {rows && !preview && ready && !previewMutation.isPending && (
                 <Button variant="outline" size="sm" className="rounded-xl" onClick={() => previewMutation.mutate(rows)}>
