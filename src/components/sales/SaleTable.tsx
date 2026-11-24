@@ -30,10 +30,10 @@ export interface SaleTableProps {
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   onDetails: (s: Sale) => void;
-  onCancel: (s: Sale) => void;
-  onRefund: (s: Sale) => void;
-  onAddPayment: (s: Sale) => void;
-  onComplete: (s: Sale) => void;
+  onCancel?: (s: Sale) => void;
+  onRefund?: (s: Sale) => void;
+  onAddPayment?: (s: Sale) => void;
+  onComplete?: (s: Sale) => void;
 }
 
 export function SaleTable({
@@ -177,10 +177,10 @@ export function SaleTable({
                 sale={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onCancel={() => onCancel(row.original)}
-                onRefund={() => onRefund(row.original)}
-                onAddPayment={() => onAddPayment(row.original)}
-                onComplete={() => onComplete(row.original)}
+                onCancel={onCancel ? () => onCancel(row.original) : undefined}
+                onRefund={onRefund ? () => onRefund(row.original) : undefined}
+                onAddPayment={onAddPayment ? () => onAddPayment(row.original) : undefined}
+                onComplete={onComplete ? () => onComplete(row.original) : undefined}
               />
             ))}
           </tbody>

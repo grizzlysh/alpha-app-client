@@ -11,8 +11,8 @@ const PERSISTED_PREFIXES = new Set([
   "medicine-shapes-dropdown",
   "medicine-types-dropdown",
   "medicine-classes-dropdown",
-  "customers",
-  "customers-dropdown",
+  "patients",
+  "patients-dropdown",
   "stocks",
   "stock-catalog",
   "stock-details-search",
@@ -68,4 +68,20 @@ export function subscribeQueryCache(queryClient: QueryClient): () => void {
       void db.queryCache.delete(JSON.stringify(queryKey));
     }
   });
+}
+
+/**
+ * Drops every cached query, in memory and in IndexedDB. Call on logout (so the
+ * next person at a shared workstation can't read the previous session's
+ * patients or sales) and on pharmacy switch (so pharmacy A's data never shows
+ * while working in pharmacy B).
+ */
+export async function clearQueryCache(queryClient: QueryClient): Promise<void> {
+  await queryClient.cancelQueries();
+  queryClient.clear();
+  try {
+    await db.queryCache.clear();
+  } catch {
+    // IndexedDB can be unavailable (private mode); the in-memory clear above still applies.
+  }
 }

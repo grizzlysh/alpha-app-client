@@ -4,7 +4,8 @@ import { useDispatch } from "react-redux";
 
 import { getMe } from "@/service/authService";
 import { restoreSession, logout } from "@/store/authSlice";
-import { TOKEN_KEY } from "@/utils/constants";
+import { getToken, hasSessionHint } from "@/utils/tokenStore";
+import { refreshSession } from "@/configs/axiosInstance";
 import type { AppDispatch } from "@/store";
 
 interface UseBootstrapAuthReturn {
@@ -13,15 +14,20 @@ interface UseBootstrapAuthReturn {
 
 export function useBootstrapAuth(): UseBootstrapAuthReturn {
   const dispatch = useDispatch<AppDispatch>();
-  const hasToken = !!localStorage.getItem(TOKEN_KEY);
-  // Start as "restored" when there's no token so the router renders immediately.
-  // When a token exists, stay true until restoreSession has been dispatched.
-  const [sessionRestored, setSessionRestored] = useState(!hasToken);
+  // The access token is memory-only, so after a reload it has to be re-issued
+  // from the refresh cookie. Only try when this browser had a session.
+  const hasSession = hasSessionHint();
+  // Start as "restored" when there's no session so the router renders immediately.
+  // Otherwise stay false until restoreSession has been dispatched.
+  const [sessionRestored, setSessionRestored] = useState(!hasSession);
 
   const { data, isError } = useQuery({
     queryKey: ["auth", "me"],
-    queryFn: getMe,
-    enabled: hasToken,
+    queryFn: async () => {
+      if (!getToken()) await refreshSession();
+      return getMe();
+    },
+    enabled: hasSession,
     retry: false,
     staleTime: Infinity,
   });

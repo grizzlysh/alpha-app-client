@@ -29,9 +29,9 @@ export interface CabinetTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
-  onEdit: (c: StorageCabinet) => void;
-  onDelete: (c: StorageCabinet) => void;
+  onAdd?: () => void;
+  onEdit?: (c: StorageCabinet) => void;
+  onDelete?: (c: StorageCabinet) => void;
   onViewShelves: (c: StorageCabinet) => void;
 }
 
@@ -170,8 +170,8 @@ export function CabinetTable({
                 key={row.original.uuid}
                 cabinet={row.original}
                 t={t}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
                 onViewShelves={() => onViewShelves(row.original)}
               />
             ))}

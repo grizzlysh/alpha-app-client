@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -34,11 +35,16 @@ type ModalState =
 
 export default function RolesPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
-  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
+  const { user, currentPharmacy } = useSelector((state: RootState) => state.auth);
+  const isPlatformUser = user !== null && user.platformRole !== null;
+  // Platform admins access the global /roles endpoint — never filter by pharmacy UUID,
+  // because passing pharmacyUuid with a pharmacy-context token causes a 403.
+  const pharmacyUuid = isPlatformUser ? undefined : currentPharmacy?.uuid;
 
   // ── Filter state ─────────────────────────────────────────────────────────────
   const [filterStatus, setFilterStatus] = useState<"ACTIVE" | "INACTIVE" | "DELETED" | "all">("all");
@@ -182,6 +188,7 @@ export default function RolesPage(): JSX.Element {
             />
 
             {/* Add button */}
+            {can("roles.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -192,6 +199,7 @@ export default function RolesPage(): JSX.Element {
                 {t.roleAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -207,10 +215,10 @@ export default function RolesPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("roles.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(r) => setModal({ mode: "detail", role: r })}
-          onEdit={(r) => setModal({ mode: "edit", role: r })}
-          onDelete={(r) => setModal({ mode: "delete", role: r })}
+          onEdit={can("roles.update") ? (r) => setModal({ mode: "edit", role: r }) : undefined}
+          onDelete={can("roles.delete") ? (r) => setModal({ mode: "delete", role: r }) : undefined}
         />
       </Card>
 
@@ -220,8 +228,8 @@ export default function RolesPage(): JSX.Element {
           role={modal.role}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", role: modal.role })}
-          onDelete={() => setModal({ mode: "delete", role: modal.role })}
+          onEdit={can("roles.update") ? () => setModal({ mode: "edit", role: modal.role }) : undefined}
+          onDelete={can("roles.delete") ? () => setModal({ mode: "delete", role: modal.role }) : undefined}
         />
       )}
 

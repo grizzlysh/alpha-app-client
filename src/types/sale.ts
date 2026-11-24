@@ -3,6 +3,30 @@ export type SaleType = "CASH" | "CREDIT";
 export type PaymentStatus = "UNPAID" | "PARTIAL" | "PAID";
 export type PaymentMethod = "CASH" | "TRANSFER" | "CREDIT";
 
+export interface SalePrescription {
+  uuid: string;
+  prescriptionNumber: string | null;
+  prescribedAt: string;
+  doctor: { uuid: string; name: string } | null;
+}
+
+export interface InlinePrescriptionItemPayload {
+  medicineUuid?: string;
+  medicineName: string;
+  frequency?: string;
+  duration?: string;
+  qty: number;
+  notes?: string;
+}
+
+export interface InlinePrescriptionPayload {
+  doctorUuid?: string;
+  prescriptionNumber?: string;
+  prescribedAt: string;
+  notes?: string;
+  items: InlinePrescriptionItemPayload[];
+}
+
 export interface SaleMedicine {
   uuid: string;
   name: string;
@@ -18,6 +42,7 @@ export interface SaleBatch {
 export interface SaleCustomer {
   uuid: string;
   name: string;
+  customerType: string;
   isWalkIn: boolean;
 }
 
@@ -31,6 +56,7 @@ export interface SaleDetail {
   discountAmount: number;
   totalAmount: number;
   isFefoOverride: boolean;
+  requiresPrescription: boolean;
   medicine: SaleMedicine;
   stockDetail: SaleBatch;
 }
@@ -43,10 +69,13 @@ export interface UpdateSalePayload {
   discountAmount?: number;
   ppnPercentage?: number;
   ppnAmount?: number;
-  totalAmount: number;
-  grandTotal: number;
+  totalAmount?: number;
+  grandTotal?: number;
   description?: string;
+  isPrescription?: boolean;
   details: CreateSaleDetailPayload[];
+  prescriptionUuid?: string;
+  prescription?: InlinePrescriptionPayload;
 }
 
 export interface SalePaymentHistory {
@@ -84,6 +113,7 @@ export interface Sale {
   customer: SaleCustomer;
   details: SaleDetail[];
   payment: SalePayment | null;
+  prescription: SalePrescription | null;
 }
 
 export interface SaleListParams {
@@ -104,10 +134,11 @@ export interface CreateSaleDetailPayload {
   stockDetailUuid: string;
   quantityPieces: number;
   sellingPrice: number;
-  originalPrice?: number;
+  originalPrice: number;
   discountPercentage?: number;
   discountAmount?: number;
   isFefoOverride?: boolean;
+  requiresPrescription?: boolean;
 }
 
 export interface CreateSalePaymentPayload {
@@ -122,13 +153,17 @@ export interface CreateSalePayload {
   discountAmount?: number;
   ppnPercentage?: number;
   ppnAmount?: number;
-  totalAmount: number;
-  grandTotal: number;
+  // Totals are computed by the server; sent only for older API versions.
+  totalAmount?: number;
+  grandTotal?: number;
   paidAmount?: number;
   description?: string;
   isPending?: boolean;
+  isPrescription?: boolean;
   details: CreateSaleDetailPayload[];
   payment?: CreateSalePaymentPayload;
+  prescriptionUuid?: string;
+  prescription?: InlinePrescriptionPayload;
 }
 
 export interface CancelSalePayload {

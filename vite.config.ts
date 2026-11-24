@@ -40,11 +40,11 @@ export default defineConfig({
             },
           },
           {
-            // Customers — tolerable to be slightly stale
+            // Patients — tolerable to be slightly stale
             urlPattern: /\/api\/customers/,
             handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "api-customers",
+              cacheName: "api-patients",
               expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 },
               cacheableResponse: { statuses: [0, 200] },
             },

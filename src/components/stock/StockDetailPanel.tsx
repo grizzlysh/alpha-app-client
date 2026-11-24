@@ -24,6 +24,7 @@ import {
   daysUntilExpiry,
 } from "./stockUtils";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── Batch table ───────────────────────────────────────────────────────────────
 
@@ -31,9 +32,9 @@ interface BatchTableProps {
   details: StockDetail[];
   unit: string;
   t: Translations;
-  onAdjust: (detail: StockDetail) => void;
-  onDispose: (detail: StockDetail) => void;
-  onReturn: (detail: StockDetail) => void;
+  onAdjust?: (detail: StockDetail) => void;
+  onDispose?: (detail: StockDetail) => void;
+  onReturn?: (detail: StockDetail) => void;
 }
 
 function BatchTable({
@@ -172,6 +173,7 @@ function BatchTable({
                               )}
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
+                              {onAdjust && (
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -184,6 +186,8 @@ function BatchTable({
                                 <PencilRuler className="h-3.5 w-3.5" />
                                 {t.stockAdjust}
                               </Button>
+                              )}
+                              {onDispose && (
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -196,6 +200,8 @@ function BatchTable({
                                 <Trash2 className="h-3.5 w-3.5" />
                                 {t.stockDispose}
                               </Button>
+                              )}
+                              {onReturn && (
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -208,6 +214,7 @@ function BatchTable({
                                 <Undo2 className="h-3.5 w-3.5" />
                                 {t.stockReturn}
                               </Button>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -230,11 +237,11 @@ export interface StockDetailPanelProps {
   stock: Stock;
   t: Translations;
   onClose: () => void;
-  onSetPrice: () => void;
-  onSetReorder: () => void;
-  onAdjust: (detail: StockDetail) => void;
-  onDispose: (detail: StockDetail) => void;
-  onReturn: (detail: StockDetail) => void;
+  onSetPrice?: () => void;
+  onSetReorder?: () => void;
+  onAdjust?: (detail: StockDetail) => void;
+  onDispose?: (detail: StockDetail) => void;
+  onReturn?: (detail: StockDetail) => void;
 }
 
 export function StockDetailPanel({
@@ -286,7 +293,7 @@ export function StockDetailPanel({
                 {stock.medicine.name}
               </p>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {stock.medicine.shape.name} · {stock.medicine.type.name}
+                {toTitleCase(stock.medicine.shape.name)} · {toTitleCase(stock.medicine.type.name)}
               </p>
               <span
                 className={cn(
@@ -346,6 +353,7 @@ export function StockDetailPanel({
 
         {/* Footer */}
         <div className="flex gap-3 border-t border-border p-5">
+          {onSetPrice && (
           <Button
             variant="outline"
             className="flex-1 gap-2 rounded-xl"
@@ -354,6 +362,8 @@ export function StockDetailPanel({
             <Tag className="h-4 w-4" />
             {t.stockUpdatePrice}
           </Button>
+          )}
+          {onSetReorder && (
           <Button
             variant="outline"
             className="flex-1 gap-2 rounded-xl"
@@ -362,6 +372,7 @@ export function StockDetailPanel({
             <Pencil className="h-4 w-4" />
             {t.stockUpdateReorder}
           </Button>
+          )}
         </div>
       </div>
     </DetailModal>

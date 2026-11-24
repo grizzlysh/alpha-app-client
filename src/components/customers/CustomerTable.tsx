@@ -18,8 +18,6 @@ import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { CustomerRow } from "./CustomerRow";
 
-// ── CustomerTable ─────────────────────────────────────────────────────────────
-
 export interface CustomerTableProps {
   customers: Customer[];
   isLoading: boolean;
@@ -31,10 +29,10 @@ export interface CustomerTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (customer: Customer) => void;
-  onEdit: (customer: Customer) => void;
-  onDelete: (customer: Customer) => void;
+  onEdit?: (customer: Customer) => void;
+  onDelete?: (customer: Customer) => void;
 }
 
 export function CustomerTable({
@@ -57,11 +55,11 @@ export function CustomerTable({
 
   const columns = useMemo<ColumnDef<Customer>[]>(
     () => [
-      { accessorKey: "name", header: t.customerName, enableSorting: true },
-      { id: "phone", header: t.customerPhone, enableSorting: false },
-      { id: "address", header: t.customerAddress, enableSorting: false },
-      { id: "isWalkIn", header: t.customerIsWalkIn, enableSorting: false },
-      { id: "status", header: t.customerStatusLabel, enableSorting: false },
+      { accessorKey: "name", header: t.patientName, enableSorting: true },
+      { id: "phone", header: t.patientPhone, enableSorting: false },
+      { id: "address", header: t.patientAddress, enableSorting: false },
+      { id: "customerType", header: t.customerFilterType, enableSorting: false },
+      { id: "status", header: t.customerFilterStatus, enableSorting: false },
       { id: "actions", enableSorting: false },
     ],
     [t]
@@ -97,7 +95,7 @@ export function CustomerTable({
     name: "",
     phone: "hidden sm:table-cell",
     address: "hidden md:table-cell",
-    isWalkIn: "hidden lg:table-cell",
+    customerType: "hidden lg:table-cell",
     status: "hidden xl:table-cell",
   };
 
@@ -105,7 +103,7 @@ export function CustomerTable({
     name: "min-w-[220px]",
     phone: "min-w-[150px]",
     address: "min-w-[200px]",
-    isWalkIn: "min-w-[110px]",
+    customerType: "min-w-[130px]",
     status: "min-w-[100px]",
   };
 
@@ -171,8 +169,8 @@ export function CustomerTable({
                 customer={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

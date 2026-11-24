@@ -3,6 +3,7 @@ import type { ApiResponse } from "@/types/api";
 import type {
   Customer,
   CustomerDropdownItem,
+  CustomerDropdownParams,
   CustomerListParams,
   CreateCustomerPayload,
   UpdateCustomerPayload,
@@ -57,11 +58,11 @@ export async function deleteCustomer(uuid: string): Promise<ApiResponse<null>> {
 }
 
 export async function getCustomersDropdown(
-  search?: string
+  params?: CustomerDropdownParams
 ): Promise<ApiResponse<CustomerDropdownItem[]>> {
   const response = await axiosInstance.get<ApiResponse<CustomerDropdownItem[]>>(
     "/customers/dropdown",
-    { params: search ? { search } : undefined }
+    { params }
   );
   return response.data;
 }

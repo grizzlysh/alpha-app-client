@@ -24,7 +24,7 @@ export interface InvoiceRowProps {
   invoice: Invoice;
   t: Translations;
   onDetails: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 export function InvoiceRow({
@@ -112,6 +112,8 @@ export function InvoiceRow({
 
             {canDelete(invoice.paymentStatus) && (
               <>
+                {onDelete && (
+                <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onDelete}
@@ -120,6 +122,8 @@ export function InvoiceRow({
                   <Trash2 className="h-4 w-4" />
                   {t.invoiceDelete}
                 </DropdownMenuItem>
+                </>
+                )}
               </>
             )}
           </DropdownMenuContent>

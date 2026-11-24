@@ -16,6 +16,7 @@ import { ReferenceDetailPanel } from "./ReferenceDetailPanel";
 import { ReferenceDeleteModal } from "./ReferenceDeleteModal";
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
+import { useCan } from "@/hooks/usePermission";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -49,6 +50,9 @@ export function ReferenceTabContent({
   updateFn,
   deleteFn,
 }: ReferenceTabContentProps): JSX.Element {
+  // Query keys mirror permission modules: "medicine-shapes" → "medicine_shapes.*".
+  const permissionModule = queryKey.replace(/-/g, "_");
+  const can = useCan();
   const {
     searchInput,
     debouncedSearch,
@@ -144,10 +148,10 @@ export function ReferenceTabContent({
         totalPages={totalPages}
         onPageChange={setPage}
         onLimitChange={handleLimitChange}
-        onAdd={() => setModal({ mode: "create" })}
+        onAdd={can(`${permissionModule}.create`) ? () => setModal({ mode: "create" }) : undefined}
         onDetails={(item) => setModal({ mode: "detail", item })}
-        onEdit={(item) => setModal({ mode: "edit", item })}
-        onDelete={(item) => setModal({ mode: "delete", item })}
+        onEdit={can(`${permissionModule}.update`) ? (item) => setModal({ mode: "edit", item }) : undefined}
+        onDelete={can(`${permissionModule}.delete`) ? (item) => setModal({ mode: "delete", item }) : undefined}
       />
 
       {/* Detail panel */}
@@ -157,8 +161,8 @@ export function ReferenceTabContent({
           labels={labels}
           icon={icon}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", item: modal.item })}
-          onDelete={() => setModal({ mode: "delete", item: modal.item })}
+          onEdit={can(`${permissionModule}.update`) ? () => setModal({ mode: "edit", item: modal.item }) : undefined}
+          onDelete={can(`${permissionModule}.delete`) ? () => setModal({ mode: "delete", item: modal.item }) : undefined}
         />
       )}
 

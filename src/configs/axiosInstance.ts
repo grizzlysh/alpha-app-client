@@ -1,7 +1,9 @@
 import axios from "axios";
 import { store } from "@/store";
 import { logout, setAccessToken, clearPharmacy } from "@/store/authSlice";
-import { TOKEN_KEY } from "@/utils/constants";
+import { getToken } from "@/utils/tokenStore";
+import { db } from "@/utils/db";
+import { invalidateAfterWrite } from "@/configs/queryInvalidation";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -13,7 +15,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,21 +23,58 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 let isRefreshing = false;
-const refreshSubscribers: Array<(token: string) => void> = [];
+type RefreshSubscriber = { resolve: (token: string) => void; reject: (reason: unknown) => void };
+const refreshSubscribers: RefreshSubscriber[] = [];
 
-function subscribeTokenRefresh(cb: (token: string) => void): void {
-  refreshSubscribers.push(cb);
+function subscribeTokenRefresh(sub: RefreshSubscriber): void {
+  refreshSubscribers.push(sub);
 }
 
 function notifySubscribers(token: string): void {
-  refreshSubscribers.forEach((cb) => cb(token));
-  refreshSubscribers.splice(0, refreshSubscribers.length);
+  refreshSubscribers.splice(0).forEach((sub) => sub.resolve(token));
+}
+
+// When the refresh itself fails, queued requests must fail too — retrying them
+// with an empty token only produced a burst of extra 401s.
+function rejectSubscribers(reason: unknown): void {
+  refreshSubscribers.splice(0).forEach((sub) => sub.reject(reason));
 }
 
 const retriedRequests = new WeakSet<object>();
 
+let refreshInFlight: Promise<string> | null = null;
+
+/**
+ * Exchanges the httpOnly refresh cookie for a new access token and stores it.
+ * Concurrent callers share one request (the server rotates the refresh token).
+ */
+export function refreshSession(): Promise<string> {
+  if (!refreshInFlight) {
+    refreshInFlight = axios
+      .post<{ success: boolean; data: { accessToken: string } | null }>(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+        {},
+        { withCredentials: true, timeout: 10000 }
+      )
+      .then((res) => {
+        const token = res.data?.data?.accessToken;
+        if (!token) throw new Error("No access token in refresh response");
+        store.dispatch(setAccessToken(token));
+        return token;
+      })
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+  return refreshInFlight;
+}
+
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Any successful write refreshes every cached list/dropdown that depends on it.
+    invalidateAfterWrite(response.config.method, response.config.url);
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     const url = originalRequest?.url ?? "";
@@ -52,10 +91,14 @@ axiosInstance.interceptors.response.use(
       !retriedRequests.has(originalRequest)
     ) {
       if (isRefreshing) {
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(axiosInstance(originalRequest));
+        return new Promise((resolve, reject) => {
+          subscribeTokenRefresh({
+            resolve: (token) => {
+              retriedRequests.add(originalRequest);
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(axiosInstance(originalRequest));
+            },
+            reject,
           });
         });
       }
@@ -64,27 +107,20 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshResponse = await axios.post<{
-          success: boolean;
-          data: { accessToken: string } | null;
-        }>(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
-
-        const newToken = refreshResponse.data?.data?.accessToken;
-        if (!newToken) throw new Error("No access token in refresh response");
-
-        store.dispatch(setAccessToken(newToken));
-        axiosInstance.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+        const newToken = await refreshSession();
         notifySubscribers(newToken);
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
       } catch {
-        notifySubscribers("");
+        rejectSubscribers(error);
         store.dispatch(logout());
+        // Full reload below wipes memory; IndexedDB must be cleared explicitly.
+        try {
+          await db.queryCache.clear();
+        } catch {
+          // IndexedDB unavailable — nothing persisted to clear.
+        }
         sessionStorage.setItem("auth_redirect_reason", "session_expired");
         window.location.href = "/login";
         return Promise.reject(error);

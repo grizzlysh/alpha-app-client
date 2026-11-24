@@ -13,8 +13,8 @@ import { getInitials, getAvatarColor } from "./distributorUtils";
 interface RowMenuProps {
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 function RowMenu({ t, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element {
@@ -84,6 +84,7 @@ function RowMenu({ t, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element 
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.distributorDetails}
             </button>
+            {onEdit && (
             <button
               type="button"
               onClick={() => pick(onEdit)}
@@ -92,6 +93,9 @@ function RowMenu({ t, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element 
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.distributorEdit}
             </button>
+            )}
+            {onDelete && (
+            <>
             <div className="mx-2 my-1 border-t border-border" />
             <button
               type="button"
@@ -101,6 +105,8 @@ function RowMenu({ t, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element 
               <Trash2 className="h-4 w-4" />
               {t.distributorDelete}
             </button>
+            </>
+            )}
           </div>,
           document.body
         )}
@@ -114,8 +120,8 @@ export interface DistributorRowProps {
   distributor: Distributor;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function DistributorRow({

@@ -9,7 +9,7 @@ export function getSRStatusLabel(
   t: Translations
 ): string {
   const map: Record<StockReturnStatus, string> = {
-    ON_PROCESS: t.srStatusOnProcess,
+    IN_PROGRESS: t.srStatusInProgress,
     COMPLETED: t.srStatusCompleted,
     CANCELLED: t.srStatusCancelled,
     REJECTED: t.srStatusRejected,
@@ -35,17 +35,17 @@ export function canEdit(_status: StockReturnStatus): boolean {
 }
 
 export function canComplete(status: StockReturnStatus): boolean {
-  return status === "ON_PROCESS";
+  return status === "IN_PROGRESS";
 }
 
 export function canReject(status: StockReturnStatus): boolean {
-  return status === "ON_PROCESS";
+  return status === "IN_PROGRESS";
 }
 
 export function canCancel(status: StockReturnStatus): boolean {
-  return status === "ON_PROCESS";
+  return status === "IN_PROGRESS";
 }
 
 export function canDelete(status: StockReturnStatus): boolean {
-  return status === "ON_PROCESS";
+  return status === "IN_PROGRESS";
 }

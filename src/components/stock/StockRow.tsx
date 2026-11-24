@@ -18,13 +18,14 @@ import {
   getStockStatusClass,
   getStockStatusKey,
 } from "./stockUtils";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 export interface StockRowProps {
   stock: Stock;
   t: Translations;
   onDetails: () => void;
-  onSetPrice: () => void;
-  onSetReorder: () => void;
+  onSetPrice?: () => void;
+  onSetReorder?: () => void;
 }
 
 export function StockRow({
@@ -55,7 +56,7 @@ export function StockRow({
               {stock.medicine.name}
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              {stock.medicine.shape.name} · {stock.medicine.medicineClass.name}
+              {toTitleCase(stock.medicine.shape.name)} · {toTitleCase(stock.medicine.medicineClass.name)}
             </p>
           </div>
         </div>
@@ -80,7 +81,7 @@ export function StockRow({
 
       {/* Type — md+ */}
       <td className="hidden min-w-[120px] px-5 py-4 md:table-cell">
-        <span className="text-sm text-foreground">{stock.medicine.type.name}</span>
+        <span className="text-sm text-foreground">{toTitleCase(stock.medicine.type.name)}</span>
       </td>
 
       {/* Reorder level — sm+ */}
@@ -125,14 +126,18 @@ export function StockRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.stockDetails}
             </DropdownMenuItem>
+            {onSetPrice && (
             <DropdownMenuItem onClick={onSetPrice} className="gap-2.5 rounded-lg">
               <Tag className="h-4 w-4 text-muted-foreground" />
               {t.stockUpdatePrice}
             </DropdownMenuItem>
+            )}
+            {onSetReorder && (
             <DropdownMenuItem onClick={onSetReorder} className="gap-2.5 rounded-lg">
               <ListOrdered className="h-4 w-4 text-muted-foreground" />
               {t.stockUpdateReorder}
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

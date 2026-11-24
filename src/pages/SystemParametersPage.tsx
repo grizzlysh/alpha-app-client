@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { MonitorCog } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -30,6 +31,7 @@ type ModalState =
 
 export default function SystemParametersPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
 
   const {
@@ -112,7 +114,7 @@ export default function SystemParametersPage(): JSX.Element {
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
           onDetails={(p) => setModal({ mode: "detail", parameter: p })}
-          onEdit={(p) => setModal({ mode: "edit", parameter: p })}
+          onEdit={can("system_parameters.update") ? (p) => setModal({ mode: "edit", parameter: p }) : undefined}
         />
       </Card>
 
@@ -123,9 +125,8 @@ export default function SystemParametersPage(): JSX.Element {
           t={t}
           icon={MonitorCog}
           onClose={closeModal}
-          onEdit={() =>
-            setModal({ mode: "edit", parameter: modal.parameter })
-          }
+          onEdit={can("system_parameters.update") ? () =>
+            setModal({ mode: "edit", parameter: modal.parameter }) : undefined}
         />
       )}
 

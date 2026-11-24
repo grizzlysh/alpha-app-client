@@ -35,6 +35,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { Translations } from "@/configs/i18n";
 import { getApiErrorMessage } from "@/utils/apiError";
@@ -126,6 +128,7 @@ export function StockDisposalFormModal({
 }: StockDisposalFormModalProps): JSX.Element {
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
 
@@ -180,6 +183,7 @@ export function StockDisposalFormModal({
           batchNumber: d.stockDetail.batchNumber,
           expiryDate: d.stockDetail.expiryDate,
           quantityPieces: d.quantityPieces,
+          availablePieces: d.quantityPieces,
           quantityBox: 0,
           quantityPerBox: 0,
           distributor: { uuid: "", name: "" },
@@ -189,7 +193,7 @@ export function StockDisposalFormModal({
             name: d.medicine.name,
             unit: d.medicine.unit,
             shape: { name: "" },
-            type: { name: "" },
+            type: { name: "", requiredPrescription: false },
           },
         },
       })) ?? []
@@ -197,7 +201,7 @@ export function StockDisposalFormModal({
 
   // ── Remote data ────────────────────────────────────────────────────────────
   const { data: searchData, isFetching: searchFetching } = useQuery({
-    queryKey: ["stock-details-search", debouncedSearch],
+    queryKey: ["stock-details-search", pharmacyUuid, debouncedSearch],
     queryFn: () => getStockDetails({ search: debouncedSearch }),
     enabled: debouncedSearch.length >= 2 && !selectedDetail,
     staleTime: 0,

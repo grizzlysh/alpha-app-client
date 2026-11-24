@@ -31,9 +31,9 @@ export interface InvoiceTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (invoice: Invoice) => void;
-  onDelete: (invoice: Invoice) => void;
+  onDelete?: (invoice: Invoice) => void;
 }
 
 export function InvoiceTable({
@@ -177,7 +177,7 @@ export function InvoiceTable({
                 invoice={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

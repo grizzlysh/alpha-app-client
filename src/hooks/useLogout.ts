@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 
 import { logoutUser } from "@/service/authService";
 import { logout } from "@/store/authSlice";
 import type { AppDispatch } from "@/store";
+import { clearQueryCache } from "@/utils/queryPersister";
 
 interface UseLogoutReturn {
   signOut: () => void;
@@ -14,10 +15,12 @@ interface UseLogoutReturn {
 export function useLogout(): UseLogoutReturn {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const queryClient = useQueryClient();
 
   const logoutMutation = useMutation({
     mutationFn: logoutUser,
-    onSettled: () => {
+    onSettled: async () => {
+      await clearQueryCache(queryClient);
       dispatch(logout());
       sessionStorage.setItem("auth_redirect_reason", "logout_success");
       navigate("/login");

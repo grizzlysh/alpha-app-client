@@ -57,11 +57,11 @@ type SubModal =
 interface TenureRowProps {
   tenure: PlacementItem;
   t: Translations;
-  onEdit: () => void;
-  onDelete: () => void;
-  onAddLicense: () => void;
-  onEditLicense: (license: LicenseItem) => void;
-  onDeleteLicense: (license: LicenseItem) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onAddLicense?: () => void;
+  onEditLicense?: (license: LicenseItem) => void;
+  onDeleteLicense?: (license: LicenseItem) => void;
   onViewHistory: () => void;
 }
 
@@ -81,7 +81,14 @@ function TenureRow({
     <div className="px-3.5 py-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium uppercase text-foreground">{tenure.role.name}</p>
+          <p className="flex flex-wrap items-center gap-1.5 text-sm font-medium uppercase text-foreground">
+            {tenure.role.name}
+            {tenure.isHeadPharmacist && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold normal-case text-primary">
+                {t.placementHeadPharmacist}
+              </span>
+            )}
+          </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {formatDate(tenure.joinedAt)}
             {tenure.leftAt
@@ -104,38 +111,47 @@ function TenureRow({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 rounded-xl">
+              {onEdit && (
               <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
                 <Pencil className="h-4 w-4 text-muted-foreground" />
                 {t.placementEdit}
               </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={onViewHistory} className="gap-2.5 rounded-lg">
                 <History className="h-4 w-4 text-muted-foreground" />
                 {t.licenseHistory}
               </DropdownMenuItem>
               {license ? (
                 <>
-                  <DropdownMenuItem
-                    onClick={() => onEditLicense(license)}
-                    className="gap-2.5 rounded-lg"
-                  >
-                    <FileBadge className="h-4 w-4 text-muted-foreground" />
-                    {t.licenseEdit}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onDeleteLicense(license)}
-                    className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {t.licenseDelete}
-                  </DropdownMenuItem>
+                  {onEditLicense && (
+                    <DropdownMenuItem
+                      onClick={() => onEditLicense(license)}
+                      className="gap-2.5 rounded-lg"
+                    >
+                      <FileBadge className="h-4 w-4 text-muted-foreground" />
+                      {t.licenseEdit}
+                    </DropdownMenuItem>
+                  )}
+                  {onDeleteLicense && (
+                    <DropdownMenuItem
+                      onClick={() => onDeleteLicense(license)}
+                      className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {t.licenseDelete}
+                    </DropdownMenuItem>
+                  )}
                 </>
               ) : (
-                <DropdownMenuItem onClick={onAddLicense} className="gap-2.5 rounded-lg">
-                  <FileBadge className="h-4 w-4 text-muted-foreground" />
-                  {t.licenseAdd}
-                </DropdownMenuItem>
+                onAddLicense && (
+                  <DropdownMenuItem onClick={onAddLicense} className="gap-2.5 rounded-lg">
+                    <FileBadge className="h-4 w-4 text-muted-foreground" />
+                    {t.licenseAdd}
+                  </DropdownMenuItem>
+                )
               )}
               <DropdownMenuSeparator />
+              {onDelete && (
               <DropdownMenuItem
                 onClick={onDelete}
                 className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
@@ -143,6 +159,7 @@ function TenureRow({
                 <Trash2 className="h-4 w-4" />
                 {t.placementDelete}
               </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -183,11 +200,11 @@ function TenureRow({
 interface PharmacyGroupCardProps {
   group: PlacementGroup;
   t: Translations;
-  onEdit: (placement: PlacementItem) => void;
-  onDelete: (placement: PlacementItem) => void;
-  onAddLicense: (placement: PlacementItem) => void;
-  onEditLicense: (placement: PlacementItem, license: LicenseItem) => void;
-  onDeleteLicense: (placement: PlacementItem, license: LicenseItem) => void;
+  onEdit?: (placement: PlacementItem) => void;
+  onDelete?: (placement: PlacementItem) => void;
+  onAddLicense?: (placement: PlacementItem) => void;
+  onEditLicense?: (placement: PlacementItem, license: LicenseItem) => void;
+  onDeleteLicense?: (placement: PlacementItem, license: LicenseItem) => void;
   onViewHistory: (placement: PlacementItem) => void;
 }
 
@@ -219,11 +236,11 @@ function PharmacyGroupCard({
             key={tenure.uuid}
             tenure={tenure}
             t={t}
-            onEdit={() => onEdit(tenure)}
-            onDelete={() => onDelete(tenure)}
-            onAddLicense={() => onAddLicense(tenure)}
-            onEditLicense={(license) => onEditLicense(tenure, license)}
-            onDeleteLicense={(license) => onDeleteLicense(tenure, license)}
+            onEdit={onEdit ? () => onEdit(tenure) : undefined}
+            onDelete={onDelete ? () => onDelete(tenure) : undefined}
+            onAddLicense={onAddLicense ? () => onAddLicense(tenure) : undefined}
+            onEditLicense={onEditLicense ? (license) => onEditLicense(tenure, license) : undefined}
+            onDeleteLicense={onDeleteLicense ? (license) => onDeleteLicense(tenure, license) : undefined}
             onViewHistory={() => onViewHistory(tenure)}
           />
         ))}
@@ -238,8 +255,8 @@ export interface UserDetailPanelProps {
   user: UserListItem;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function UserDetailPanel({

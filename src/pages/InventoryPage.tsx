@@ -1,9 +1,10 @@
 import type { JSX } from "react";
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Warehouse } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Save, Warehouse } from "lucide-react";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
@@ -34,6 +35,12 @@ export default function InventoryPage(): JSX.Element {
 
   // ── Canvas positions — incremental: add any cabinet not yet placed ──────────
   const [localPositions, setLocalPositions] = useState<Record<string, CanvasPosition>>({});
+  const localPositionsRef = useRef(localPositions);
+  localPositionsRef.current = localPositions;
+
+  // Track which cabinets have unsaved layout changes
+  const [changedUuids, setChangedUuids] = useState<Set<string>>(new Set());
+  const [isSavingLayout, setIsSavingLayout] = useState(false);
 
   useEffect(() => {
     if (cabinets.length === 0) return;
@@ -58,21 +65,6 @@ export default function InventoryPage(): JSX.Element {
     enabled: !!selectedBin,
   });
   const binItems = binItemsData?.data ?? [];
-
-  // ── Position mutation ───────────────────────────────────────────────────────
-  const positionMutation = useMutation({
-    mutationFn: ({
-      cabinetUuid,
-      payload,
-    }: {
-      cabinetUuid: string;
-      payload: Parameters<typeof updateCabinetPosition>[1];
-    }) => updateCabinetPosition(cabinetUuid, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inventory-tree"] });
-      toast.success(<LiveToastMessage getMessage={(t) => t.inventoryCanvasSaveSuccess} />);
-    },
-  });
 
   // ── Handlers ────────────────────────────────────────────────────────────────
   function handleCabinetSelect(cabinet: InventoryCabinetNode): void {
@@ -111,10 +103,7 @@ export default function InventoryPage(): JSX.Element {
       ...prev,
       [cabinetUuid]: { ...prev[cabinetUuid], ...pos },
     }));
-    positionMutation.mutate({
-      cabinetUuid,
-      payload: { posX: pos.posX, posY: pos.posY },
-    });
+    setChangedUuids((prev) => new Set(prev).add(cabinetUuid));
   }
 
   function handleRotate(
@@ -126,23 +115,42 @@ export default function InventoryPage(): JSX.Element {
       ...prev,
       [cabinetUuid]: { ...prev[cabinetUuid], rotation, posX: pos.posX, posY: pos.posY },
     }));
-    positionMutation.mutate({
-      cabinetUuid,
-      payload: { posX: pos.posX, posY: pos.posY, rotation },
-    });
+    setChangedUuids((prev) => new Set(prev).add(cabinetUuid));
   }
 
   function handleSizeChange(cabinetUuid: string, width: number, height: number): void {
-    const pos = localPositions[cabinetUuid];
-    if (!pos) return;
+    if (!localPositions[cabinetUuid]) return;
     setLocalPositions((prev) => ({
       ...prev,
       [cabinetUuid]: { ...prev[cabinetUuid], width, height },
     }));
-    positionMutation.mutate({
-      cabinetUuid,
-      payload: { posX: pos.posX, posY: pos.posY, width, height },
-    });
+    setChangedUuids((prev) => new Set(prev).add(cabinetUuid));
+  }
+
+  async function handleSaveLayout(): Promise<void> {
+    if (changedUuids.size === 0) return;
+    setIsSavingLayout(true);
+    try {
+      await Promise.all(
+        [...changedUuids].map((uuid) => {
+          const pos = localPositionsRef.current[uuid];
+          return updateCabinetPosition(uuid, {
+            posX: pos.posX,
+            posY: pos.posY,
+            rotation: pos.rotation,
+            width: pos.width,
+            height: pos.height,
+          });
+        })
+      );
+      queryClient.invalidateQueries({ queryKey: ["inventory-tree"] });
+      toast.success(<LiveToastMessage getMessage={(t) => t.inventoryCanvasSaveSuccess} />);
+      setChangedUuids(new Set());
+    } catch {
+      toast.error(t.unexpectedError);
+    } finally {
+      setIsSavingLayout(false);
+    }
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -159,6 +167,25 @@ export default function InventoryPage(): JSX.Element {
         <div className="px-4 py-2.5 border-b flex items-center gap-2">
           <Warehouse className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">{t.inventoryCanvasTitle}</span>
+          {changedUuids.size > 0 && (
+            <span className="ml-1 h-1.5 w-1.5 rounded-full bg-primary" />
+          )}
+          <div className="ml-auto">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 gap-1.5 rounded-lg px-3 text-xs"
+              disabled={changedUuids.size === 0 || isSavingLayout}
+              onClick={handleSaveLayout}
+            >
+              {isSavingLayout ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Save className="h-3 w-3" />
+              )}
+              {t.save}
+            </Button>
+          </div>
         </div>
         <InventoryCanvas
           cabinets={cabinets}

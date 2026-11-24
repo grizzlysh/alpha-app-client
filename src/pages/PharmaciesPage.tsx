@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -28,6 +29,7 @@ type ModalState =
 
 export default function PharmaciesPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
@@ -83,6 +85,7 @@ export default function PharmaciesPage(): JSX.Element {
               placeholder={t.pharmaSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+            {can("pharmacies.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -93,6 +96,7 @@ export default function PharmaciesPage(): JSX.Element {
                 {t.pharmaAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -107,10 +111,10 @@ export default function PharmaciesPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("pharmacies.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(p) => setModal({ mode: "detail", pharmacy: p })}
-          onEdit={(p) => setModal({ mode: "edit", pharmacy: p })}
-          onDelete={(p) => setModal({ mode: "delete", pharmacy: p })}
+          onEdit={can("pharmacies.update") ? (p) => setModal({ mode: "edit", pharmacy: p }) : undefined}
+          onDelete={can("pharmacies.delete") ? (p) => setModal({ mode: "delete", pharmacy: p }) : undefined}
         />
       </Card>
 
@@ -119,8 +123,8 @@ export default function PharmaciesPage(): JSX.Element {
           pharmacy={modal.pharmacy}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", pharmacy: modal.pharmacy })}
-          onDelete={() => setModal({ mode: "delete", pharmacy: modal.pharmacy })}
+          onEdit={can("pharmacies.update") ? () => setModal({ mode: "edit", pharmacy: modal.pharmacy }) : undefined}
+          onDelete={can("pharmacies.delete") ? () => setModal({ mode: "delete", pharmacy: modal.pharmacy }) : undefined}
         />
       )}
 

@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -31,10 +32,15 @@ type ModalState =
 
 export default function UsersPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
-  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
+  const { user, currentPharmacy } = useSelector((state: RootState) => state.auth);
+  const isPlatformUser = user !== null && user.platformRole !== null;
+  // Platform admins access the global /users endpoint — never filter by pharmacy UUID,
+  // because passing pharmacyUuid with a pharmacy-context token causes a 403.
+  const pharmacyUuid = isPlatformUser ? undefined : currentPharmacy?.uuid;
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["users", page, limit, debouncedSearch, pharmacyUuid],
@@ -87,6 +93,7 @@ export default function UsersPage(): JSX.Element {
               placeholder={t.userSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+            {can("users.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -97,6 +104,7 @@ export default function UsersPage(): JSX.Element {
                 {t.userAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -111,11 +119,11 @@ export default function UsersPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("users.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(u) => setModal({ mode: "detail", user: u })}
-          onEdit={(u) => setModal({ mode: "edit", user: u })}
-          onDelete={(u) => setModal({ mode: "delete", user: u })}
-          onResetPassword={(u) => setModal({ mode: "reset-password", user: u })}
+          onEdit={can("users.update") ? (u) => setModal({ mode: "edit", user: u }) : undefined}
+          onDelete={can("users.delete") ? (u) => setModal({ mode: "delete", user: u }) : undefined}
+          onResetPassword={can("users.update") ? (u) => setModal({ mode: "reset-password", user: u }) : undefined}
         />
       </Card>
 
@@ -124,8 +132,8 @@ export default function UsersPage(): JSX.Element {
           user={modal.user}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", user: modal.user })}
-          onDelete={() => setModal({ mode: "delete", user: modal.user })}
+          onEdit={can("users.update") ? () => setModal({ mode: "edit", user: modal.user }) : undefined}
+          onDelete={can("users.delete") ? () => setModal({ mode: "delete", user: modal.user }) : undefined}
         />
       )}
 

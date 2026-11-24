@@ -2,6 +2,7 @@ import type { JSX } from "react";
 import { useState } from "react";
 import { AlertTriangle, Ban, Clock, Loader2, ShoppingBag } from "lucide-react";
 import { format } from "date-fns";
+import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -12,6 +13,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import type { RootState } from "@/store";
 import type { Translations } from "@/configs/i18n";
 import type { Sale } from "@/types/sale";
 import { getSales } from "@/service/saleService";
@@ -23,7 +25,8 @@ export interface PosHeldSalesModalProps {
   cartHasItems: boolean;
   cancellingUuid: string | null;
   onContinue: (sale: Sale) => void;
-  onCancelHeld: (sale: Sale) => void;
+  /** Omitted when the user may not cancel sales. */
+  onCancelHeld?: (sale: Sale) => void;
   onClose: () => void;
 }
 
@@ -37,9 +40,10 @@ export function PosHeldSalesModal({
   onClose,
 }: PosHeldSalesModalProps): JSX.Element {
   const [confirmSale, setConfirmSale] = useState<Sale | null>(null);
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["sales", { status: "PENDING" }],
+    queryKey: ["sales", pharmacyUuid, { status: "PENDING" }],
     queryFn: () => getSales({ status: "PENDING", sortBy: "soldAt", sortOrder: "desc" }),
     enabled: open,
     staleTime: 0,
@@ -105,19 +109,21 @@ export function PosHeldSalesModal({
                       </div>
 
                       <div className="flex shrink-0 gap-1.5">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                          disabled={isAnyBusy}
-                          onClick={() => setConfirmSale(sale)}
-                        >
-                          {isCancelling ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            t.posHeldSalesCancelHeld
-                          )}
-                        </Button>
+                        {onCancelHeld && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            disabled={isAnyBusy}
+                            onClick={() => setConfirmSale(sale)}
+                          >
+                            {isCancelling ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              t.posHeldSalesCancelHeld
+                            )}
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           className="rounded-lg"
@@ -170,7 +176,7 @@ export function PosHeldSalesModal({
             variant="destructive"
             className="min-w-[8rem] rounded-xl"
             onClick={() => {
-              if (confirmSale) {
+              if (confirmSale && onCancelHeld) {
                 onCancelHeld(confirmSale);
                 setConfirmSale(null);
               }

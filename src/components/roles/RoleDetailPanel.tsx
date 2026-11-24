@@ -21,8 +21,8 @@ export interface RoleDetailPanelProps {
   role: Role;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function RoleDetailPanel({

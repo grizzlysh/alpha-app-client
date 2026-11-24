@@ -33,10 +33,10 @@ export interface StockDisposalRowProps {
   disposal: StockDisposal;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onComplete: () => void;
-  onCancel: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onComplete?: () => void;
+  onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export function StockDisposalRow({
@@ -121,14 +121,14 @@ export function StockDisposalRow({
               {t.sdDetails}
             </DropdownMenuItem>
 
-            {canEdit(disposal.status) && (
+            {canEdit(disposal.status) && onEdit && (
               <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
                 <Pencil className="h-4 w-4 text-muted-foreground" />
                 {t.sdEdit}
               </DropdownMenuItem>
             )}
 
-            {canComplete(disposal.status) && (
+            {canComplete(disposal.status) && onComplete && (
               <DropdownMenuItem
                 onClick={onComplete}
                 className="gap-2.5 rounded-lg text-success focus:bg-success/10 focus:text-success"
@@ -138,7 +138,7 @@ export function StockDisposalRow({
               </DropdownMenuItem>
             )}
 
-            {canCancel(disposal.status) && (
+            {canCancel(disposal.status) && onCancel && (
               <DropdownMenuItem
                 onClick={onCancel}
                 className="gap-2.5 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
@@ -150,6 +150,8 @@ export function StockDisposalRow({
 
             {canDelete(disposal.status) && (
               <>
+                {onDelete && (
+                <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onDelete}
@@ -158,6 +160,8 @@ export function StockDisposalRow({
                   <Trash2 className="h-4 w-4" />
                   {t.sdDelete}
                 </DropdownMenuItem>
+                </>
+                )}
               </>
             )}
           </DropdownMenuContent>

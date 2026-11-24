@@ -8,7 +8,7 @@ import { getApiErrorMessage } from "@/utils/apiError";
 import { login, selectPharmacy } from "@/service/authService";
 import { setLoginCredentials, setFullAuth } from "@/store/authSlice";
 import { useLanguage } from "@/hooks/useLanguage";
-import { TOKEN_KEY } from "@/utils/constants";
+import { storeToken } from "@/utils/tokenStore";
 import type { AppDispatch } from "@/store";
 import type { BilingualMessage } from "@/types/api";
 
@@ -52,9 +52,9 @@ export function useLogin(): UseLoginReturn {
       }
 
       // Single-placement non-owner: inline select so we never render Dashboard A.
-      // Set the token in localStorage first so axios can use it without a Redux dispatch
+      // Put the token in the in-memory store first so axios can use it without a Redux dispatch
       // (dispatching setLoginCredentials here would cause GuestGuard to flash / to the user).
-      localStorage.setItem(TOKEN_KEY, accessToken);
+      storeToken(accessToken);
       setIsAutoSelecting(true);
 
       try {

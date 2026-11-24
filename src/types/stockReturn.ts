@@ -1,4 +1,4 @@
-export type StockReturnStatus = "ON_PROCESS" | "COMPLETED" | "CANCELLED" | "REJECTED";
+export type StockReturnStatus = "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "REJECTED";
 
 export interface StockReturnMedicine {
   uuid: string;

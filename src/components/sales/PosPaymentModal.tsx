@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreditCard, Banknote, Handshake, Loader2, ArrowRight } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -10,6 +10,7 @@ import type { Translations } from "@/configs/i18n";
 import type { PaymentMethod, SaleType } from "@/types/sale";
 import type { CartItem } from "./PosCartPanel";
 import { formatCurrency } from "./salesUtils";
+import { computeTotals } from "@/utils/saleMath";
 
 type PaymentOption = "CASH" | "CARD" | "CREDIT";
 
@@ -24,10 +25,10 @@ export interface PaymentConfirmation {
 export interface PosPaymentModalProps {
   t: Translations;
   items: CartItem[];
-  subtotal: number;
   ppnPercentage: number;
-  ppnAmount: number;
-  total: number;
+  /** Largest header discount (as % of subtotal) the user may give without override permission. */
+  maxDiscountPercentage: number;
+  canOverrideDiscount: boolean;
   customerUuid: string;
   customerLabel: string;
   isSubmitting: boolean;
@@ -42,10 +43,9 @@ function parseAmount(raw: string): number {
 export function PosPaymentModal({
   t,
   items,
-  subtotal,
   ppnPercentage,
-  ppnAmount,
-  total,
+  maxDiscountPercentage,
+  canOverrideDiscount,
   customerUuid,
   customerLabel,
   isSubmitting,
@@ -56,14 +56,31 @@ export function PosPaymentModal({
   const [discountInput, setDiscountInput] = useState("");
   const [downPaymentInput, setDownPaymentInput] = useState("");
   const [description, setDescription] = useState("");
+  const [receivedInput, setReceivedInput] = useState("");
 
   const isCreditDisabled = !customerUuid;
 
-  const discount = Math.min(parseAmount(discountInput), total);
-  const discountPercent = total > 0 ? Math.round((discount / total) * 100 * 10) / 10 : 0;
-  const amountDue = Math.max(0, total - discount);
+  // Same formula as the server: discount comes off the subtotal, PPN is charged on the rest.
+  const base = computeTotals(items, 0, ppnPercentage);
+  const maxDiscountAmount = canOverrideDiscount
+    ? base.subtotal
+    : Math.floor((base.subtotal * maxDiscountPercentage) / 100);
+  const discount = Math.min(parseAmount(discountInput), maxDiscountAmount);
+  const totals = computeTotals(items, discount, ppnPercentage);
+  const subtotal = totals.subtotal;
+  const ppnAmount = totals.ppnAmount;
+  const discountPercent = subtotal > 0 ? Math.round((discount / subtotal) * 100 * 10) / 10 : 0;
+  const amountDue = totals.grandTotal;
   const downPayment = option === "CREDIT" ? parseAmount(downPaymentInput) : 0;
   const remaining = amountDue - downPayment;
+
+  // Cash: what the customer hands over (defaults to the exact amount) and the change.
+  const received = receivedInput === "" ? amountDue : parseAmount(receivedInput);
+  const change = Math.max(0, received - amountDue);
+  const isCashShort = option === "CASH" && received < amountDue;
+  const quickAmounts = [...new Set([50000, 100000, 200000].map((n) => Math.max(n, Math.ceil(amountDue / n) * n)))]
+    .filter((n) => n > amountDue)
+    .slice(0, 3);
 
   function handleOptionChange(next: PaymentOption): void {
     if (next === "CREDIT" && isCreditDisabled) return;
@@ -78,27 +95,41 @@ export function PosPaymentModal({
       onConfirm({ saleType: "CREDIT", paymentMethod: null, amountReceived: downPayment, discount, description });
       return;
     }
+    if (isCashShort) return;
     onConfirm({
       saleType: "CASH",
       paymentMethod: option === "CASH" ? "CASH" : "TRANSFER",
-      amountReceived: amountDue,
+      amountReceived: option === "CASH" ? received : amountDue,
       discount,
       description,
     });
   }
 
+  // Enter (outside the note field) or F9 confirms — the cashier never needs the mouse.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent): void {
+      const inTextarea = e.target instanceof HTMLTextAreaElement;
+      if (e.key === "F9" || (e.key === "Enter" && !inTextarea)) {
+        e.preventDefault();
+        handleConfirm();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   const confirmLabel =
     option === "CASH" ? t.posAcceptCash : option === "CARD" ? t.posAcceptCard : t.posAcceptCredit;
-  const isConfirmDisabled = isSubmitting || (option === "CREDIT" && isCreditDisabled);
+  const isConfirmDisabled = isSubmitting || (option === "CREDIT" && isCreditDisabled) || isCashShort;
 
   return (
     <Dialog open onOpenChange={(open) => !open && !isSubmitting && onCancel()}>
-      <DialogContent className="grid max-w-4xl grid-cols-1 gap-0 overflow-hidden p-0 sm:grid-cols-[1fr,400px]">
+      <DialogContent className="grid max-h-[92vh] max-w-4xl grid-cols-1 gap-0 overflow-y-auto p-0 md:grid-cols-[1fr,360px] lg:grid-cols-[1fr,400px]">
         {/* ── Left panel ── */}
         <div className="flex flex-col">
           <div className="border-b border-border px-6 py-4">
             <p className="text-xl font-bold text-foreground">
-              {t.posPayLabel} {formatCurrency(total)}
+              {t.posPayLabel} {formatCurrency(amountDue)}
             </p>
             <p className="mt-0.5 text-sm text-muted-foreground">{t.posSelectPaymentMethod}</p>
           </div>
@@ -158,7 +189,7 @@ export function PosPaymentModal({
                     : t.posPaymentMethodCreditDesc}
               </p>
               {isCreditDisabled && (
-                <p className="text-xs text-muted-foreground/70">{t.posCreditRequiresCustomer}</p>
+                <p className="text-xs text-muted-foreground/70">{t.posCreditRequiresPatient}</p>
               )}
             </div>
 
@@ -174,7 +205,7 @@ export function PosPaymentModal({
                 onChange={(e) => {
                   const digits = e.target.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
                   const parsed = parseInt(digits, 10) || 0;
-                  const clamped = Math.min(parsed, Math.floor(total));
+                  const clamped = Math.min(parsed, maxDiscountAmount);
                   setDiscountInput(clamped === 0 ? "" : String(clamped));
                 }}
                 readOnly={isSubmitting}
@@ -184,8 +215,62 @@ export function PosPaymentModal({
               <p className="text-xs text-muted-foreground">
                 {discountPercent}% {t.posDiscountLabel.toLowerCase()} · {t.saleTotalAmount}{" "}
                 {formatCurrency(amountDue)}
+                {!canOverrideDiscount && (
+                  <> · {t.posDiscountMaxHint.replace("{n}", String(maxDiscountPercentage))}</>
+                )}
               </p>
             </div>
+
+            {/* Cash received + change */}
+            {option === "CASH" && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t.posAmountReceived}
+                </p>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={receivedInput}
+                  onChange={(e) => setReceivedInput(e.target.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""))}
+                  readOnly={isSubmitting}
+                  placeholder={String(amountDue)}
+                  aria-label={t.posAmountReceived}
+                  autoFocus
+                  className={cn(
+                    "w-full rounded-xl border bg-background px-4 py-2.5 text-base font-medium text-foreground outline-none focus:border-primary",
+                    isCashShort ? "border-destructive" : "border-border"
+                  )}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setReceivedInput("")}
+                    className={cn(
+                      "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                      receivedInput === "" ? "border-success bg-success/10 text-foreground" : "border-border text-muted-foreground hover:border-primary/40"
+                    )}
+                  >
+                    {t.posExactAmount}
+                  </button>
+                  {quickAmounts.map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => setReceivedInput(String(n))}
+                      className={cn(
+                        "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                        receivedInput === String(n) ? "border-success bg-success/10 text-foreground" : "border-border text-muted-foreground hover:border-primary/40"
+                      )}
+                    >
+                      {formatCurrency(n)}
+                    </button>
+                  ))}
+                </div>
+                <p className={cn("text-sm font-semibold", isCashShort ? "text-destructive" : "text-foreground")}>
+                  {isCashShort ? t.posAmountShort : `${t.posChangeDue}: ${formatCurrency(change)}`}
+                </p>
+              </div>
+            )}
 
             {/* Down payment — Credit only */}
             {option === "CREDIT" && (
@@ -234,7 +319,7 @@ export function PosPaymentModal({
                   {item.quantityPieces}× <span className="uppercase">{item.medicineName}</span>
                 </span>
                 <span className="shrink-0 text-foreground">
-                  {formatCurrency(item.unitPrice * item.quantityPieces * (1 - item.discount / 100))}
+                  {formatCurrency(computeTotals([item], 0, 0).subtotal)}
                 </span>
               </div>
             ))}
@@ -245,14 +330,6 @@ export function PosPaymentModal({
               <span className="text-muted-foreground">{t.posSubtotal}</span>
               <span className="text-foreground">{formatCurrency(subtotal)}</span>
             </div>
-            {ppnPercentage > 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">
-                  {t.saleTaxAmount} {ppnPercentage}%
-                </span>
-                <span className="text-foreground">{formatCurrency(ppnAmount)}</span>
-              </div>
-            )}
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
                 {t.posDiscountLabel} ({discountPercent}%)
@@ -261,10 +338,24 @@ export function PosPaymentModal({
                 -{formatCurrency(discount)}
               </span>
             </div>
+            {ppnPercentage > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">
+                  {t.saleTaxAmount} {ppnPercentage}%
+                </span>
+                <span className="text-foreground">{formatCurrency(ppnAmount)}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-base font-bold text-foreground">
               <span>{t.saleTotalAmount}</span>
               <span>{formatCurrency(amountDue)}</span>
             </div>
+            {option === "CASH" && change > 0 && (
+              <div className="flex items-center justify-between font-medium text-foreground">
+                <span>{t.posChangeDue}</span>
+                <span>{formatCurrency(change)}</span>
+              </div>
+            )}
             {option === "CREDIT" && (
               <>
                 <div className="flex items-center justify-between">
@@ -281,7 +372,7 @@ export function PosPaymentModal({
 
           <div className="mt-3 space-y-1 border-t border-border pt-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{t.posCustomerLabel}</span>
+              <span className="text-muted-foreground">{t.posPatientLabel}</span>
               <span className="text-foreground">{customerLabel}</span>
             </div>
           </div>
@@ -294,6 +385,7 @@ export function PosPaymentModal({
           <Button type="button" onClick={handleConfirm} disabled={isConfirmDisabled} className="gap-2 rounded-xl">
             {confirmLabel}
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+            <kbd className="ml-1 hidden rounded border border-primary-foreground/30 px-1 text-[10px] font-medium sm:inline">Enter</kbd>
           </Button>
         </div>
       </DialogContent>

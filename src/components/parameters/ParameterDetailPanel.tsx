@@ -14,7 +14,7 @@ export interface ParameterDetailPanelProps {
   t: Translations;
   icon: LucideIcon;
   onClose: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 export function ParameterDetailPanel({

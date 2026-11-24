@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -7,7 +8,9 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -35,6 +38,8 @@ type ModalState =
 
 export default function SalesPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const navigate = useNavigate();
   const pageTitleRef = useScrollAwareTitle();
 
@@ -45,7 +50,7 @@ export default function SalesPage(): JSX.Element {
   const [filterStatus, setFilterStatus] = useState<SaleStatus | "all">("all");
   const [filterSaleType, setFilterSaleType] = useState<SaleType | "all">("all");
   const [filterPaymentStatus, setFilterPaymentStatus] = useState<PaymentStatus | "all">("all");
-  const [filterCustomer, setFilterCustomer] = useState("all");
+  const [filterPatient, setFilterPatient] = useState("all");
 
   const { data: customersData } = useQuery({
     queryKey: ["customers-dropdown"],
@@ -53,21 +58,22 @@ export default function SalesPage(): JSX.Element {
     staleTime: 5 * 60 * 1000,
   });
 
-  const customerFilterOptions = [
-    { value: "all", label: `${t.saleFilterCustomer}: ${t.filterAll}` },
+  const patientFilterOptions = [
+    { value: "all", label: `${t.saleFilterPatient}: ${t.filterAll}` },
     ...(customersData?.data ?? []).map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
   ];
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
       "sales",
+      pharmacyUuid,
       page,
       limit,
       debouncedSearch,
       filterStatus,
       filterSaleType,
       filterPaymentStatus,
-      filterCustomer,
+      filterPatient,
     ],
     queryFn: () =>
       getSales({
@@ -77,7 +83,7 @@ export default function SalesPage(): JSX.Element {
         status: filterStatus !== "all" ? filterStatus : undefined,
         saleType: filterSaleType !== "all" ? filterSaleType : undefined,
         paymentStatus: filterPaymentStatus !== "all" ? filterPaymentStatus : undefined,
-        customerUuid: filterCustomer !== "all" ? filterCustomer : undefined,
+        customerUuid: filterPatient !== "all" ? filterPatient : undefined,
       }),
     placeholderData: keepPreviousData,
   });
@@ -101,8 +107,8 @@ export default function SalesPage(): JSX.Element {
     setPage(1);
   }
 
-  function handleFilterCustomer(value: string): void {
-    setFilterCustomer(value);
+  function handleFilterPatient(value: string): void {
+    setFilterPatient(value);
     setPage(1);
   }
 
@@ -186,12 +192,12 @@ export default function SalesPage(): JSX.Element {
               className="h-10 w-[12rem] shrink-0 rounded-xl text-sm"
             />
 
-            {/* Customer filter */}
+            {/* Patient filter */}
             <Combobox
-              value={filterCustomer}
-              onValueChange={handleFilterCustomer}
-              options={customerFilterOptions}
-              placeholder={t.saleFilterCustomer}
+              value={filterPatient}
+              onValueChange={handleFilterPatient}
+              options={patientFilterOptions}
+              placeholder={t.saleFilterPatient}
               className="h-10 w-[12rem] shrink-0 rounded-xl text-sm"
             />
 
@@ -204,6 +210,7 @@ export default function SalesPage(): JSX.Element {
             />
 
             {/* New sale button */}
+            {can("sales.create") && (
             <Button
               onClick={() => navigate("/pos")}
               variant="success"
@@ -214,6 +221,7 @@ export default function SalesPage(): JSX.Element {
                 {t.saleNewSale}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -230,10 +238,10 @@ export default function SalesPage(): JSX.Element {
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
           onDetails={(s) => setModal({ mode: "detail", sale: s })}
-          onCancel={(s) => setModal({ mode: "cancel", sale: s })}
-          onRefund={(s) => setModal({ mode: "refund", sale: s })}
-          onAddPayment={(s) => setModal({ mode: "payment", sale: s })}
-          onComplete={(s) => setModal({ mode: "complete", sale: s })}
+          onCancel={can("sales.update") ? (s) => setModal({ mode: "cancel", sale: s }) : undefined}
+          onRefund={can("sales.update") ? (s) => setModal({ mode: "refund", sale: s }) : undefined}
+          onAddPayment={can("sales.update") ? (s) => setModal({ mode: "payment", sale: s }) : undefined}
+          onComplete={can("sales.update") ? (s) => setModal({ mode: "complete", sale: s }) : undefined}
         />
       </Card>
 
@@ -243,10 +251,10 @@ export default function SalesPage(): JSX.Element {
           sale={modal.sale}
           t={t}
           onClose={closeModal}
-          onCancel={() => setModal({ mode: "cancel", sale: modal.sale })}
-          onRefund={() => setModal({ mode: "refund", sale: modal.sale })}
-          onAddPayment={() => setModal({ mode: "payment", sale: modal.sale })}
-          onComplete={() => setModal({ mode: "complete", sale: modal.sale })}
+          onCancel={can("sales.update") ? () => setModal({ mode: "cancel", sale: modal.sale }) : undefined}
+          onRefund={can("sales.update") ? () => setModal({ mode: "refund", sale: modal.sale }) : undefined}
+          onAddPayment={can("sales.update") ? () => setModal({ mode: "payment", sale: modal.sale }) : undefined}
+          onComplete={can("sales.update") ? () => setModal({ mode: "complete", sale: modal.sale }) : undefined}
         />
       )}
 

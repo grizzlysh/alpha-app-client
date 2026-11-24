@@ -21,10 +21,10 @@ export interface StockDisposalDetailPanelProps {
   disposal: StockDisposal;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onComplete: () => void;
-  onCancel: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onComplete?: () => void;
+  onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export function StockDisposalDetailPanel({

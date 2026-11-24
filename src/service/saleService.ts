@@ -12,14 +12,6 @@ import type {
   UpdatePaymentHistoryPayload,
 } from "@/types/sale";
 
-const EMPTY_204: ApiResponse<null> = {
-  success: true,
-  code: "",
-  data: null,
-  message: { en: "", id: "" },
-  errors: null,
-  meta: null,
-};
 
 export async function getSales(
   params?: SaleListParams
@@ -37,12 +29,32 @@ export async function getSale(uuid: string): Promise<ApiResponse<Sale>> {
   return response.data;
 }
 
+export interface SaleRequestOptions {
+  /**
+   * Same key for every retry of one checkout: if the first response is lost,
+   * the server replays it instead of creating a second sale.
+   */
+  idempotencyKey?: string;
+}
+
+// Checkout runs one DB transaction for the whole cart; allow more than the 10s default.
+const CHECKOUT_TIMEOUT_MS = 30000;
+
+function saleRequestConfig(options?: SaleRequestOptions) {
+  return {
+    timeout: CHECKOUT_TIMEOUT_MS,
+    headers: options?.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : undefined,
+  };
+}
+
 export async function createSale(
-  payload: CreateSalePayload
+  payload: CreateSalePayload,
+  options?: SaleRequestOptions
 ): Promise<ApiResponse<Sale>> {
   const response = await axiosInstance.post<ApiResponse<Sale>>(
     "/sales",
-    payload
+    payload,
+    saleRequestConfig(options)
   );
   return response.data;
 }
@@ -60,11 +72,13 @@ export async function updateSale(
 
 export async function completeSale(
   uuid: string,
-  payload?: CreateSalePayload
+  payload?: CreateSalePayload,
+  options?: SaleRequestOptions
 ): Promise<ApiResponse<Sale>> {
   const response = await axiosInstance.patch<ApiResponse<Sale>>(
     `/sales/${uuid}/complete`,
-    payload
+    payload,
+    saleRequestConfig(options)
   );
   return response.data;
 }
@@ -126,10 +140,9 @@ export async function updatePaymentHistory(
 export async function deletePaymentHistory(
   uuid: string,
   historyUuid: string
-): Promise<ApiResponse<null>> {
-  const response = await axiosInstance.delete<ApiResponse<null>>(
+): Promise<ApiResponse<SalePayment>> {
+  const response = await axiosInstance.delete<ApiResponse<SalePayment>>(
     `/sales/${uuid}/payment/history/${historyUuid}`
   );
-  if (response.status === 204 || !response.data) return EMPTY_204;
   return response.data;
 }

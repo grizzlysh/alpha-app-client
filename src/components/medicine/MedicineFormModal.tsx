@@ -25,6 +25,7 @@ import { createMedicine, updateMedicine } from "@/service/medicineService";
 import { getMedicineShapesDropdown } from "@/service/medicineShapeService";
 import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
 import { getMedicineClassesDropdown } from "@/service/medicineClassService";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -36,9 +37,7 @@ function makeSchema(t: Translations) {
     medicineClassUuid: z.string().min(1, t.medicineClassRequired),
     unit: z.string().min(1, t.medicineUnitRequired),
     status: z.enum(["ACTIVE", "INACTIVE"]),
-    ingredients: z
-      .array(z.object({ value: z.string().min(1) }))
-      .min(1, t.medicineIngredientsRequired),
+    ingredients: z.array(z.object({ value: z.string() })),
   });
 }
 
@@ -150,7 +149,7 @@ export function MedicineFormModal({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   function onSubmit(values: FormValues): void {
-    const ingredients = values.ingredients.map((i) => i.value);
+    const ingredients = values.ingredients.map((i) => i.value).filter(Boolean);
 
     if (mode === "create") {
       const payload: CreateMedicinePayload = {
@@ -244,7 +243,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={shapes.map((s) => ({ value: s.uuid, label: s.name.toUpperCase() }))}
+                      options={shapes.map((s) => ({ value: s.uuid, label: toTitleCase(s.name) }))}
                       placeholder={t.medicineSelectShape}
                       className={cn(
                         fieldError("medicineShapeUuid") &&
@@ -274,7 +273,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={types.map((tp) => ({ value: tp.uuid, label: tp.name.toUpperCase() }))}
+                      options={types.map((tp) => ({ value: tp.uuid, label: toTitleCase(tp.name) }))}
                       placeholder={t.medicineSelectType}
                       className={cn(
                         fieldError("medicineTypeUuid") &&
@@ -304,7 +303,7 @@ export function MedicineFormModal({
                     <Combobox
                       value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      options={classes.map((cl) => ({ value: cl.uuid, label: cl.name.toUpperCase() }))}
+                      options={classes.map((cl) => ({ value: cl.uuid, label: toTitleCase(cl.name) }))}
                       placeholder={t.medicineSelectClass}
                       className={cn(
                         fieldError("medicineClassUuid") &&
@@ -364,10 +363,7 @@ export function MedicineFormModal({
 
               {/* Ingredients */}
               <div className="space-y-2 sm:col-span-2">
-                <Label>
-                  {t.medicineIngredients}
-                  <span className="ml-0.5 text-destructive">*</span>
-                </Label>
+                <Label>{t.medicineIngredients}</Label>
 
                 <div className="space-y-2">
                   {fields.map((field, index) => (

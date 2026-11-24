@@ -30,11 +30,11 @@ export interface StockReturnDetailPanelProps {
   stockReturn: StockReturn;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onComplete: () => void;
-  onReject: () => void;
-  onCancel: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onComplete?: () => void;
+  onReject?: () => void;
+  onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export function StockReturnDetailPanel({

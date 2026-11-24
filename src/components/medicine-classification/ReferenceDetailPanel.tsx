@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 import { getInitials, getAvatarColor, formatDate } from "./referenceUtils";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── ReferenceDetailPanel ──────────────────────────────────────────────────────
 
@@ -14,8 +15,8 @@ export interface ReferenceDetailPanelProps {
   labels: ReferenceLabels;
   icon: JSX.Element;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function ReferenceDetailPanel({
@@ -45,7 +46,7 @@ export function ReferenceDetailPanel({
           {getInitials(item.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-lg font-bold text-foreground">{item.name}</p>
+          <p className="truncate text-lg font-bold text-foreground">{toTitleCase(item.name)}</p>
           <StatusBadge
             status={item.status}
             label={item.status.toUpperCase() === "ACTIVE" ? labels.statusActive : labels.statusInactive}

@@ -1,21 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 import { store } from "@/store";
+import { queryClient } from "@/configs/queryClient";
 import { App } from "@/App";
 import { hydrateQueryCache, subscribeQueryCache } from "@/utils/queryPersister";
 import "./index.css";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: 1,
-    },
-  },
-});
 
 // Start persisting successful fetches to IndexedDB immediately
 subscribeQueryCache(queryClient);

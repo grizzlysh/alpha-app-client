@@ -5,14 +5,15 @@ import type {
   MeResponse,
   SelectPharmacyResponse,
 } from "@/types/auth";
-import { TOKEN_KEY } from "@/utils/constants";
+import { storeToken, clearToken, hasSessionHint } from "@/utils/tokenStore";
 
 const initialState: AuthState = {
-  accessToken: localStorage.getItem(TOKEN_KEY),
+  // Never persisted; re-issued from the refresh cookie on startup.
+  accessToken: null,
   user: null,
   currentPharmacy: null,
   permissions: {},
-  isAuthenticated: !!localStorage.getItem(TOKEN_KEY),
+  isAuthenticated: hasSessionHint(),
   pharmacySelected: false,
 };
 
@@ -33,7 +34,7 @@ const authSlice = createSlice({
         state.permissions = {};
         state.pharmacySelected = false;
       }
-      localStorage.setItem(TOKEN_KEY, action.payload.accessToken);
+      storeToken(action.payload.accessToken);
     },
     setPharmacy(state, action: PayloadAction<SelectPharmacyResponse>) {
       state.accessToken = action.payload.accessToken;
@@ -41,7 +42,7 @@ const authSlice = createSlice({
       state.currentPharmacy = action.payload.currentPharmacy;
       state.permissions = action.payload.currentPharmacy.permissions;
       state.pharmacySelected = true;
-      localStorage.setItem(TOKEN_KEY, action.payload.accessToken);
+      storeToken(action.payload.accessToken);
     },
     // Used when login + pharmacy-select are combined into one atomic transition,
     // so GuestGuard never sees an intermediate isAuthenticated=true/pharmacySelected=false state.
@@ -52,7 +53,7 @@ const authSlice = createSlice({
       state.permissions = action.payload.currentPharmacy.permissions;
       state.isAuthenticated = true;
       state.pharmacySelected = true;
-      localStorage.setItem(TOKEN_KEY, action.payload.accessToken);
+      storeToken(action.payload.accessToken);
     },
     restoreSession(state, action: PayloadAction<MeResponse>) {
       state.user = action.payload.user;
@@ -79,11 +80,11 @@ const authSlice = createSlice({
       state.permissions = {};
       state.isAuthenticated = false;
       state.pharmacySelected = false;
-      localStorage.removeItem(TOKEN_KEY);
+      clearToken();
     },
     setAccessToken(state, action: PayloadAction<string>) {
       state.accessToken = action.payload;
-      localStorage.setItem(TOKEN_KEY, action.payload);
+      storeToken(action.payload);
     },
   },
 });

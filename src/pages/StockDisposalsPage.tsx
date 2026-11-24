@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -7,7 +8,9 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -36,6 +39,8 @@ type ModalState =
 
 export default function StockDisposalsPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
@@ -44,7 +49,7 @@ export default function StockDisposalsPage(): JSX.Element {
   const [filterStatus, setFilterStatus] = useState<StockDisposalStatus | "all">("all");
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["stock-disposals", page, limit, debouncedSearch, filterStatus],
+    queryKey: ["stock-disposals", pharmacyUuid, page, limit, debouncedSearch, filterStatus],
     queryFn: () =>
       getStockDisposals({
         page,
@@ -133,6 +138,7 @@ export default function StockDisposalsPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            {can("stock_disposal.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -143,6 +149,7 @@ export default function StockDisposalsPage(): JSX.Element {
                 {t.sdAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -158,12 +165,12 @@ export default function StockDisposalsPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("stock_disposal.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(d) => setModal({ mode: "detail", disposal: d })}
-          onEdit={(d) => setModal({ mode: "edit", disposal: d })}
-          onComplete={(d) => setModal({ mode: "complete", disposal: d })}
-          onCancel={(d) => setModal({ mode: "cancel", disposal: d })}
-          onDelete={(d) => setModal({ mode: "delete", disposal: d })}
+          onEdit={can("stock_disposal.update") ? (d) => setModal({ mode: "edit", disposal: d }) : undefined}
+          onComplete={can("stock_disposal.update") ? (d) => setModal({ mode: "complete", disposal: d }) : undefined}
+          onCancel={can("stock_disposal.update") ? (d) => setModal({ mode: "cancel", disposal: d }) : undefined}
+          onDelete={can("stock_disposal.delete") ? (d) => setModal({ mode: "delete", disposal: d }) : undefined}
         />
       </Card>
 
@@ -173,10 +180,10 @@ export default function StockDisposalsPage(): JSX.Element {
           disposal={modal.disposal}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", disposal: modal.disposal })}
-          onComplete={() => setModal({ mode: "complete", disposal: modal.disposal })}
-          onCancel={() => setModal({ mode: "cancel", disposal: modal.disposal })}
-          onDelete={() => setModal({ mode: "delete", disposal: modal.disposal })}
+          onEdit={can("stock_disposal.update") ? () => setModal({ mode: "edit", disposal: modal.disposal }) : undefined}
+          onComplete={can("stock_disposal.update") ? () => setModal({ mode: "complete", disposal: modal.disposal }) : undefined}
+          onCancel={can("stock_disposal.update") ? () => setModal({ mode: "cancel", disposal: modal.disposal }) : undefined}
+          onDelete={can("stock_disposal.delete") ? () => setModal({ mode: "delete", disposal: modal.disposal }) : undefined}
         />
       )}
 

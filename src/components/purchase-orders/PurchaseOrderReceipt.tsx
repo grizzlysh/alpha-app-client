@@ -1,31 +1,34 @@
 import type { JSX } from "react";
 
 import type { PurchaseOrder, PurchaseOrderPrintData } from "@/types/purchaseOrder";
-import { useLanguage } from "@/hooks/useLanguage";
+import { translations } from "@/configs/i18n";
+import { BiLabel, sl } from "@/utils/bilingualDoc";
+
+const EN = translations.en;
+const ID = translations.id;
 
 export interface PurchaseOrderReceiptProps {
   order: PurchaseOrder;
   printData: PurchaseOrderPrintData | null;
 }
 
+function fmtDate(value: string | Date): string {
+  return new Date(value).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export function PurchaseOrderReceipt({
   order,
   printData,
 }: PurchaseOrderReceiptProps): JSX.Element {
-  const { t, language } = useLanguage();
-
   const headPharmacist = printData?.headPharmacist ?? null;
   const pharmacy = printData?.pharmacy ?? null;
 
-  const sysdate = new Date().toLocaleDateString(
-    language === "id" ? "id-ID" : "en-GB",
-    { day: "numeric", month: "long", year: "numeric" }
-  );
-
-  const orderDate = new Date(order.orderedAt).toLocaleDateString(
-    language === "id" ? "id-ID" : "en-GB",
-    { day: "numeric", month: "long", year: "numeric" }
-  );
+  const sysdate = fmtDate(new Date());
+  const orderDate = fmtDate(order.orderedAt);
 
   return (
     <div
@@ -61,7 +64,7 @@ export function PurchaseOrderReceipt({
               color: "#222",
             }}
           >
-            {t.poReceiptPraktikApoteker}
+            <BiLabel id={ID.poReceiptPraktikApoteker} en={EN.poReceiptPraktikApoteker} />
           </div>
           {headPharmacist && (
             <>
@@ -117,7 +120,7 @@ export function PurchaseOrderReceipt({
 
       {/* Recipient */}
       <div style={{ marginBottom: "10px", fontSize: "11px" }}>
-        <span>{t.poReceiptKepada} </span>
+        <span>{sl(ID.poReceiptKepada, EN.poReceiptKepada)} </span>
         <span style={{ fontWeight: "bold", textTransform: "uppercase" }}>{order.distributor.name}</span>
       </div>
 
@@ -137,84 +140,39 @@ export function PurchaseOrderReceipt({
               borderTop: "1px solid #000",
             }}
           >
-            <th
-              style={{ textAlign: "left", padding: "4px 2px", width: "20px" }}
-            >
+            <th style={{ textAlign: "left", padding: "4px 2px", width: "20px", verticalAlign: "top" }}>
               #
             </th>
-            <th style={{ textAlign: "left", padding: "4px 6px" }}>
-              {t.poItemMedicine}
+            <th style={{ textAlign: "left", padding: "4px 6px", verticalAlign: "top" }}>
+              <BiLabel id={ID.poItemMedicine} en={EN.poItemMedicine} />
             </th>
-            <th
-              style={{
-                textAlign: "right",
-                padding: "4px 6px",
-                width: "50px",
-              }}
-            >
-              {t.poItemQuantity}
+            <th style={{ textAlign: "right", padding: "4px 6px", width: "50px", verticalAlign: "top" }}>
+              {ID.poItemQuantity}
             </th>
-            <th
-              style={{
-                textAlign: "left",
-                padding: "4px 6px",
-                width: "60px",
-              }}
-            >
-              {t.poItemUnit}
+            <th style={{ textAlign: "left", padding: "4px 6px", width: "60px", verticalAlign: "top" }}>
+              <BiLabel id={ID.poItemUnit} en={EN.poItemUnit} />
             </th>
-            <th style={{ textAlign: "left", padding: "4px 6px" }}>
-              {t.poItemDescription}
+            <th style={{ textAlign: "left", padding: "4px 6px", verticalAlign: "top" }}>
+              <BiLabel id={ID.poItemDescription} en={EN.poItemDescription} />
             </th>
           </tr>
         </thead>
         <tbody>
           {order.details.map((item, i) => (
             <tr key={item.uuid} style={{ borderBottom: "1px dotted #ccc" }}>
-              <td
-                style={{
-                  padding: "4px 2px",
-                  verticalAlign: "top",
-                  color: "#555",
-                }}
-              >
+              <td style={{ padding: "4px 2px", verticalAlign: "top", color: "#555" }}>
                 {i + 1}
               </td>
-              <td
-                style={{
-                  padding: "4px 6px",
-                  verticalAlign: "top",
-                  fontWeight: "bold",
-                }}
-              >
+              <td style={{ padding: "4px 6px", verticalAlign: "top", fontWeight: "bold" }}>
                 <span style={{ textTransform: "uppercase" }}>{item.medicine.name}</span>
               </td>
-              <td
-                style={{
-                  padding: "4px 6px",
-                  textAlign: "right",
-                  verticalAlign: "top",
-                }}
-              >
+              <td style={{ padding: "4px 6px", textAlign: "right", verticalAlign: "top" }}>
                 {item.quantity}
               </td>
-              <td
-                style={{
-                  padding: "4px 6px",
-                  verticalAlign: "top",
-                  color: "#555",
-                }}
-              >
+              <td style={{ padding: "4px 6px", verticalAlign: "top", color: "#555" }}>
                 {item.unit}
               </td>
-              <td
-                style={{
-                  padding: "4px 6px",
-                  verticalAlign: "top",
-                  color: "#555",
-                  fontSize: "10px",
-                }}
-              >
+              <td style={{ padding: "4px 6px", verticalAlign: "top", color: "#555", fontSize: "10px" }}>
                 {item.description ?? ""}
               </td>
             </tr>
@@ -232,20 +190,18 @@ export function PurchaseOrderReceipt({
         }}
       >
         <span style={{ fontWeight: "bold" }}>
-          {t.poReceiptTotalItems}: {order.details.length}
+          {sl(ID.poReceiptTotalItems, EN.poReceiptTotalItems)}: {order.details.length}
         </span>
       </div>
 
       {/* Signature — right-aligned */}
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <div
-          style={{ textAlign: "center", fontSize: "11px", minWidth: "180px" }}
-        >
+        <div style={{ textAlign: "center", fontSize: "11px", minWidth: "180px" }}>
           <div style={{ marginBottom: "2px" }}>
             {pharmacy?.location ?? ".................."}, {sysdate}
           </div>
           <div style={{ marginBottom: "48px" }}>
-            {t.poReceiptPenanggungJawab}
+            <BiLabel id={ID.poReceiptPenanggungJawab} en={EN.poReceiptPenanggungJawab} />
           </div>
           {headPharmacist && (
             <>

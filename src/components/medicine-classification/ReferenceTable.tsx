@@ -42,7 +42,7 @@ function EmptyState({
 }: {
   isSearch: boolean;
   labels: ReferenceLabels;
-  onAdd: () => void;
+  onAdd?: () => void;
 }): JSX.Element {
   return (
     <div className="flex flex-col items-center gap-4 px-8 py-16 text-center">
@@ -57,7 +57,7 @@ function EmptyState({
           <p className="mt-1 text-sm text-muted-foreground">{labels.emptyDesc}</p>
         )}
       </div>
-      {!isSearch && (
+      {!isSearch && onAdd && (
         <Button onClick={onAdd} className="gap-2 rounded-xl">
           <Plus className="h-4 w-4" />
           <span className="inline-block text-center" style={{ width: labels.addBtnWidth }}>{labels.addBtn}</span>
@@ -80,10 +80,10 @@ export interface ReferenceTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (item: ReferenceItem) => void;
-  onEdit: (item: ReferenceItem) => void;
-  onDelete: (item: ReferenceItem) => void;
+  onEdit?: (item: ReferenceItem) => void;
+  onDelete?: (item: ReferenceItem) => void;
 }
 
 export function ReferenceTable({
@@ -200,8 +200,8 @@ export function ReferenceTable({
                 item={row.original}
                 labels={labels}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

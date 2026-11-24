@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -7,7 +8,9 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -39,6 +42,8 @@ type ModalState =
 
 export default function StockReturnsPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } =
@@ -48,7 +53,7 @@ export default function StockReturnsPage(): JSX.Element {
   const [filterDistributor, setFilterDistributor] = useState("all");
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["stock-returns", page, limit, debouncedSearch, filterStatus, filterDistributor],
+    queryKey: ["stock-returns", pharmacyUuid, page, limit, debouncedSearch, filterStatus, filterDistributor],
     queryFn: () =>
       getStockReturns({
         page,
@@ -143,7 +148,7 @@ export default function StockReturnsPage(): JSX.Element {
               onValueChange={handleFilterStatus}
               options={[
                 { value: "all", label: `${t.srFilterStatus}: ${t.filterAll}` },
-                { value: "ON_PROCESS", label: t.srStatusOnProcess },
+                { value: "IN_PROGRESS", label: t.srStatusInProgress },
                 { value: "COMPLETED", label: t.srStatusCompleted },
                 { value: "CANCELLED", label: t.srStatusCancelled },
                 { value: "REJECTED", label: t.srStatusRejected },
@@ -168,6 +173,7 @@ export default function StockReturnsPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
+            {can("stock_return.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -178,6 +184,7 @@ export default function StockReturnsPage(): JSX.Element {
                 {t.srAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -193,13 +200,13 @@ export default function StockReturnsPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("stock_return.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(sr) => setModal({ mode: "detail", stockReturn: sr })}
-          onEdit={(sr) => setModal({ mode: "edit", stockReturn: sr })}
-          onComplete={(sr) => setModal({ mode: "complete", stockReturn: sr })}
-          onReject={(sr) => setModal({ mode: "reject", stockReturn: sr })}
-          onCancel={(sr) => setModal({ mode: "cancel", stockReturn: sr })}
-          onDelete={(sr) => setModal({ mode: "delete", stockReturn: sr })}
+          onEdit={can("stock_return.update") ? (sr) => setModal({ mode: "edit", stockReturn: sr }) : undefined}
+          onComplete={can("stock_return.update") ? (sr) => setModal({ mode: "complete", stockReturn: sr }) : undefined}
+          onReject={can("stock_return.update") ? (sr) => setModal({ mode: "reject", stockReturn: sr }) : undefined}
+          onCancel={can("stock_return.update") ? (sr) => setModal({ mode: "cancel", stockReturn: sr }) : undefined}
+          onDelete={can("stock_return.delete") ? (sr) => setModal({ mode: "delete", stockReturn: sr }) : undefined}
         />
       </Card>
 
@@ -209,11 +216,11 @@ export default function StockReturnsPage(): JSX.Element {
           stockReturn={modal.stockReturn}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", stockReturn: modal.stockReturn })}
-          onComplete={() => setModal({ mode: "complete", stockReturn: modal.stockReturn })}
-          onReject={() => setModal({ mode: "reject", stockReturn: modal.stockReturn })}
-          onCancel={() => setModal({ mode: "cancel", stockReturn: modal.stockReturn })}
-          onDelete={() => setModal({ mode: "delete", stockReturn: modal.stockReturn })}
+          onEdit={can("stock_return.update") ? () => setModal({ mode: "edit", stockReturn: modal.stockReturn }) : undefined}
+          onComplete={can("stock_return.update") ? () => setModal({ mode: "complete", stockReturn: modal.stockReturn }) : undefined}
+          onReject={can("stock_return.update") ? () => setModal({ mode: "reject", stockReturn: modal.stockReturn }) : undefined}
+          onCancel={can("stock_return.update") ? () => setModal({ mode: "cancel", stockReturn: modal.stockReturn }) : undefined}
+          onDelete={can("stock_return.delete") ? () => setModal({ mode: "delete", stockReturn: modal.stockReturn }) : undefined}
         />
       )}
 

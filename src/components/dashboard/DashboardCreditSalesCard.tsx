@@ -81,7 +81,7 @@ export function DashboardCreditSalesCard({
               <thead>
                 <tr className="border-b border-border text-muted-foreground">
                   <th className="pb-1.5 text-left font-medium">Sale #</th>
-                  <th className="pb-1.5 text-left font-medium">Customer</th>
+                  <th className="pb-1.5 text-left font-medium">Patient</th>
                   <th className="pb-1.5 text-right font-medium">Date</th>
                   <th className="pb-1.5 text-right font-medium">Total</th>
                   <th className="pb-1.5 text-right font-medium">Paid</th>

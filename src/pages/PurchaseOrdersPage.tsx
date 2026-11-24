@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -7,7 +8,9 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
+import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
@@ -40,6 +43,8 @@ type ModalState =
 
 export default function PurchaseOrdersPage(): JSX.Element {
   const { t } = useLanguage();
+  const can = useCan();
+  const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
@@ -68,6 +73,7 @@ export default function PurchaseOrdersPage(): JSX.Element {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
       "purchase-orders",
+      pharmacyUuid,
       page,
       limit,
       debouncedSearch,
@@ -199,6 +205,7 @@ export default function PurchaseOrdersPage(): JSX.Element {
             />
 
             {/* Add button */}
+            {can("purchase_orders.create") && (
             <Button
               onClick={() => setModal({ mode: "create" })}
               variant="success"
@@ -209,6 +216,7 @@ export default function PurchaseOrdersPage(): JSX.Element {
                 {t.poAdd}
               </span>
             </Button>
+            )}
           </div>
         </div>
 
@@ -224,14 +232,14 @@ export default function PurchaseOrdersPage(): JSX.Element {
           totalPages={totalPages}
           onPageChange={setPage}
           onLimitChange={handleLimitChange}
-          onAdd={() => setModal({ mode: "create" })}
+          onAdd={can("purchase_orders.create") ? () => setModal({ mode: "create" }) : undefined}
           onDetails={(o) => setModal({ mode: "detail", order: o })}
-          onEdit={(o) => setModal({ mode: "edit", order: o })}
+          onEdit={can("purchase_orders.update") ? (o) => setModal({ mode: "edit", order: o }) : undefined}
           onPrint={(o) => setModal({ mode: "print", order: o })}
-          onMarkReceived={(o) => setModal({ mode: "complete", order: o })}
-          onRepurchase={(o) => setModal({ mode: "repurchase", order: o })}
-          onCancel={(o) => setModal({ mode: "cancel", order: o })}
-          onDelete={(o) => setModal({ mode: "delete", order: o })}
+          onMarkReceived={can("purchase_orders.update") ? (o) => setModal({ mode: "complete", order: o }) : undefined}
+          onRepurchase={can("purchase_orders.create") ? (o) => setModal({ mode: "repurchase", order: o }) : undefined}
+          onCancel={can("purchase_orders.update") ? (o) => setModal({ mode: "cancel", order: o }) : undefined}
+          onDelete={can("purchase_orders.delete") ? (o) => setModal({ mode: "delete", order: o }) : undefined}
         />
       </Card>
 
@@ -241,11 +249,11 @@ export default function PurchaseOrdersPage(): JSX.Element {
           order={modal.order}
           t={t}
           onClose={closeModal}
-          onEdit={() => setModal({ mode: "edit", order: modal.order })}
+          onEdit={can("purchase_orders.update") ? () => setModal({ mode: "edit", order: modal.order }) : undefined}
           onPrint={() => setModal({ mode: "print", order: modal.order })}
-          onRepurchase={() => setModal({ mode: "repurchase", order: modal.order })}
-          onCancel={() => setModal({ mode: "cancel", order: modal.order })}
-          onDelete={() => setModal({ mode: "delete", order: modal.order })}
+          onRepurchase={can("purchase_orders.create") ? () => setModal({ mode: "repurchase", order: modal.order }) : undefined}
+          onCancel={can("purchase_orders.update") ? () => setModal({ mode: "cancel", order: modal.order }) : undefined}
+          onDelete={can("purchase_orders.delete") ? () => setModal({ mode: "delete", order: modal.order }) : undefined}
         />
       )}
 

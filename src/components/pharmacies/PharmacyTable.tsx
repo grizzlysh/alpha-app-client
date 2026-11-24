@@ -31,10 +31,10 @@ export interface PharmacyTableProps {
   totalPages: number;
   onPageChange: (p: number) => void;
   onLimitChange: (l: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (p: Pharmacy) => void;
-  onEdit: (p: Pharmacy) => void;
-  onDelete: (p: Pharmacy) => void;
+  onEdit?: (p: Pharmacy) => void;
+  onDelete?: (p: Pharmacy) => void;
 }
 
 export function PharmacyTable({
@@ -170,8 +170,8 @@ export function PharmacyTable({
                 pharmacy={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

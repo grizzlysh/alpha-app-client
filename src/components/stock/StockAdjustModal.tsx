@@ -76,7 +76,7 @@ export function StockAdjustModal({
   });
 
   const { data: usersData } = useQuery({
-    queryKey: ["users-dropdown"],
+    queryKey: ["users-all"],
     queryFn: () => getUsers({ limit: 100 }),
     staleTime: 5 * 60 * 1000,
   });

@@ -9,14 +9,12 @@ import type { Customer } from "@/types/customer";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getInitials, getAvatarColor } from "./customerUtils";
 
-// ── Row action menu ───────────────────────────────────────────────────────────
-
 interface RowMenuProps {
   t: Translations;
   isWalkIn: boolean;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JSX.Element {
@@ -88,6 +86,7 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
             </button>
             {!isWalkIn && (
               <>
+                {onEdit && (
                 <button
                   type="button"
                   onClick={() => pick(onEdit)}
@@ -96,6 +95,9 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
                   <Pencil className="h-4 w-4 text-muted-foreground" />
                   {t.customerEdit}
                 </button>
+                )}
+                {onDelete && (
+                <>
                 <div className="mx-2 my-1 border-t border-border" />
                 <button
                   type="button"
@@ -105,6 +107,8 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
                   <Trash2 className="h-4 w-4" />
                   {t.customerDelete}
                 </button>
+                </>
+                )}
               </>
             )}
           </div>,
@@ -114,14 +118,12 @@ function RowMenu({ t, isWalkIn, onDetails, onEdit, onDelete }: RowMenuProps): JS
   );
 }
 
-// ── Table row ─────────────────────────────────────────────────────────────────
-
 export interface CustomerRowProps {
   customer: Customer;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function CustomerRow({
@@ -155,7 +157,7 @@ export function CustomerRow({
         </div>
       </td>
 
-      {/* Phone — sm+ */}
+      {/* Phone */}
       <td className="hidden min-w-[150px] px-5 py-4 sm:table-cell">
         {customer.phone ? (
           <div className="flex items-center gap-1.5 text-sm text-foreground">
@@ -167,7 +169,7 @@ export function CustomerRow({
         )}
       </td>
 
-      {/* Address — md+ */}
+      {/* Address */}
       <td className="hidden min-w-[200px] px-5 py-4 md:table-cell">
         {customer.address ? (
           <div className="flex items-center gap-1.5 text-sm text-foreground">
@@ -179,20 +181,25 @@ export function CustomerRow({
         )}
       </td>
 
-      {/* Walk-in badge — lg+ */}
-      <td className="hidden min-w-[110px] px-5 py-4 lg:table-cell">
-        {customer.isWalkIn && (
-          <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-            {t.customerWalkInBadge}
+      {/* Customer type */}
+      <td className="hidden min-w-[130px] px-5 py-4 lg:table-cell">
+        <div className="flex flex-col gap-1">
+          <span className="inline-block w-fit rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+            {customer.customerType === "PATIENT" ? t.customerTypePatient : t.customerTypeProfessional}
           </span>
-        )}
+          {customer.isWalkIn && (
+            <span className="inline-block w-fit rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+              {t.patientWalkInBadge}
+            </span>
+          )}
+        </div>
       </td>
 
-      {/* Status — xl+ */}
+      {/* Status */}
       <td className="hidden min-w-[100px] px-5 py-4 xl:table-cell">
         <StatusBadge
           status={customer.status}
-          label={customer.status === "ACTIVE" ? t.customerStatusActive : t.customerStatusInactive}
+          label={customer.status === "ACTIVE" ? t.patientStatusActive : t.patientStatusInactive}
         />
       </td>
 

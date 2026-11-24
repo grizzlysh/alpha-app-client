@@ -23,9 +23,9 @@ export interface UserRowProps {
   user: UserListItem;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-  onResetPassword: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onResetPassword?: () => void;
 }
 
 export function UserRow({
@@ -94,10 +94,13 @@ export function UserRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.userDetails}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.userEdit}
             </DropdownMenuItem>
+            )}
+            {onResetPassword && (
             <DropdownMenuItem
               onClick={onResetPassword}
               className="gap-2.5 rounded-lg"
@@ -105,6 +108,9 @@ export function UserRow({
               <KeyRound className="h-4 w-4 text-muted-foreground" />
               {t.userResetPassword}
             </DropdownMenuItem>
+            )}
+            {onDelete && (
+            <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={onDelete}
@@ -113,6 +119,8 @@ export function UserRow({
               <Trash2 className="h-4 w-4" />
               {t.userDelete}
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

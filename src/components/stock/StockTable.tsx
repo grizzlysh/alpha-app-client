@@ -17,6 +17,7 @@ import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { StockRow } from "./StockRow";
+import { toTitleCase } from "@/utils/stringHelpers";
 
 // ── StockTable ────────────────────────────────────────────────────────────────
 
@@ -32,8 +33,8 @@ export interface StockTableProps {
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   onDetails: (s: Stock) => void;
-  onSetPrice: (s: Stock) => void;
-  onSetReorder: (s: Stock) => void;
+  onSetPrice?: (s: Stock) => void;
+  onSetReorder?: (s: Stock) => void;
 }
 
 export function StockTable({
@@ -69,7 +70,7 @@ export function StockTable({
       },
       {
         id: "type",
-        accessorFn: (row) => row.medicine.type.name,
+        accessorFn: (row) => toTitleCase(row.medicine.type.name),
         header: t.medicineTypeLabel,
         enableSorting: true,
       },
@@ -205,8 +206,8 @@ export function StockTable({
                 stock={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onSetPrice={() => onSetPrice(row.original)}
-                onSetReorder={() => onSetReorder(row.original)}
+                onSetPrice={onSetPrice ? () => onSetPrice(row.original) : undefined}
+                onSetReorder={onSetReorder ? () => onSetReorder(row.original) : undefined}
               />
             ))}
           </tbody>

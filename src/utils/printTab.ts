@@ -11,7 +11,7 @@ export function openPrintTab(title: string, contentEl: HTMLElement): void {
   </head>
   <body>
     ${contentEl.outerHTML}
-    <script>window.onload = function () { window.focus(); window.print(); };<\/script>
+    <script>window.onload = function () { window.focus(); window.print(); };</script>
   </body>
 </html>`);
   win.document.close();

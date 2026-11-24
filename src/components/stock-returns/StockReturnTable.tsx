@@ -29,13 +29,13 @@ export interface StockReturnTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   onDetails: (sr: StockReturn) => void;
-  onEdit: (sr: StockReturn) => void;
-  onComplete: (sr: StockReturn) => void;
-  onReject: (sr: StockReturn) => void;
-  onCancel: (sr: StockReturn) => void;
-  onDelete: (sr: StockReturn) => void;
+  onEdit?: (sr: StockReturn) => void;
+  onComplete?: (sr: StockReturn) => void;
+  onReject?: (sr: StockReturn) => void;
+  onCancel?: (sr: StockReturn) => void;
+  onDelete?: (sr: StockReturn) => void;
 }
 
 export function StockReturnTable({
@@ -180,11 +180,11 @@ export function StockReturnTable({
                 stockReturn={row.original}
                 t={t}
                 onDetails={() => onDetails(row.original)}
-                onEdit={() => onEdit(row.original)}
-                onComplete={() => onComplete(row.original)}
-                onReject={() => onReject(row.original)}
-                onCancel={() => onCancel(row.original)}
-                onDelete={() => onDelete(row.original)}
+                onEdit={onEdit ? () => onEdit(row.original) : undefined}
+                onComplete={onComplete ? () => onComplete(row.original) : undefined}
+                onReject={onReject ? () => onReject(row.original) : undefined}
+                onCancel={onCancel ? () => onCancel(row.original) : undefined}
+                onDelete={onDelete ? () => onDelete(row.original) : undefined}
               />
             ))}
           </tbody>

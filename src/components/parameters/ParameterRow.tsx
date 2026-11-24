@@ -14,7 +14,7 @@ export interface ParameterRowProps {
   parameter: Parameter;
   t: Translations;
   onDetails: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 export function ParameterRow({
@@ -75,10 +75,12 @@ export function ParameterRow({
               <Eye className="h-4 w-4 text-muted-foreground" />
               {t.paramDetails}
             </DropdownMenuItem>
+            {onEdit && (
             <DropdownMenuItem onClick={onEdit} className="gap-2.5 rounded-lg">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               {t.paramEdit}
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

@@ -6,6 +6,8 @@ export interface StockDetailSearchResult {
   batchNumber: string;
   expiryDate: string;
   quantityPieces: number;
+  /** quantityPieces minus pieces reserved by held sales. */
+  availablePieces: number;
   quantityBox: number;
   quantityPerBox: number;
   distributor: { uuid: string; name: string };
@@ -15,7 +17,7 @@ export interface StockDetailSearchResult {
     name: string;
     unit: string;
     shape: { name: string };
-    type: { name: string };
+    type: { name: string; requiredPrescription: boolean };
   };
 }
 

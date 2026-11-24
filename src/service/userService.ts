@@ -86,11 +86,10 @@ export async function deleteUser(uuid: string): Promise<ApiResponse<null>> {
 
 export async function resetUserPassword(
   uuid: string
-): Promise<ApiResponse<null>> {
-  const response = await axiosInstance.post<ApiResponse<null>>(
+): Promise<ApiResponse<{ temporaryPassword: string }>> {
+  const response = await axiosInstance.post<ApiResponse<{ temporaryPassword: string }>>(
     `/users/${uuid}/reset-password`
   );
-  if (response.status === 204 || !response.data) return EMPTY_204;
   return response.data;
 }
 

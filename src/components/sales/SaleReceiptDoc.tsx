@@ -1,21 +1,32 @@
 import type { JSX } from "react";
-import type { Sale } from "@/types/sale";
+import type React from "react";
+import type { Sale, PaymentMethod } from "@/types/sale";
 import type { Pharmacy } from "@/types/pharmacy";
-import type { Translations } from "@/configs/i18n";
+import { translations } from "@/configs/i18n";
+import { sl } from "@/utils/bilingualDoc";
 import { formatCurrency } from "./salesUtils";
+
+const EN = translations.en;
+const ID = translations.id;
+
+function idPaymentMethod(method: PaymentMethod): string {
+  const map: Record<PaymentMethod, string> = {
+    CASH: ID.salePaymentMethodCash,
+    TRANSFER: ID.salePaymentMethodTransfer,
+    CREDIT: ID.salePaymentMethodCredit,
+  };
+  return map[method] ?? method;
+}
 
 export interface SaleReceiptDocProps {
   sale: Sale;
   pharmacy: Pharmacy | null;
   cashierName: string;
-  paymentMethodLabel: string;
   amountReceived: number;
-  t: Translations;
-  language: string;
 }
 
-function fmtDate(value: string, language: string): string {
-  return new Date(value).toLocaleDateString(language === "id" ? "id-ID" : "en-GB", {
+function fmtDate(value: string): string {
+  return new Date(value).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -33,12 +44,11 @@ export function SaleReceiptDoc({
   sale,
   pharmacy,
   cashierName,
-  paymentMethodLabel,
   amountReceived,
-  t,
-  language,
 }: SaleReceiptDocProps): JSX.Element {
   const change = amountReceived - sale.grandTotal;
+  const lastPaymentMethod = sale.payment?.history[sale.payment.history.length - 1]?.paymentMethod ?? "CASH";
+  const paymentMethodLabel = idPaymentMethod(lastPaymentMethod);
 
   const row: React.CSSProperties = {
     display: "flex",
@@ -84,7 +94,7 @@ export function SaleReceiptDoc({
       <div style={{ textAlign: "center", marginBottom: "12px", fontSize: "11px", color: "#555" }}>
         <div style={{ fontWeight: 600, fontSize: "12px", letterSpacing: "0.03em" }}>{sale.saleNumber}</div>
         <div style={{ marginTop: "2px" }}>
-          {fmtDate(sale.soldAt, language)} · {fmtTime(sale.soldAt)}
+          {fmtDate(sale.soldAt)} · {fmtTime(sale.soldAt)}
         </div>
       </div>
 
@@ -110,7 +120,7 @@ export function SaleReceiptDoc({
       {/* ── Totals ───────────────────────────────── */}
       <div>
         <div style={{ ...row, color: "#555" }}>
-          <span>{t.posSubtotal}</span>
+          <span>{ID.posSubtotal}</span>
           <span>{formatCurrency(sale.totalAmount)}</span>
         </div>
         {sale.ppnPercentage > 0 && (
@@ -121,7 +131,7 @@ export function SaleReceiptDoc({
         )}
         {sale.discountAmount > 0 && (
           <div style={{ ...row, color: "#555" }}>
-            <span>{t.posDiscountLabel}</span>
+            <span>{sl(ID.posDiscountLabel, EN.posDiscountLabel)}</span>
             <span>-{formatCurrency(sale.discountAmount)}</span>
           </div>
         )}
@@ -136,12 +146,12 @@ export function SaleReceiptDoc({
       {/* ── Payment ──────────────────────────────── */}
       <div>
         <div style={{ ...row, color: "#555" }}>
-          <span>{t.saleDocPayment} ({paymentMethodLabel})</span>
+          <span>{sl(ID.saleDocPayment, EN.saleDocPayment)} ({paymentMethodLabel})</span>
           <span>{formatCurrency(amountReceived)}</span>
         </div>
         {change > 0 && (
           <div style={{ ...row, color: "#555" }}>
-            <span>{t.posChangeLabel}</span>
+            <span>{sl(ID.posChangeLabel, EN.posChangeLabel)}</span>
             <span>{formatCurrency(change)}</span>
           </div>
         )}
@@ -151,8 +161,9 @@ export function SaleReceiptDoc({
 
       {/* ── Footer ───────────────────────────────── */}
       <div style={{ textAlign: "center", fontSize: "11px", color: "#777", lineHeight: 1.6 }}>
-        <div>{t.posReceiptCashierLabel}: {cashierName}</div>
-        <div style={{ marginTop: "4px" }}>{t.saleDocThankYouVisit}</div>
+        <div>{sl(ID.posReceiptCashierLabel, EN.posReceiptCashierLabel)}: {cashierName}</div>
+        <div style={{ marginTop: "6px" }}>{ID.saleDocThankYouVisit}</div>
+        <div style={{ fontStyle: "italic", fontSize: "0.9em", opacity: 0.7 }}>{EN.saleDocThankYouVisit}</div>
       </div>
     </div>
   );

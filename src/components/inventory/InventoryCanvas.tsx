@@ -1,8 +1,7 @@
 import type { JSX, CSSProperties, RefObject } from "react";
 import { useState, useRef, useMemo } from "react";
 import { DndContext } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
-import { restrictToParentElement } from "@dnd-kit/modifiers";
+import type { DragEndEvent, Modifier } from "@dnd-kit/core";
 import { useDraggable } from "@dnd-kit/core";
 import { GripVertical, RotateCw, Archive, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
@@ -14,14 +13,16 @@ import type { InventoryCabinetNode, CanvasPosition, CabinetRotation } from "@/ty
 export const CANVAS_HEIGHT = 420;
 const ROTATIONS: CabinetRotation[] = [0, 90, 180, 270];
 
-// Padding between cabinets and the canvas edge (drag clamping + auto-placement)
-const CANVAS_PADDING = 12;
-// Margin between cabinets in the placement scan
-const PLACEMENT_MARGIN = CANVAS_PADDING;
+// No padding — cabinets can reach the canvas walls; visual breathing room comes from canvas margin
+const CANVAS_PADDING = 0;
+// Small margin between cabinets during auto-placement scan
+const PLACEMENT_MARGIN = 4;
 // Snap step matches the dot-grid spacing
 const SNAP_STEP = 20;
 // Conservative canvas width used for the placement scan
 const SCAN_CANVAS_W = 900;
+// Distance (px) within which a dragged/resized cabinet edge snaps to a nearby cabinet edge
+const EDGE_SNAP_THRESHOLD = 12;
 
 // ── Text-based minimum size ───────────────────────────────────────────────────
 
@@ -69,6 +70,107 @@ function rectsOverlap(
     a.posY < b.posY + b.height + margin &&
     a.posY + a.height + margin > b.posY
   );
+}
+
+// Returns the visual axis-aligned bounding box, accounting for 90/270° rotation swapping W/H.
+function getVisualRect(pos: CanvasPosition): { posX: number; posY: number; width: number; height: number } {
+  const isSwapped = pos.rotation === 90 || pos.rotation === 270;
+  const visW = isSwapped ? pos.height : pos.width;
+  const visH = isSwapped ? pos.width : pos.height;
+  const cx = pos.posX + pos.width / 2;
+  const cy = pos.posY + pos.height / 2;
+  return { posX: cx - visW / 2, posY: cy - visH / 2, width: visW, height: visH };
+}
+
+// Returns how much to nudge the dragged cabinet so that its nearest edge snaps to a nearby cabinet edge.
+// Each axis is snapped independently to the closest matching edge within EDGE_SNAP_THRESHOLD.
+function computeSnapOffset(
+  uuid: string,
+  deltaX: number,
+  deltaY: number,
+  positions: Record<string, CanvasPosition>
+): { x: number; y: number } {
+  const prev = positions[uuid];
+  if (!prev) return { x: 0, y: 0 };
+
+  const dr = getVisualRect({ ...prev, posX: prev.posX + deltaX, posY: prev.posY + deltaY });
+  const dL = dr.posX, dR = dr.posX + dr.width;
+  const dT = dr.posY, dB = dr.posY + dr.height;
+
+  let snapX = 0, snapY = 0;
+  let minDX = EDGE_SNAP_THRESHOLD + 1, minDY = EDGE_SNAP_THRESHOLD + 1;
+
+  for (const [id, pos] of Object.entries(positions)) {
+    if (id === uuid) continue;
+    const or = getVisualRect(pos);
+    const oL = or.posX, oR = or.posX + or.width;
+    const oT = or.posY, oB = or.posY + or.height;
+
+    // X axis — same-edge and adjacent-edge candidates
+    for (const [dist, snap] of [
+      [Math.abs(dL - oL), oL - dL],
+      [Math.abs(dR - oR), oR - dR],
+      [Math.abs(dR - oL), oL - dR],
+      [Math.abs(dL - oR), oR - dL],
+    ] as [number, number][]) {
+      if (dist < minDX) { minDX = dist; snapX = snap; }
+    }
+
+    // Y axis — same-edge and adjacent-edge candidates
+    for (const [dist, snap] of [
+      [Math.abs(dT - oT), oT - dT],
+      [Math.abs(dB - oB), oB - dB],
+      [Math.abs(dB - oT), oT - dB],
+      [Math.abs(dT - oB), oB - dT],
+    ] as [number, number][]) {
+      if (dist < minDY) { minDY = dist; snapY = snap; }
+    }
+  }
+
+  return {
+    x: minDX <= EDGE_SNAP_THRESHOLD ? snapX : 0,
+    y: minDY <= EDGE_SNAP_THRESHOLD ? snapY : 0,
+  };
+}
+
+// Returns size adjustments so the cabinet's right/bottom edge snaps to a nearby cabinet edge during resize.
+function computeResizeSnapOffset(
+  position: CanvasPosition,
+  candidateW: number,
+  candidateH: number,
+  otherPositions: CanvasPosition[]
+): { dw: number; dh: number } {
+  const myRect = getVisualRect({ ...position, width: candidateW, height: candidateH });
+  const myRight  = myRect.posX + myRect.width;
+  const myBottom = myRect.posY + myRect.height;
+
+  let snapDw = 0, snapDh = 0;
+  let minRight = EDGE_SNAP_THRESHOLD + 1, minBottom = EDGE_SNAP_THRESHOLD + 1;
+
+  for (const op of otherPositions) {
+    const or = getVisualRect(op);
+    const oL = or.posX, oR = or.posX + or.width;
+    const oT = or.posY, oB = or.posY + or.height;
+
+    for (const [dist, snap] of [
+      [Math.abs(myRight - oL), oL - myRight],
+      [Math.abs(myRight - oR), oR - myRight],
+    ] as [number, number][]) {
+      if (dist < minRight) { minRight = dist; snapDw = snap; }
+    }
+
+    for (const [dist, snap] of [
+      [Math.abs(myBottom - oT), oT - myBottom],
+      [Math.abs(myBottom - oB), oB - myBottom],
+    ] as [number, number][]) {
+      if (dist < minBottom) { minBottom = dist; snapDh = snap; }
+    }
+  }
+
+  return {
+    dw: minRight  <= EDGE_SNAP_THRESHOLD ? snapDw : 0,
+    dh: minBottom <= EDGE_SNAP_THRESHOLD ? snapDh : 0,
+  };
 }
 
 function findFreeSpot(
@@ -124,6 +226,7 @@ interface DraggableCabinetProps {
     pos: { posX: number; posY: number }
   ) => void;
   onResizeEnd: (uuid: string, width: number, height: number) => void;
+  otherPositions: CanvasPosition[];
 }
 
 interface Props {
@@ -151,6 +254,7 @@ function DraggableCabinet({
   onCabinetClick,
   onRotateRequest,
   onResizeEnd,
+  otherPositions,
 }: DraggableCabinetProps): JSX.Element {
   const { t } = useLanguage();
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -166,11 +270,13 @@ function DraggableCabinet({
 
   // Live resize delta — reset on pointer-up
   const [resizeDelta, setResizeDelta] = useState({ dw: 0, dh: 0 });
+  const [isBlocked, setIsBlocked] = useState(false);
   const resizeStartRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
 
   const effectiveW = Math.max(minDims.width, position.width + resizeDelta.dw);
   const effectiveH = Math.max(minDims.height, position.height + resizeDelta.dh);
 
+  // dnd-kit modifier already applies snap to the transform — use it directly
   const dragTranslate = transform ? `translate3d(${transform.x}px,${transform.y}px,0)` : "";
   const rotateDeg = `rotate(${position.rotation}deg)`;
 
@@ -191,17 +297,17 @@ function DraggableCabinet({
     e.stopPropagation();
     const nextRotation = ROTATIONS[(ROTATIONS.indexOf(position.rotation) + 1) % ROTATIONS.length];
     const canvas = canvasRef.current;
-    if (canvas) {
-      const { width: cW, height: cH } = canvas.getBoundingClientRect();
-      const clamped = clampAfterRotate(
-        position.posX, position.posY,
-        effectiveW, effectiveH,
-        nextRotation, cW, cH
-      );
-      onRotateRequest(cabinet.uuid, nextRotation, clamped);
-    } else {
-      onRotateRequest(cabinet.uuid, nextRotation, { posX: position.posX, posY: position.posY });
+    const newPos = canvas
+      ? clampAfterRotate(position.posX, position.posY, effectiveW, effectiveH, nextRotation, canvas.getBoundingClientRect().width, canvas.getBoundingClientRect().height)
+      : { posX: position.posX, posY: position.posY };
+    const candidateRect = getVisualRect({ posX: newPos.posX, posY: newPos.posY, width: effectiveW, height: effectiveH, rotation: nextRotation });
+    const wouldOverlap = otherPositions.some((op) => rectsOverlap(candidateRect, getVisualRect(op), 0));
+    if (wouldOverlap) {
+      setIsBlocked(true);
+      setTimeout(() => setIsBlocked(false), 500);
+      return;
     }
+    onRotateRequest(cabinet.uuid, nextRotation, newPos);
   }
 
   // ── Resize ──────────────────────────────────────────────────────────────────
@@ -215,11 +321,12 @@ function DraggableCabinet({
 
     function onMove(ev: PointerEvent): void {
       if (!resizeStartRef.current) return;
-      const rawDw = ev.clientX - resizeStartRef.current.x;
-      const rawDh = ev.clientY - resizeStartRef.current.y;
+      const candidateW = Math.max(minDims.width, Math.min(maxW, resizeStartRef.current.w + (ev.clientX - resizeStartRef.current.x)));
+      const candidateH = Math.max(minDims.height, Math.min(maxH, resizeStartRef.current.h + (ev.clientY - resizeStartRef.current.y)));
+      const snap = computeResizeSnapOffset(position, candidateW, candidateH, otherPositions);
       setResizeDelta({
-        dw: Math.max(minDims.width - resizeStartRef.current.w, Math.min(maxW - resizeStartRef.current.w, rawDw)),
-        dh: Math.max(minDims.height - resizeStartRef.current.h, Math.min(maxH - resizeStartRef.current.h, rawDh)),
+        dw: candidateW - resizeStartRef.current.w + snap.dw,
+        dh: candidateH - resizeStartRef.current.h + snap.dh,
       });
     }
 
@@ -227,13 +334,16 @@ function DraggableCabinet({
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       if (!resizeStartRef.current) return;
-      const finalW = Math.round(
-        Math.max(minDims.width, Math.min(maxW, resizeStartRef.current.w + (ev.clientX - resizeStartRef.current.x)))
-      );
-      const finalH = Math.round(
-        Math.max(minDims.height, Math.min(maxH, resizeStartRef.current.h + (ev.clientY - resizeStartRef.current.y)))
-      );
-      onResizeEnd(cabinet.uuid, finalW, finalH);
+      const candidateW = Math.max(minDims.width, Math.min(maxW, resizeStartRef.current.w + (ev.clientX - resizeStartRef.current.x)));
+      const candidateH = Math.max(minDims.height, Math.min(maxH, resizeStartRef.current.h + (ev.clientY - resizeStartRef.current.y)));
+      const snap = computeResizeSnapOffset(position, candidateW, candidateH, otherPositions);
+      const finalW = Math.round(Math.max(minDims.width, Math.min(maxW, candidateW + snap.dw)));
+      const finalH = Math.round(Math.max(minDims.height, Math.min(maxH, candidateH + snap.dh)));
+      const candidateRect = getVisualRect({ ...position, width: finalW, height: finalH });
+      const wouldOverlap = otherPositions.some((op) => rectsOverlap(candidateRect, getVisualRect(op), 0));
+      if (!wouldOverlap) {
+        onResizeEnd(cabinet.uuid, finalW, finalH);
+      }
       setResizeDelta({ dw: 0, dh: 0 });
       resizeStartRef.current = null;
     }
@@ -250,9 +360,11 @@ function DraggableCabinet({
       className={cn(
         "rounded-lg border-2 flex flex-col items-center justify-center gap-0.5 select-none cursor-pointer transition-colors",
         "bg-card dark:bg-card/80",
-        isSelected
-          ? "border-primary ring-2 ring-primary/30 shadow-md"
-          : "border-border hover:border-primary/50 hover:shadow-sm",
+        isBlocked
+          ? "border-destructive ring-2 ring-destructive/30 shadow-md"
+          : isSelected
+            ? "border-primary ring-2 ring-primary/30 shadow-md"
+            : "border-border hover:border-primary/50 hover:shadow-sm",
         isDragging && "opacity-80 shadow-xl",
         cabinet.status === "INACTIVE" && "opacity-50"
       )}
@@ -315,6 +427,17 @@ export function InventoryCanvas({
   const { t } = useLanguage();
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  // Runs synchronously inside dnd-kit — no React state, no re-renders during drag.
+  const snapModifier = useMemo<Modifier>(
+    () =>
+      ({ transform, active }) => {
+        if (!active) return transform;
+        const snap = computeSnapOffset(active.id as string, transform.x, transform.y, localPositions);
+        return { ...transform, x: transform.x + snap.x, y: transform.y + snap.y };
+      },
+    [localPositions]
+  );
+
   function handleDragEnd(event: DragEndEvent): void {
     const { active, delta } = event;
     const uuid = active.id as string;
@@ -337,10 +460,21 @@ export function InventoryCanvas({
     const maxX = Math.round(canvasW - (prev.width  + visW) / 2) - pad;
     const maxY = Math.round(canvasH - (prev.height + visH) / 2) - pad;
 
-    onPositionChange(uuid, {
-      posX: Math.round(Math.max(minX, Math.min(maxX, prev.posX + delta.x))),
-      posY: Math.round(Math.max(minY, Math.min(maxY, prev.posY + delta.y))),
+    // Recompute snap for the final delta to stay in sync with what the modifier showed.
+    const snap = computeSnapOffset(uuid, delta.x, delta.y, localPositions);
+
+    const newPosX = Math.round(Math.max(minX, Math.min(maxX, prev.posX + delta.x + snap.x)));
+    const newPosY = Math.round(Math.max(minY, Math.min(maxY, prev.posY + delta.y + snap.y)));
+
+    const candidateRect = getVisualRect({ ...prev, posX: newPosX, posY: newPosY });
+    const wouldOverlap = Object.entries(localPositions).some(([id, pos]) => {
+      if (id === uuid) return false;
+      return rectsOverlap(candidateRect, getVisualRect(pos), 0);
     });
+
+    if (!wouldOverlap) {
+      onPositionChange(uuid, { posX: newPosX, posY: newPosY });
+    }
   }
 
   if (isLoading) {
@@ -363,17 +497,16 @@ export function InventoryCanvas({
   }
 
   return (
-    <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
+    <DndContext modifiers={[snapModifier]} onDragEnd={handleDragEnd}>
       <div
         ref={canvasRef}
-        className="relative bg-muted/20 overflow-hidden"
+        className="relative bg-muted/20 overflow-hidden m-3 rounded-lg"
         style={{ height: CANVAS_HEIGHT }}
       >
-        {/* Dot-grid — inset by CANVAS_PADDING to show the padded border area */}
+        {/* Dot-grid — full canvas coverage */}
         <div
-          className="absolute pointer-events-none opacity-30 dark:opacity-20"
+          className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-20"
           style={{
-            inset: CANVAS_PADDING,
             backgroundImage: "radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)",
             backgroundSize: "20px 20px",
           }}
@@ -392,6 +525,9 @@ export function InventoryCanvas({
               onCabinetClick={onCabinetClick}
               onRotateRequest={onRotate}
               onResizeEnd={onSizeChange}
+              otherPositions={Object.entries(localPositions)
+                .filter(([id]) => id !== cabinet.uuid)
+                .map(([, p]) => p)}
             />
           );
         })}

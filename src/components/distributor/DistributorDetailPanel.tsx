@@ -12,8 +12,8 @@ export interface DistributorDetailPanelProps {
   distributor: Distributor;
   t: Translations;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function DistributorDetailPanel({
