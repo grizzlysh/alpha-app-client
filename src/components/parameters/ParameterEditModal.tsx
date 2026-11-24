@@ -23,9 +23,11 @@ import { getApiErrorMessage } from "@/utils/apiError";
 import type { ApiResponse } from "@/types/api";
 import type { Parameter, UpdateParameterPayload } from "@/types/parameters";
 import { useDispatch } from "react-redux";
-import { setNameCase } from "@/store/authSlice";
+import { setMedicineNameFormat, setNameCase } from "@/store/authSlice";
+import { useNameFormat } from "@/hooks/useNameFormat";
 import { NAME_CASES, formatName, isNameCase } from "@/utils/nameFormat";
-import { nameCaseLabel } from "./parameterUtils";
+import { MEDICINE_NAME_FORMATS, buildMedicineName, isMedicineNameFormat } from "@/utils/medicineName";
+import { medicineNameFormatLabel, nameCaseLabel } from "./parameterUtils";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -65,6 +67,8 @@ export function ParameterEditModal({
   const schema = useMemo(() => makeSchema(t), [t]);
   const dispatch = useDispatch();
   const isNameCaseParam = parameter.key === "NAME_DISPLAY_CASE";
+  const isNameFormatParam = parameter.key === "MEDICINE_NAME_FORMAT";
+  const fmt = useNameFormat();
 
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
@@ -94,6 +98,7 @@ export function ParameterEditModal({
         queryClient.invalidateQueries({ queryKey: [queryKey] });
         // Apply the new name display at once, without signing in again.
         if (isNameCaseParam && isNameCase(values.value)) dispatch(setNameCase(values.value));
+        if (isNameFormatParam && isMedicineNameFormat(values.value)) dispatch(setMedicineNameFormat(values.value));
         onSuccessRef.current();
       } else {
         toast.error(res.message[language]);
@@ -144,7 +149,29 @@ export function ParameterEditModal({
               <Controller
                 name="value"
                 control={form.control}
-                render={({ field }) => isNameCaseParam ? (
+                render={({ field }) => isNameFormatParam ? (
+                  <div className="grid gap-2" role="radiogroup" aria-label={t.medicineNameFormatLabel}>
+                    {MEDICINE_NAME_FORMATS.map((format) => (
+                      <button
+                        key={format}
+                        type="button"
+                        role="radio"
+                        aria-checked={field.value === format}
+                        onClick={() => field.onChange(format)}
+                        className={cn(
+                          "flex flex-col items-start gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-colors",
+                          field.value === format ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:bg-muted/40"
+                        )}
+                      >
+                        <span className="text-sm font-medium text-foreground">{medicineNameFormatLabel(format, t)}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {fmt(buildMedicineName(format, { baseName: "Amlodipin", strengths: ["10 mg"], shape: "Tablet" }))}
+                        </span>
+                      </button>
+                    ))}
+                    <p className="text-xs text-muted-foreground">{t.medicineFormatNote}</p>
+                  </div>
+                ) : isNameCaseParam ? (
                   <div className="grid gap-2" role="radiogroup" aria-label={t.paramValue}>
                     {NAME_CASES.map((mode) => (
                       <button

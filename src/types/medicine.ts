@@ -64,11 +64,24 @@ export interface ReferencePayload {
 export interface MedicineIngredient {
   uuid: string;
   name: string;
+  /** "500 mg"; null when not recorded. */
+  strength: string | null;
+}
+
+export interface MedicineIngredientInput {
+  name: string;
+  strength?: string | null;
 }
 
 export interface Medicine {
   uuid: string;
+  /** The full name as shown (built from the parts, or typed when isCustomName). */
   name: string;
+  baseName: string | null;
+  variant: string | null;
+  isCustomName: boolean;
+  /** The ingredients' strengths as in the name ("500/50 mg"); "" when none. */
+  strength: string;
   unit: string;
   /** One code for all batches (maker's EAN-13 or in-house); null when not set. */
   barcode: string | null;
@@ -94,22 +107,29 @@ export interface MedicineListParams {
 }
 
 export interface CreateMedicinePayload {
-  name: string;
+  /** Only for a custom name. */
+  name?: string;
+  baseName?: string;
+  variant?: string | null;
+  isCustomName: boolean;
   medicineShapeUuid: string;
   medicineTypeUuid: string;
   medicineClassUuid: string;
   unit: string;
   barcode?: string | null;
-  ingredients: string[];
+  ingredients: MedicineIngredientInput[];
 }
 
 export interface UpdateMedicinePayload {
   name?: string;
+  baseName?: string;
+  variant?: string | null;
+  isCustomName?: boolean;
   medicineShapeUuid?: string;
   medicineTypeUuid?: string;
   medicineClassUuid?: string;
   unit?: string;
   barcode?: string | null;
-  ingredients?: string[];
+  ingredients?: MedicineIngredientInput[];
   status?: "ACTIVE" | "INACTIVE";
 }

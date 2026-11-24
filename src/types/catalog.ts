@@ -1,5 +1,27 @@
+export interface CatalogIngredient {
+  name: string;
+  strength: string | null;
+}
+
+/** As exported: the full name plus its parts. */
 export interface CatalogMedicine {
   name: string;
+  baseName: string | null;
+  variant: string | null;
+  isCustomName: boolean;
+  unit: string;
+  shape: string;
+  type: string;
+  class: string;
+  ingredients: CatalogIngredient[];
+}
+
+/** As imported from a file: a structured row sets baseName; ingredients may carry the strength ("Paracetamol 500 mg"). */
+export interface CatalogImportMedicine {
+  name: string;
+  baseName?: string;
+  variant?: string | null;
+  isCustomName?: boolean;
   unit: string;
   shape: string;
   type: string;
@@ -21,7 +43,7 @@ export interface CatalogImportPayload {
   shapes: { name: string }[];
   types: { name: string; requiredPrescription?: boolean; isControlled?: boolean }[];
   classes: { name: string }[];
-  medicines: CatalogMedicine[];
+  medicines: CatalogImportMedicine[];
 }
 
 export interface CatalogCount {

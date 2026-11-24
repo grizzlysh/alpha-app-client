@@ -1,3 +1,4 @@
+import type { MedicineNameFormat } from "@/utils/medicineName";
 import type { NameCase } from "@/utils/nameFormat";
 import type { PharmacyRole } from "@/types/role";
 
@@ -50,6 +51,8 @@ export interface CurrentPharmacyData {
   permissions: Record<string, PermissionSet>;
   /** How names are shown and printed at this pharmacy. */
   nameCase?: NameCase;
+  /** How structured medicine names are put together. */
+  medicineNameFormat?: MedicineNameFormat;
 }
 
 export interface LoginPayload {

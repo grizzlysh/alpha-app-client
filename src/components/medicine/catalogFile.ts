@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import type { CatalogExport, CatalogImportPayload, CatalogMedicine } from "@/types/catalog";
+import type { CatalogExport, CatalogImportMedicine, CatalogImportPayload } from "@/types/catalog";
 
 // The medicine-catalog spreadsheet. Sheet and column names are Indonesian (the
 // app's main language) but the parser also accepts the English ones, and only
@@ -14,6 +14,8 @@ const SHEETS = {
 
 const COLS = {
   name: ["nama", "name", "nama obat"],
+  variant: ["varian", "variant"],
+  customName: ["nama sendiri", "custom name"],
   unit: ["satuan", "unit"],
   shape: ["bentuk", "shape"],
   type: ["golongan", "type", "jenis"],
@@ -30,9 +32,20 @@ export function downloadCatalog(catalog: CatalogExport): void {
   const add = (name: string, rows: (string | number)[][]) =>
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name);
 
+  // A structured name is written as its parts ("Nama" is then the name part only);
+  // "Komposisi" carries each ingredient's strength: "Paracetamol 500 mg, Kafein 50 mg".
   add("Obat", [
-    ["Nama", "Satuan", "Bentuk", "Golongan", "Kelas", "Komposisi"],
-    ...catalog.medicines.map((m) => [m.name, m.unit, m.shape, m.type, m.class, m.ingredients.join(", ")]),
+    ["Nama", "Varian", "Nama Sendiri", "Satuan", "Bentuk", "Golongan", "Kelas", "Komposisi"],
+    ...catalog.medicines.map((m) => [
+      m.isCustomName ? m.name : (m.baseName ?? m.name),
+      m.variant ?? "",
+      m.isCustomName ? "Ya" : "Tidak",
+      m.unit,
+      m.shape,
+      m.type,
+      m.class,
+      m.ingredients.map((i) => (i.strength ? `${i.name} ${i.strength}` : i.name)).join(", "),
+    ]),
   ]);
   add("Bentuk", [["Nama"], ...catalog.shapes.map((s) => [s.name])]);
   add("Golongan", [
@@ -80,17 +93,23 @@ export async function parseCatalogFile(file: File): Promise<CatalogImportPayload
   }
 
   const isYes = (v: string) => ["ya", "yes", "y", "true", "1"].includes(norm(v));
-  const medicines: CatalogMedicine[] = medicineRows.map((r) => ({
-    name: r.name,
-    unit: r.unit,
-    shape: r.shape,
-    type: r.type,
-    class: r.class,
-    ingredients: r.ingredients
-      .split(/[,;]/)
-      .map((s) => s.trim())
-      .filter(Boolean),
-  }));
+  // "Nama Sendiri" = Tidak: "Nama" is the name part, and the name follows the
+  // pharmacy's format. Without that column, names are kept exactly as written.
+  const medicines: CatalogImportMedicine[] = medicineRows.map((r) => {
+    const structured = r.customName !== "" && !isYes(r.customName);
+    return {
+      name: structured ? "" : r.name,
+      ...(structured ? { baseName: r.name, variant: r.variant || null, isCustomName: false } : { isCustomName: true }),
+      unit: r.unit,
+      shape: r.shape,
+      type: r.type,
+      class: r.class,
+      ingredients: r.ingredients
+        .split(/[;]|,(?!\d)/)
+        .map((s) => s.trim())
+        .filter(Boolean),
+    };
+  });
 
   return {
     shapes: readRows(findSheet(wb, SHEETS.shapes)).filter((r) => r.name).map((r) => ({ name: r.name })),

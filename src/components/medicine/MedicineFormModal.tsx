@@ -26,32 +26,43 @@ import { createMedicine, updateMedicine } from "@/service/medicineService";
 import { getMedicineShapesDropdown } from "@/service/medicineShapeService";
 import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
 import { getMedicineClassesDropdown } from "@/service/medicineClassService";
-import { useNameFormat } from "@/hooks/useNameFormat";
+import { useMedicineNameFormat, useNameFormat } from "@/hooks/useNameFormat";
+import { buildMedicineName } from "@/utils/medicineName";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
 function makeSchema(t: Translations) {
   return z.object({
-    name: z.string().min(1, t.medicineNameRequired),
+    isCustomName: z.boolean(),
+    name: z.string(),
+    baseName: z.string(),
+    variant: z.string().max(100),
     medicineShapeUuid: z.string().min(1, t.medicineShapeRequired),
     medicineTypeUuid: z.string().min(1, t.medicineTypeRequired),
     medicineClassUuid: z.string().min(1, t.medicineClassRequired),
     unit: z.string().min(1, t.medicineUnitRequired),
     barcode: z.string().trim().max(64).regex(/^[0-9A-Za-z\-./]*$/, t.medicineBarcodeInvalid),
     status: z.enum(["ACTIVE", "INACTIVE"]),
-    ingredients: z.array(z.object({ value: z.string() })),
+    ingredients: z.array(z.object({ value: z.string(), strength: z.string().max(50) })),
+  }).superRefine((v, ctx) => {
+    // A custom name is typed whole; otherwise only the name part is required.
+    const field = v.isCustomName ? "name" : "baseName";
+    if (!v[field].trim()) ctx.addIssue({ code: "custom", path: [field], message: t.medicineNameRequired });
   });
 }
 
 interface FormValues {
+  isCustomName: boolean;
   name: string;
+  baseName: string;
+  variant: string;
   medicineShapeUuid: string;
   medicineTypeUuid: string;
   medicineClassUuid: string;
   unit: string;
   barcode: string;
   status: "ACTIVE" | "INACTIVE";
-  ingredients: { value: string }[];
+  ingredients: { value: string; strength: string }[];
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -79,13 +90,16 @@ export function MedicineFormModal({
 
   const defaultIngredients =
     medicine && medicine.ingredients.length > 0
-      ? medicine.ingredients.map((i) => ({ value: i.name }))
-      : [{ value: "" }];
+      ? medicine.ingredients.map((i) => ({ value: i.name, strength: i.strength ?? "" }))
+      : [{ value: "", strength: "" }];
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
+      isCustomName: medicine?.isCustomName ?? false,
       name: medicine?.name ?? "",
+      baseName: medicine?.baseName ?? "",
+      variant: medicine?.variant ?? "",
       medicineShapeUuid: medicine?.medicineShape?.uuid ?? "",
       medicineTypeUuid: medicine?.medicineType?.uuid ?? "",
       medicineClassUuid: medicine?.medicineClass?.uuid ?? "",
@@ -117,6 +131,25 @@ export function MedicineFormModal({
   const shapes = shapesData?.data ?? [];
   const types = typesData?.data ?? [];
   const classes = classesData?.data ?? [];
+
+  // Live preview of the name the server will store.
+  const nameFormat = useMedicineNameFormat();
+  const [isCustomName, baseName, variant, shapeUuid, ingredientValues] = form.watch([
+    "isCustomName",
+    "baseName",
+    "variant",
+    "medicineShapeUuid",
+    "ingredients",
+  ]);
+  const shapeName = shapes.find((s) => s.uuid === shapeUuid)?.name ?? "";
+  const previewName = isCustomName
+    ? ""
+    : buildMedicineName(nameFormat, {
+        baseName,
+        strengths: ingredientValues.filter((i) => i.value.trim()).map((i) => i.strength),
+        shape: shapeName,
+        variant,
+      });
 
   function handleMutationError(error: unknown): void {
     toast.error(getApiErrorMessage(error, language, t.unexpectedError));
@@ -154,11 +187,16 @@ export function MedicineFormModal({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   function onSubmit(values: FormValues): void {
-    const ingredients = values.ingredients.map((i) => i.value).filter(Boolean);
+    const ingredients = values.ingredients
+      .filter((i) => i.value.trim())
+      .map((i) => ({ name: i.value.trim(), strength: i.strength.trim() || null }));
+    const naming = values.isCustomName
+      ? { isCustomName: true, name: values.name.trim() }
+      : { isCustomName: false, baseName: values.baseName.trim(), variant: values.variant.trim() || null };
 
     if (mode === "create") {
       const payload: CreateMedicinePayload = {
-        name: values.name,
+        ...naming,
         medicineShapeUuid: values.medicineShapeUuid,
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
@@ -169,7 +207,7 @@ export function MedicineFormModal({
       createMutation.mutate(payload);
     } else if (medicine) {
       const payload: UpdateMedicinePayload = {
-        name: values.name,
+        ...naming,
         medicineShapeUuid: values.medicineShapeUuid,
         medicineTypeUuid: values.medicineTypeUuid,
         medicineClassUuid: values.medicineClassUuid,
@@ -211,29 +249,64 @@ export function MedicineFormModal({
           <div className="max-h-[65vh] overflow-y-auto px-6 py-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-              {/* Name */}
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="med-name">
-                  {t.medicineName}
-                  <span className="ml-0.5 text-destructive">*</span>
-                </Label>
-                <Controller
-                  name="name"
-                  control={form.control}
-                  render={({ field }) => (
+              {/* Name: built from its parts, or typed whole */}
+              <div className="space-y-3 sm:col-span-2">
+                <div className="flex items-center justify-between gap-3">
+                  <Label htmlFor={isCustomName ? "med-name" : "med-base-name"}>
+                    {t.medicineName}
+                    <span className="ml-0.5 text-destructive">*</span>
+                  </Label>
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      {...form.register("isCustomName")}
+                      className="h-4 w-4 accent-[hsl(var(--primary))]"
+                    />
+                    {t.medicineCustomName}
+                  </label>
+                </div>
+
+                {isCustomName ? (
+                  <>
                     <Input
                       id="med-name"
                       placeholder={t.medicineNamePlaceholder}
-                      {...field}
-                      className={cn(
-                        fieldError("name") &&
-                          "border-destructive focus-visible:ring-destructive/30"
-                      )}
+                      {...form.register("name")}
+                      className={cn(fieldError("name") && "border-destructive focus-visible:ring-destructive/30")}
                     />
-                  )}
-                />
-                {fieldError("name") && (
-                  <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("name")}</p>
+                    {fieldError("name") ? (
+                      <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("name")}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">{t.medicineCustomNameHint}</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]">
+                      <div className="space-y-1">
+                        <Input
+                          id="med-base-name"
+                          placeholder={t.medicineBaseNamePlaceholder}
+                          {...form.register("baseName")}
+                          className={cn(fieldError("baseName") && "border-destructive focus-visible:ring-destructive/30")}
+                        />
+                        {fieldError("baseName") && (
+                          <p className="flex items-center gap-1 text-xs text-destructive"><AlertCircle className="h-3 w-3 shrink-0" />{fieldError("baseName")}</p>
+                        )}
+                      </div>
+                      <Input
+                        id="med-variant"
+                        aria-label={t.medicineVariant}
+                        placeholder={t.medicineVariantPlaceholder}
+                        {...form.register("variant")}
+                      />
+                    </div>
+                    <div className="rounded-xl bg-muted/50 px-3 py-2">
+                      <p className="text-xs text-muted-foreground">{t.medicineNamePreview}</p>
+                      <p className="mt-0.5 text-sm font-semibold name-case text-foreground">{previewName || "—"}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{t.medicineNamePreviewHint}</p>
+                    </div>
+                  </>
                 )}
               </div>
 
@@ -407,6 +480,7 @@ export function MedicineFormModal({
               {/* Ingredients */}
               <div className="space-y-2 sm:col-span-2">
                 <Label>{t.medicineIngredients}</Label>
+                <p className="text-xs text-muted-foreground">{t.medicineIngredientsHint}</p>
 
                 <div className="space-y-2">
                   {fields.map((field, index) => (
@@ -415,10 +489,16 @@ export function MedicineFormModal({
                         placeholder={t.medicineIngredientPlaceholder}
                         {...form.register(`ingredients.${index}.value`)}
                         className={cn(
-                          "flex-1",
+                          "min-w-0 flex-1",
                           form.formState.errors.ingredients?.[index]?.value &&
                             "border-destructive focus-visible:ring-destructive/30"
                         )}
+                      />
+                      <Input
+                        placeholder={t.medicineStrengthPlaceholder}
+                        aria-label={t.medicineStrength}
+                        {...form.register(`ingredients.${index}.strength`)}
+                        className="w-28 shrink-0"
                       />
                       {fields.length > 1 && (
                         <button
@@ -446,7 +526,7 @@ export function MedicineFormModal({
                   variant="outline"
                   size="sm"
                   className="gap-1.5 rounded-lg"
-                  onClick={() => append({ value: "" })}
+                  onClick={() => append({ value: "", strength: "" })}
                 >
                   <Plus className="h-3.5 w-3.5" />
                   {t.medicineIngredientAdd}
