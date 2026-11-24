@@ -89,6 +89,9 @@ function useLabels(t: Translations) {
   return { severity, type };
 }
 
+/** Allergies shown in the summary; the rest are one click away on the Allergies tab. */
+const ALLERGY_PREVIEW = 5;
+
 const TAB_TRIGGER =
   "flex flex-1 items-center justify-center gap-1.5 rounded-none border-b-2 border-transparent px-2 py-3 text-sm sm:gap-2 sm:px-4 [&>svg]:hidden sm:[&>svg]:block font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none";
 
@@ -131,6 +134,7 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
   const labels = useLabels(t);
   const [modal, setModal] = useState<ModalState>(null);
   const [visitPage, setVisitPage] = useState(1);
+  const [tab, setTab] = useState("visits");
 
   const { data: recordData, isLoading: recordLoading } = useQuery({
     queryKey: ["medical-record", customer.uuid],
@@ -229,47 +233,61 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
 
         {!recordLoading && record && (
           <>
-            {/* ── Compact summary: short facts and allergies in one block ── */}
-            <dl className="mx-5 grid grid-cols-2 gap-x-6 gap-y-2 rounded-xl border border-border bg-muted/20 px-4 py-2.5 text-sm lg:grid-cols-[auto_auto_auto_minmax(0,1fr)]">
-              <SummaryItem label={t.medicalRecordBloodType} value={record.bloodType} empty={t.medicalRecordNotSet} />
-              <SummaryItem
-                label={t.medicalRecordEmergencyContact}
-                value={emergencyContact}
-                empty={t.medicalRecordNotSet}
-              />
-              <SummaryItem
-                label={t.medicalRecordLastVisit}
-                value={lastVisit ? formatVisitDate(lastVisit.visitDate, language) : null}
-                empty="—"
-              />
-              {/* Allergies stay visible on every tab */}
-              <div className="col-span-2 min-w-0 lg:col-span-1">
-                <dt className="text-[11px] text-muted-foreground">{t.medicalRecordAllergiesTab}</dt>
-                <dd className="mt-0.5 flex flex-wrap items-center gap-1 text-xs">
+            {/* ── Summary: key facts, then the allergies (worst first, top 5) ── */}
+            <div className="mx-5 rounded-xl border border-border bg-muted/20 px-4 py-3">
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+                <SummaryItem label={t.medicalRecordBloodType} value={record.bloodType} empty={t.medicalRecordNotSet} />
+                <SummaryItem
+                  label={t.medicalRecordEmergencyContact}
+                  value={emergencyContact}
+                  empty={t.medicalRecordNotSet}
+                />
+                <SummaryItem
+                  label={t.medicalRecordLastVisit}
+                  value={lastVisit ? formatVisitDate(lastVisit.visitDate, language) : null}
+                  empty="—"
+                  className="col-span-2 sm:col-span-1"
+                />
+              </dl>
+
+              <div className="mt-3 border-t border-border/70 pt-3">
+                <p className="text-[11px] text-muted-foreground">{t.medicalRecordAllergiesTab}</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
                   {allergies.length === 0 ? (
                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
                       <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
                       {t.medicalRecordNoKnownAllergies}
                     </span>
                   ) : (
-                    allergies.map((a) => (
-                      <span
-                        key={a.uuid}
-                        title={labels.severity[a.severity]}
-                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2 py-0.5 font-medium text-foreground"
-                      >
-                        <span className={cn("h-1.5 w-1.5 rounded-full", SEVERITY_DOT[a.severity])} aria-hidden />
-                        {a.allergenName}
-                        <span className="sr-only">({labels.severity[a.severity]})</span>
-                      </span>
-                    ))
+                    <>
+                      {allergies.slice(0, ALLERGY_PREVIEW).map((a) => (
+                        <span
+                          key={a.uuid}
+                          title={labels.severity[a.severity]}
+                          className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2 py-0.5 font-medium text-foreground"
+                        >
+                          <span className={cn("h-1.5 w-1.5 rounded-full", SEVERITY_DOT[a.severity])} aria-hidden />
+                          {a.allergenName}
+                          <span className="sr-only">({labels.severity[a.severity]})</span>
+                        </span>
+                      ))}
+                      {allergies.length > ALLERGY_PREVIEW && (
+                        <button
+                          type="button"
+                          onClick={() => setTab("allergies")}
+                          className="rounded-full px-2 py-0.5 font-medium text-primary transition-colors hover:bg-primary/10"
+                        >
+                          {t.medicalRecordAllergiesMore.replace("{n}", String(allergies.length - ALLERGY_PREVIEW))}
+                        </button>
+                      )}
+                    </>
                   )}
-                </dd>
+                </div>
               </div>
-            </dl>
+            </div>
 
             {/* ── Tabs ── */}
-            <Tabs defaultValue="visits" className="mt-2 flex min-h-0 flex-1 flex-col gap-0">
+            <Tabs value={tab} onValueChange={setTab} className="mt-2 flex min-h-0 flex-1 flex-col gap-0">
               <div className="border-b border-border px-2 sm:px-5">
                 <TabsList className="flex h-auto w-full gap-0 rounded-none bg-transparent p-0">
                   <TabsTrigger value="visits" className={TAB_TRIGGER}>

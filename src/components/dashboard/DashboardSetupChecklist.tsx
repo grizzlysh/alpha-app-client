@@ -36,7 +36,7 @@ export function DashboardSetupChecklist({ pharmacyUuid }: { pharmacyUuid: string
   if (dismissed || !s) return null;
 
   const steps = [
-    { done: s.hasActiveLicense, label: t.setupLicense, to: "/pharmacies" },
+    { done: s.hasActiveLicense, label: t.setupLicense, to: "/pharmacy-profile" },
     { done: s.hasHeadPharmacist, label: t.setupHeadPharmacist, to: "/users" },
     { done: s.staffCount > 0, label: t.setupStaff, to: "/users" },
     { done: s.medicineCount > 0, label: t.setupMedicines, to: "/medicines" },

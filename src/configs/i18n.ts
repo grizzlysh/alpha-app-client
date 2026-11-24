@@ -387,6 +387,7 @@ export interface Translations {
   medicalRecordNotFoundDesc: string;
   medicalRecordOverviewTab: string;
   medicalRecordAllergiesTab: string;
+  medicalRecordAllergiesMore: string;
   medicalRecordVisitsTab: string;
   // Allergies
   medicalRecordAllergyAdd: string;
@@ -639,6 +640,19 @@ export interface Translations {
   jobsLastRun: string;
   jobsNeverRun: string;
   jobsDailyAt: string;
+  jobsSettings: string;
+  jobsSettingsTitle: string;
+  jobsEnabled: string;
+  jobsEnabledHint: string;
+  jobsTime: string;
+  jobsTimeHint: string;
+  jobsOff: string;
+  jobsDefaultValue: string;
+  jobsPharmacyParams: string;
+  jobsPharmacyParamsHint: string;
+  jobsSettingsSaved: string;
+  jobsParamNotificationRetention: string;
+  jobsParamJobRunRetention: string;
   jobsHistory: string;
   jobsAllJobs: string;
   jobsColJob: string;
@@ -2184,6 +2198,8 @@ export interface Translations {
   sdSignerHint: string;
   pharmaNoOwner: string;
   navPharmacyProfile: string;
+  pharmacyProfileSubtitle: string;
+  pharmaInfoTitle: string;
   setupTitle: string;
   setupProgress: string;
   setupHide: string;
@@ -2327,6 +2343,20 @@ export interface Translations {
   examFlowTriage: string;
   examFlowDoctor: string;
   examFlowDone: string;
+  examViewByPatient: string;
+  examViewByDoctor: string;
+  examDoctorYou: string;
+  examDoctorFree: string;
+  examDoctorBusy: string;
+  examCallNext: string;
+  examNextUp: string;
+  examLaneEmpty: string;
+  examAnyDoctor: string;
+  examAnyDoctorHint: string;
+  examNoDoctorsTitle: string;
+  examNoDoctorsDesc: string;
+  examWaitingCount: string;
+  examCalledIn: string;
   examNewPatient: string;
   examCheckInDescTriage: string;
   roleTypeDoctor: string;
@@ -2716,6 +2746,7 @@ export const translations: Record<Language, Translations> = {
     medicalRecordNotFoundDesc: "This patient doesn't have a medical record yet. It will be created automatically once the backend generates one for this patient.",
     medicalRecordOverviewTab: "Overview",
     medicalRecordAllergiesTab: "Allergies",
+    medicalRecordAllergiesMore: "+{n} more",
     medicalRecordVisitsTab: "Visit History",
     medicalRecordAllergyAdd: "Add Allergy",
     medicalRecordAllergyDelete: "Remove",
@@ -2958,6 +2989,19 @@ export const translations: Record<Language, Translations> = {
     jobsLastRun: "Last run",
     jobsNeverRun: "Not run yet",
     jobsDailyAt: "Daily at {time}",
+    jobsSettings: "Settings",
+    jobsSettingsTitle: "{name} settings",
+    jobsEnabled: "Run on schedule",
+    jobsEnabledHint: "When off, it only runs when started by hand.",
+    jobsTime: "Time of day",
+    jobsTimeHint: "Every day, {tz} time. Default {time}.",
+    jobsOff: "Off",
+    jobsDefaultValue: "Default {value}, range {min}–{max}",
+    jobsPharmacyParams: "Set by each pharmacy",
+    jobsPharmacyParamsHint: "Each pharmacy changes these in Business Parameters:",
+    jobsSettingsSaved: "Settings saved",
+    jobsParamNotificationRetention: "Keep notifications (days)",
+    jobsParamJobRunRetention: "Keep run history (days)",
     jobsHistory: "Run history",
     jobsAllJobs: "All jobs",
     jobsColJob: "Job",
@@ -4476,6 +4520,8 @@ export const translations: Record<Language, Translations> = {
     sdSignerHint: "Disposal records are signed by the Head Pharmacist (active practice license).",
     pharmaNoOwner: "No owner yet",
     navPharmacyProfile: "Pharmacy profile",
+    pharmacyProfileSubtitle: "Details and business licenses of the pharmacy you are working in",
+    pharmaInfoTitle: "Pharmacy information",
     setupTitle: "Finish setting up this pharmacy",
     setupProgress: "{done} of {total} done",
     setupHide: "Hide",
@@ -4619,6 +4665,20 @@ export const translations: Record<Language, Translations> = {
     examFlowTriage: "Triage",
     examFlowDoctor: "Doctor",
     examFlowDone: "Prescription / done",
+    examViewByPatient: "By patient",
+    examViewByDoctor: "By doctor",
+    examDoctorYou: "you",
+    examDoctorFree: "Free",
+    examDoctorBusy: "Examining {n}",
+    examCallNext: "Call next · {n} {name}",
+    examNextUp: "Next: {n} {name}",
+    examLaneEmpty: "No one waiting",
+    examAnyDoctor: "Any doctor",
+    examAnyDoctorHint: "Patients without a chosen doctor appear in every doctor's line; whoever calls them first takes them.",
+    examNoDoctorsTitle: "No in-house doctors yet",
+    examNoDoctorsDesc: "Link a doctor to a user account (Doctors page) to split the queue per doctor.",
+    examWaitingCount: "{n} waiting",
+    examCalledIn: "{name} called in",
     examNewPatient: "New patient",
     examCheckInDescTriage: "Pick the patient who arrived; record vital signs and allergies in the triage panel next.",
     roleTypeDoctor: "Doctor",
@@ -5004,6 +5064,7 @@ export const translations: Record<Language, Translations> = {
     medicalRecordNotFoundDesc: "Pasien ini belum memiliki rekam medis. Rekam medis akan dibuat otomatis setelah backend membuatkannya untuk pasien ini.",
     medicalRecordOverviewTab: "Ringkasan",
     medicalRecordAllergiesTab: "Alergi",
+    medicalRecordAllergiesMore: "+{n} lainnya",
     medicalRecordVisitsTab: "Riwayat Kunjungan",
     medicalRecordAllergyAdd: "Tambah Alergi",
     medicalRecordAllergyDelete: "Hapus",
@@ -5246,6 +5307,19 @@ export const translations: Record<Language, Translations> = {
     jobsLastRun: "Terakhir jalan",
     jobsNeverRun: "Belum pernah jalan",
     jobsDailyAt: "Setiap hari pukul {time}",
+    jobsSettings: "Atur",
+    jobsSettingsTitle: "Pengaturan {name}",
+    jobsEnabled: "Jalan sesuai jadwal",
+    jobsEnabledHint: "Jika dimatikan, job hanya jalan saat dijalankan manual.",
+    jobsTime: "Jam",
+    jobsTimeHint: "Setiap hari, waktu {tz}. Default {time}.",
+    jobsOff: "Nonaktif",
+    jobsDefaultValue: "Default {value}, rentang {min}–{max}",
+    jobsPharmacyParams: "Diatur oleh setiap apotek",
+    jobsPharmacyParamsHint: "Setiap apotek mengubahnya di Parameter Bisnis:",
+    jobsSettingsSaved: "Pengaturan disimpan",
+    jobsParamNotificationRetention: "Simpan notifikasi (hari)",
+    jobsParamJobRunRetention: "Simpan riwayat job (hari)",
     jobsHistory: "Riwayat eksekusi",
     jobsAllJobs: "Semua job",
     jobsColJob: "Job",
@@ -6764,6 +6838,8 @@ export const translations: Record<Language, Translations> = {
     sdSignerHint: "Berita acara pemusnahan ditandatangani Head Pharmacist (SIPA aktif).",
     pharmaNoOwner: "Belum ada pemilik",
     navPharmacyProfile: "Profil apotek",
+    pharmacyProfileSubtitle: "Data dan izin usaha apotek yang sedang Anda buka",
+    pharmaInfoTitle: "Informasi apotek",
     setupTitle: "Lengkapi pengaturan apotek",
     setupProgress: "{done} dari {total} selesai",
     setupHide: "Sembunyikan",
@@ -6907,6 +6983,20 @@ export const translations: Record<Language, Translations> = {
     examFlowTriage: "Triase",
     examFlowDoctor: "Dokter",
     examFlowDone: "Resep / selesai",
+    examViewByPatient: "Per pasien",
+    examViewByDoctor: "Per dokter",
+    examDoctorYou: "Anda",
+    examDoctorFree: "Kosong",
+    examDoctorBusy: "Memeriksa {n}",
+    examCallNext: "Panggil berikutnya · {n} {name}",
+    examNextUp: "Berikutnya: {n} {name}",
+    examLaneEmpty: "Tidak ada yang menunggu",
+    examAnyDoctor: "Bebas",
+    examAnyDoctorHint: "Pasien tanpa pilihan dokter muncul di urutan semua dokter; siapa yang memanggil duluan yang menangani.",
+    examNoDoctorsTitle: "Belum ada dokter praktik",
+    examNoDoctorsDesc: "Hubungkan dokter dengan akun user (halaman Dokter) agar antrean bisa dibagi per dokter.",
+    examWaitingCount: "{n} menunggu",
+    examCalledIn: "{name} dipanggil",
     examNewPatient: "Pasien baru",
     examCheckInDescTriage: "Pilih pasien yang datang, lalu catat tanda vital dan alergi di panel triase.",
     roleTypeDoctor: "Dokter",

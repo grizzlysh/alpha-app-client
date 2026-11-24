@@ -144,8 +144,8 @@ export const PHARMACY_NAV_GROUPS: NavGroup[] = [
     items: [
       { key: "reports", labelKey: "navReports", icon: BarChart2, path: "/reports", permission: "reports.read" },
       { key: "business-parameters", labelKey: "navBusinessParameters", icon: BriefcaseBusiness, path: "/business-parameters", permission: "business_parameters.read" },
-      // The pharmacy's own details and business licenses (the list only shows this pharmacy).
-      { key: "pharmacy-profile", labelKey: "navPharmacyProfile", icon: Hospital, path: "/pharmacies", permission: "pharmacies.update" },
+      // The selected pharmacy's own details and business licenses.
+      { key: "pharmacy-profile", labelKey: "navPharmacyProfile", icon: Hospital, path: "/pharmacy-profile", permission: "pharmacies.update" },
     ],
   },
 ];

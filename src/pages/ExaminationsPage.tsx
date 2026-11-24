@@ -7,6 +7,7 @@ import { ClipboardList, HeartPulse, Plus, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckInModal } from "@/components/examinations/CheckInModal";
+import { DoctorQueueView } from "@/components/examinations/DoctorQueueView";
 import { ExamWorkspace } from "@/components/examinations/ExamWorkspace";
 import { ExamStatusBadge, formatQueueNumber } from "@/components/examinations/examStatus";
 import { QUEUE_STAGES, stageOf, type QueueStage } from "@/components/examinations/queueStage";
@@ -34,6 +35,9 @@ export default function ExaminationsPage(): JSX.Element {
   const [checkInOpen, setCheckInOpen] = useState(false);
   // On narrow screens the list and the workspace take turns.
   const [mobileView, setMobileView] = useState<"queue" | "exam">("queue");
+  // "patient": everyone by stage and arrival; "doctor": one line per doctor.
+  // Until the user picks, doctors start on their own line, everyone else by patient.
+  const [queueView, setQueueView] = useState<"patient" | "doctor" | null>(null);
 
   // The queue changes from other desks (front desk checks in, nurse triages,
   // another doctor calls a patient), so it polls.
@@ -46,6 +50,8 @@ export default function ExaminationsPage(): JSX.Element {
 
   const queue = data?.data;
   const items = useMemo(() => queue?.items ?? [], [queue]);
+  const doctors = useMemo(() => queue?.doctors ?? [], [queue]);
+  const view = queueView ?? (doctors.some((d) => d.isMe) ? "doctor" : "patient");
   const counts: Record<QueueStage, number> = useMemo(() => {
     const c = { WAITING: 0, READY: 0, IN_PROGRESS: 0, COMPLETED: 0 };
     for (const e of items) {
@@ -97,6 +103,45 @@ export default function ExaminationsPage(): JSX.Element {
       <div className="flex min-h-0 flex-1 gap-4">
         {/* ── Queue ── */}
         <Card className={cn("w-full flex-shrink-0 flex-col overflow-hidden lg:flex lg:w-[22rem]", mobileView === "queue" ? "flex" : "hidden")}>
+          {/* How to read the queue: by patient (stages) or by doctor (one line each). */}
+          <div className="grid grid-cols-2 gap-1 border-b border-border p-2" role="tablist" aria-label={t.navExaminations}>
+            {(["patient", "doctor"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                role="tab"
+                aria-selected={view === v}
+                onClick={() => setQueueView(v)}
+                className={cn(
+                  "rounded-lg px-2 py-1.5 text-xs font-semibold transition-colors",
+                  view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                )}
+              >
+                {v === "patient" ? t.examViewByPatient : t.examViewByDoctor}
+              </button>
+            ))}
+          </div>
+
+          {view === "doctor" ? (
+            <div className="flex-1 overflow-y-auto">
+              {isLoading ? (
+                <div className="space-y-2 p-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-28 animate-pulse rounded-xl bg-muted/50" />
+                  ))}
+                </div>
+              ) : (
+                <DoctorQueueView
+                  items={items}
+                  doctors={doctors}
+                  selectedUuid={selectedUuid}
+                  canCall={canPerform}
+                  onSelect={select}
+                />
+              )}
+            </div>
+          ) : (
+          <>
           {/* Stage stepper: the order a patient moves through. */}
           <div className="grid grid-cols-4 gap-1 border-b border-border bg-muted/20 p-2" role="tablist" aria-label={t.navExaminations}>
             {QUEUE_STAGES.map((s) => (
@@ -152,6 +197,8 @@ export default function ExaminationsPage(): JSX.Element {
               </ul>
             )}
           </div>
+          </>
+          )}
         </Card>
 
         {/* ── Workspace ── */}
@@ -283,6 +330,11 @@ function QueueItem({
             {minutes != null && !carriedOver && (stage === "WAITING" || stage === "READY") && ` · ${t.examWaitingFor.replace("{n}", String(minutes))}`}
             {exam.chiefComplaint && ` · ${exam.chiefComplaint}`}
           </span>
+          {(stage === "WAITING" || stage === "READY") && (
+            <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
+              {exam.doctor ? fmt(exam.doctor.name, { doctor: true }) : t.examAnyDoctor}
+            </span>
+          )}
           {vitals && (stage === "READY" || stage === "IN_PROGRESS") && (
             <span className={cn("mt-0.5 flex items-center gap-1 truncate text-[11px] tabular-nums", abnormal ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground")}>
               <ClipboardList className="h-3 w-3 shrink-0" aria-hidden />
