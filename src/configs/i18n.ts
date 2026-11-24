@@ -178,6 +178,16 @@ export interface Translations {
   navSettings: string;
   searchPlaceholder: string;
   notifications: string;
+  notificationsEmpty: string;
+  notificationsEmptyDesc: string;
+  notificationsMarkAllRead: string;
+  notificationsLoadError: string;
+  notificationExpiringBatches: string;
+  notificationExpiredBatches: string;
+  notificationLowStock: string;
+  notificationOverduePayables: string;
+  notificationOverdueReceivables: string;
+  notificationLicenseExpiring: string;
   sidebarCollapse: string;
   sidebarExpand: string;
   branchSingular: string;
@@ -623,6 +633,40 @@ export interface Translations {
   // Nav — parameters
   navBusinessParameters: string;
   navSystemParameters: string;
+  navBackgroundJobs: string;
+  jobsSubtitle: string;
+  jobsRunNow: string;
+  jobsLastRun: string;
+  jobsNeverRun: string;
+  jobsDailyAt: string;
+  jobsHistory: string;
+  jobsAllJobs: string;
+  jobsColJob: string;
+  jobsColStatus: string;
+  jobsColStarted: string;
+  jobsColDuration: string;
+  jobsColAffected: string;
+  jobsColTrigger: string;
+  jobsNoRuns: string;
+  jobsStatusRunning: string;
+  jobsStatusSuccess: string;
+  jobsStatusFailed: string;
+  jobsStatusSkipped: string;
+  jobsTriggerSchedule: string;
+  jobsTriggerManual: string;
+  jobsConfirmTitle: string;
+  jobsConfirmDesc: string;
+  jobsRunDone: string;
+  jobsRunSkippedMsg: string;
+  jobsRunFailedMsg: string;
+  jobNameCancelHeldSales: string;
+  jobDescCancelHeldSales: string;
+  jobNameExpirePrescriptions: string;
+  jobDescExpirePrescriptions: string;
+  jobNamePurgeExpired: string;
+  jobDescPurgeExpired: string;
+  jobNameDailyAlerts: string;
+  jobDescDailyAlerts: string;
   navPharmacyList: string;
 
   // Parameters shared
@@ -2239,6 +2283,7 @@ export interface Translations {
   purchaseAdd: string;
   purchaseSales: string;
   purchaseLoadMore: string;
+  purchaseItemsCount: string;
   examEditVitals: string;
   examAddAllergy: string;
   examEditAllergy: string;
@@ -2465,6 +2510,16 @@ export const translations: Record<Language, Translations> = {
     navSettings: "Settings",
     searchPlaceholder: "Search...",
     notifications: "Notifications",
+    notificationsEmpty: "You're all caught up",
+    notificationsEmptyDesc: "Daily alerts about stock, payments and licenses appear here.",
+    notificationsMarkAllRead: "Mark all as read",
+    notificationsLoadError: "Couldn't load notifications",
+    notificationExpiringBatches: "{n} batch(es) expire within {days} days",
+    notificationExpiredBatches: "{n} expired batch(es) still in stock",
+    notificationLowStock: "{n} medicine(s) at or below reorder level",
+    notificationOverduePayables: "{n} supplier invoice(s) overdue · {amount}",
+    notificationOverdueReceivables: "{n} customer credit sale(s) overdue · {amount}",
+    notificationLicenseExpiring: "{n} license(s) expire within {days} days or have expired",
     sidebarCollapse: "Collapse sidebar",
     sidebarExpand: "Expand sidebar",
     branchSingular: "branch",
@@ -2897,6 +2952,40 @@ export const translations: Record<Language, Translations> = {
     navMedicineClasses: "Medicine Therapeutic Classes",
     navBusinessParameters: "Business Parameters",
     navSystemParameters: "System Parameters",
+    navBackgroundJobs: "Background Jobs",
+    jobsSubtitle: "Scheduled tasks that keep data tidy and send the daily alerts",
+    jobsRunNow: "Run now",
+    jobsLastRun: "Last run",
+    jobsNeverRun: "Not run yet",
+    jobsDailyAt: "Daily at {time}",
+    jobsHistory: "Run history",
+    jobsAllJobs: "All jobs",
+    jobsColJob: "Job",
+    jobsColStatus: "Status",
+    jobsColStarted: "Started",
+    jobsColDuration: "Duration",
+    jobsColAffected: "Changed",
+    jobsColTrigger: "Trigger",
+    jobsNoRuns: "No runs yet",
+    jobsStatusRunning: "Running",
+    jobsStatusSuccess: "Success",
+    jobsStatusFailed: "Failed",
+    jobsStatusSkipped: "Skipped",
+    jobsTriggerSchedule: "Schedule",
+    jobsTriggerManual: "Manual · {name}",
+    jobsConfirmTitle: "Run {name} now?",
+    jobsConfirmDesc: "It also runs on its schedule. Running it again is safe: it only changes what still needs changing.",
+    jobsRunDone: "{name} finished · {n} changed",
+    jobsRunSkippedMsg: "{name} was skipped: it is already running",
+    jobsRunFailedMsg: "{name} failed: {error}",
+    jobNameCancelHeldSales: "Cancel held sales",
+    jobDescCancelHeldSales: "Held sales still open after the day ends are cancelled and their reserved stock is released.",
+    jobNameExpirePrescriptions: "Expire prescriptions",
+    jobDescExpirePrescriptions: "Undispensed prescriptions older than PRESCRIPTION_VALID_DAYS are marked expired.",
+    jobNamePurgeExpired: "Clean up",
+    jobDescPurgeExpired: "Removes expired sign-in tokens and request keys, notifications older than 30 days and runs older than 90 days.",
+    jobNameDailyAlerts: "Daily alerts",
+    jobDescDailyAlerts: "Notifies each pharmacy of expiring stock, low stock, overdue payments and expiring licenses.",
     navPharmacyList: "Pharmacy List",
 
     medicineShapesSubtitle: "Manage medicine dosage forms",
@@ -4486,6 +4575,7 @@ export const translations: Record<Language, Translations> = {
     purchaseAdd: "Add",
     purchaseSales: "Transactions",
     purchaseLoadMore: "Load more",
+    purchaseItemsCount: "{n} medicine(s) · tap for details",
     examEditVitals: "Edit",
     examAddAllergy: "Add allergy",
     examEditAllergy: "Edit allergy",
@@ -4708,6 +4798,16 @@ export const translations: Record<Language, Translations> = {
     navSettings: "Pengaturan",
     searchPlaceholder: "Cari...",
     notifications: "Notifikasi",
+    notificationsEmpty: "Tidak ada notifikasi baru",
+    notificationsEmptyDesc: "Peringatan harian soal stok, pembayaran dan izin akan muncul di sini.",
+    notificationsMarkAllRead: "Tandai semua dibaca",
+    notificationsLoadError: "Gagal memuat notifikasi",
+    notificationExpiringBatches: "{n} batch akan kedaluwarsa dalam {days} hari",
+    notificationExpiredBatches: "{n} batch kedaluwarsa masih ada di stok",
+    notificationLowStock: "{n} obat berada di bawah batas pemesanan ulang",
+    notificationOverduePayables: "{n} faktur distributor lewat jatuh tempo · {amount}",
+    notificationOverdueReceivables: "{n} penjualan kredit pelanggan lewat jatuh tempo · {amount}",
+    notificationLicenseExpiring: "{n} izin akan habis dalam {days} hari atau sudah habis",
     sidebarCollapse: "Ciutkan sidebar",
     sidebarExpand: "Perluas sidebar",
     branchSingular: "cabang",
@@ -5140,6 +5240,40 @@ export const translations: Record<Language, Translations> = {
     navMedicineClasses: "Kelas Terapi Obat",
     navBusinessParameters: "Parameter Bisnis",
     navSystemParameters: "Parameter Sistem",
+    navBackgroundJobs: "Job Latar Belakang",
+    jobsSubtitle: "Tugas terjadwal yang merapikan data dan mengirim peringatan harian",
+    jobsRunNow: "Jalankan sekarang",
+    jobsLastRun: "Terakhir jalan",
+    jobsNeverRun: "Belum pernah jalan",
+    jobsDailyAt: "Setiap hari pukul {time}",
+    jobsHistory: "Riwayat eksekusi",
+    jobsAllJobs: "Semua job",
+    jobsColJob: "Job",
+    jobsColStatus: "Status",
+    jobsColStarted: "Mulai",
+    jobsColDuration: "Durasi",
+    jobsColAffected: "Diubah",
+    jobsColTrigger: "Pemicu",
+    jobsNoRuns: "Belum ada eksekusi",
+    jobsStatusRunning: "Berjalan",
+    jobsStatusSuccess: "Berhasil",
+    jobsStatusFailed: "Gagal",
+    jobsStatusSkipped: "Dilewati",
+    jobsTriggerSchedule: "Jadwal",
+    jobsTriggerManual: "Manual · {name}",
+    jobsConfirmTitle: "Jalankan {name} sekarang?",
+    jobsConfirmDesc: "Job ini juga berjalan sesuai jadwal. Aman dijalankan ulang: hanya mengubah yang memang perlu diubah.",
+    jobsRunDone: "{name} selesai · {n} data diubah",
+    jobsRunSkippedMsg: "{name} dilewati: sedang berjalan",
+    jobsRunFailedMsg: "{name} gagal: {error}",
+    jobNameCancelHeldSales: "Batalkan transaksi tertahan",
+    jobDescCancelHeldSales: "Transaksi hold yang masih terbuka setelah hari berganti dibatalkan dan stok yang ditahan dilepas.",
+    jobNameExpirePrescriptions: "Kedaluwarsakan resep",
+    jobDescExpirePrescriptions: "Resep yang belum ditebus dan lebih tua dari PRESCRIPTION_VALID_DAYS ditandai kedaluwarsa.",
+    jobNamePurgeExpired: "Bersih-bersih data",
+    jobDescPurgeExpired: "Menghapus token login dan kunci request yang kedaluwarsa, notifikasi > 30 hari dan riwayat job > 90 hari.",
+    jobNameDailyAlerts: "Peringatan harian",
+    jobDescDailyAlerts: "Memberi tahu setiap apotek soal stok hampir ED, stok menipis, pembayaran jatuh tempo dan izin yang hampir habis.",
     navPharmacyList: "Daftar Apotek",
 
     medicineShapesSubtitle: "Kelola bentuk sediaan obat",
@@ -6729,6 +6863,7 @@ export const translations: Record<Language, Translations> = {
     purchaseAdd: "Tambah",
     purchaseSales: "Transaksi",
     purchaseLoadMore: "Muat lagi",
+    purchaseItemsCount: "{n} obat · ketuk untuk detail",
     examEditVitals: "Ubah",
     examAddAllergy: "Tambah alergi",
     examEditAllergy: "Ubah alergi",

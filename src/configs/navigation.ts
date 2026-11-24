@@ -23,6 +23,7 @@ import {
   Boxes,
   Stethoscope,
   HeartPulse,
+  Timer,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -38,6 +39,8 @@ export interface NavItem {
   end?: boolean;
   /** Hidden from the menu unless the user holds this permission (any of, if an array). */
   permission?: PermissionCheck;
+  /** Only the platform admin sees it (other platform roles do not). */
+  platformAdminOnly?: boolean;
 }
 
 export interface NavGroup {
@@ -62,6 +65,7 @@ export const GLOBAL_NAV_GROUPS: NavGroup[] = [
   {
     items: [
       { key: "system-parameters", labelKey: "navSystemParameters", icon: MonitorCog, path: "/system-parameters" },
+      { key: "background-jobs", labelKey: "navBackgroundJobs", icon: Timer, path: "/background-jobs", platformAdminOnly: true },
     ],
   },
 ];
