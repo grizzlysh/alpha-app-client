@@ -63,6 +63,7 @@ export function MedicineDetailPanel({
         <InfoPair label={t.medicineTypeLabel} value={medicine.medicineType?.name != null ? fmt(medicine.medicineType.name) : undefined} />
         <InfoPair label={t.medicineClassLabel} value={medicine.medicineClass?.name != null ? fmt(medicine.medicineClass.name) : undefined} />
         <InfoPair label={t.medicineUnit} value={medicine.unit} />
+        <InfoPair label={t.medicineBarcode} value={medicine.barcode} valueClassName="font-mono" />
         {medicine.ingredients.length > 0 && (
           <div className="py-2.5">
             <span className="flex-shrink-0 text-sm text-muted-foreground">{t.medicineIngredients}</span>

@@ -1,5 +1,6 @@
 import { useState, Fragment, type JSX } from "react";
 import {
+  ClipboardList,
   Package,
   Tag,
   Truck,
@@ -8,6 +9,7 @@ import {
   Pencil,
   Trash2,
   Undo2,
+  Printer,
 } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -35,6 +37,7 @@ interface BatchTableProps {
   onAdjust?: (detail: StockDetail) => void;
   onDispose?: (detail: StockDetail) => void;
   onReturn?: (detail: StockDetail) => void;
+  onPrint?: (detail: StockDetail) => void;
 }
 
 function BatchTable({
@@ -44,6 +47,7 @@ function BatchTable({
   onAdjust,
   onDispose,
   onReturn,
+  onPrint,
 }: BatchTableProps): JSX.Element {
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
 
@@ -201,6 +205,20 @@ function BatchTable({
                                 {t.stockDispose}
                               </Button>
                               )}
+                              {onPrint && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-1.5"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onPrint(detail);
+                                }}
+                              >
+                                <Printer className="h-3.5 w-3.5" />
+                                {t.stockPrint}
+                              </Button>
+                              )}
                               {onReturn && (
                               <Button
                                 size="sm"
@@ -242,6 +260,8 @@ export interface StockDetailPanelProps {
   onAdjust?: (detail: StockDetail) => void;
   onDispose?: (detail: StockDetail) => void;
   onReturn?: (detail: StockDetail) => void;
+  onPrint?: (detail: StockDetail) => void;
+  onPrintStockCard?: () => void;
 }
 
 export function StockDetailPanel({
@@ -253,6 +273,8 @@ export function StockDetailPanel({
   onAdjust,
   onDispose,
   onReturn,
+  onPrint,
+  onPrintStockCard,
 }: StockDetailPanelProps): JSX.Element {
   const fmt = useNameFormat();
   const statusClass = getStockStatusClass(stock);
@@ -274,6 +296,7 @@ export function StockDetailPanel({
         onAdjust={onAdjust}
         onDispose={onDispose}
         onReturn={onReturn}
+        onPrint={onPrint}
       />
 
       {/* Divider */}
@@ -372,6 +395,16 @@ export function StockDetailPanel({
           >
             <Pencil className="h-4 w-4" />
             {t.stockUpdateReorder}
+          </Button>
+          )}
+          {onPrintStockCard && (
+          <Button
+            variant="outline"
+            className="flex-1 gap-2 rounded-xl"
+            onClick={onPrintStockCard}
+          >
+            <ClipboardList className="h-4 w-4" />
+            {t.printStockCard}
           </Button>
           )}
         </div>

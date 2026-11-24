@@ -12,6 +12,9 @@ import type {
   UpdateStockPricePayload,
   UpdateStockReorderLevelPayload,
   AdjustStockPayload,
+  BatchLabel,
+  MedicineStockCard,
+  MedicineStockCardParams,
 } from "@/types/stock";
 
 export async function getStockDetails(
@@ -97,5 +100,19 @@ export async function adjustStock(
     `/stock/${stockDetailUuid}/adjust`,
     payload
   );
+  return response.data;
+}
+
+/** Header data and every movement of one batch, for its stock card and labels. */
+export async function getBatchLabel(stockDetailUuid: string): Promise<ApiResponse<BatchLabel>> {
+  const response = await axiosInstance.get<ApiResponse<BatchLabel>>(`/stock/details/${stockDetailUuid}/label`);
+  return response.data;
+}
+
+export async function getMedicineStockCard(
+  medicineUuid: string,
+  params?: MedicineStockCardParams
+): Promise<ApiResponse<MedicineStockCard>> {
+  const response = await axiosInstance.get<ApiResponse<MedicineStockCard>>(`/stock/medicines/${medicineUuid}/card`, { params });
   return response.data;
 }

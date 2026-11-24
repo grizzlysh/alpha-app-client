@@ -32,6 +32,7 @@
     "date-fns": "^4.3.0",
     "dexie": "^4.4.4",
     "html5-qrcode": "^2.3.8",
+    "jsbarcode": "^3.11.6",
     "lucide-react": "^1.17.0",
     "react": "^19.0.0",
     "react-day-picker": "^9.14.0",

@@ -70,6 +70,8 @@ export interface Medicine {
   uuid: string;
   name: string;
   unit: string;
+  /** One code for all batches (maker's EAN-13 or in-house); null when not set. */
+  barcode: string | null;
   status: "ACTIVE" | "INACTIVE";
   medicineShape: { uuid: string; name: string };
   medicineType: { uuid: string; name: string };
@@ -97,6 +99,7 @@ export interface CreateMedicinePayload {
   medicineTypeUuid: string;
   medicineClassUuid: string;
   unit: string;
+  barcode?: string | null;
   ingredients: string[];
 }
 
@@ -106,6 +109,7 @@ export interface UpdateMedicinePayload {
   medicineTypeUuid?: string;
   medicineClassUuid?: string;
   unit?: string;
+  barcode?: string | null;
   ingredients?: string[];
   status?: "ACTIVE" | "INACTIVE";
 }

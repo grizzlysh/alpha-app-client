@@ -1,6 +1,8 @@
 // ── Detail Search Result ──────────────────────────────────────────────────────
 
 export interface StockDetailSearchResult {
+  /** On a barcode scan: what the code was (a batch, a medicine, or one item of a batch). */
+  scanMatch?: "BATCH" | "MEDICINE" | "ITEM";
   uuid: string;
   barcode: string | null;
   batchNumber: string;
@@ -16,6 +18,7 @@ export interface StockDetailSearchResult {
     uuid: string;
     name: string;
     unit: string;
+    barcode?: string | null;
     shape: { name: string };
     type: { name: string; requiredPrescription: boolean };
   };
@@ -25,6 +28,8 @@ export interface StockDetailListParams {
   search?: string;
   /** Sellable (unexpired) batches of one medicine, earliest expiry first. */
   medicineUuid?: string;
+  /** Exact scan: that batch, or the medicine's sellable batches earliest expiry first. */
+  barcode?: string;
 }
 
 export interface StockCatalogParams {
@@ -156,4 +161,68 @@ export interface AdjustStockPayload {
   quantity: number;
   signedByUuid: string;
   description: string;
+}
+
+export interface StockCardMedicine {
+  uuid: string;
+  name: string;
+  unit: string;
+  barcode: string | null;
+  shape: string;
+  type: string;
+  isControlled: boolean;
+  requiredPrescription: boolean;
+  therapeuticClass: string;
+}
+
+/** Data behind a printed batch, item or medicine label. */
+export interface BatchLabel {
+  pharmacy: { name: string; code: string };
+  medicine: StockCardMedicine;
+  batch: {
+    uuid: string;
+    batchNumber: string;
+    barcode: string;
+    expiryDate: string;
+    quantityPieces: number;
+    quantityPerBox: number;
+    distributor: string;
+    location: string | null;
+  };
+  reorderLevel: number;
+  /** Stock of the medicine across all its batches. */
+  medicineTotalPieces: number;
+  sellingPrice: number;
+}
+
+/** One day on a medicine's stock card (all batches together). */
+export interface MedicineStockCardDay {
+  /** yyyy-MM-dd */
+  date: string;
+  in: number;
+  out: number;
+  balance: number;
+  documents: string[];
+  sales: number;
+  adjustments: number;
+}
+
+export interface MedicineStockCard {
+  pharmacy: { name: string; code: string };
+  medicine: StockCardMedicine;
+  reorderLevel: number;
+  totalPieces: number;
+  quantityPerBox: number;
+  sellingPrice: number;
+  batches: { batchNumber: string; expiryDate: string; quantityPieces: number; location: string | null }[];
+  period: { from: string; to: string };
+  openingBalance: number;
+  closingBalance: number;
+  movementsAfterPeriod: number;
+  days: MedicineStockCardDay[];
+}
+
+export interface MedicineStockCardParams {
+  from?: string;
+  to?: string;
 }

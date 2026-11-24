@@ -31,6 +31,7 @@ const PharmaciesPage = lazy(() => import("@/pages/PharmaciesPage"));
 const PurchaseOrdersPage = lazy(() => import("@/pages/PurchaseOrdersPage"));
 const InvoicesPage = lazy(() => import("@/pages/InvoicesPage"));
 const StockPage = lazy(() => import("@/pages/StockPage"));
+const StockLabelsPage = lazy(() => import("@/pages/StockLabelsPage"));
 const CustomersPage = lazy(() => import("@/pages/CustomersPage"));
 const StockDisposalsPage = lazy(() => import("@/pages/StockDisposalsPage"));
 const StockReturnsPage = lazy(() => import("@/pages/StockReturnsPage"));
@@ -107,6 +108,7 @@ function AppRoutes(): JSX.Element {
             <Route path="/pos" element={<PosPage />} />
             <Route path="/sales" element={<SalesPage />} />
             <Route path="/stock" element={<StockPage />} />
+            <Route path="/stock-labels" element={<StockLabelsPage />} />
             <Route path="/stock-disposals" element={<StockDisposalsPage />} />
             <Route path="/stock-returns" element={<StockReturnsPage />} />
             <Route path="/stock-movements" element={<StockMovementsPage />} />

@@ -188,8 +188,9 @@ export default function PosPage(): JSX.Element {
 
   // ── Cart handlers ──────────────────────────────────────────────────────────
 
+  // `quantity`: pieces to add at once (a scanned box label adds the whole box).
   const handleAddToCart = useCallback(
-    (detail: StockDetailSearchResult): boolean => {
+    (detail: StockDetailSearchResult, quantity = 1): boolean => {
       const available = detail.availablePieces ?? detail.quantityPieces;
       if (available <= 0) {
         toast.error(`${fmt(detail.medicine.name)} — ${t.posOutOfStock}`);
@@ -205,13 +206,15 @@ export default function PosPage(): JSX.Element {
             return prev;
           }
           return prev.map((item, i) =>
-            i === existingIndex ? { ...item, quantityPieces: item.quantityPieces + 1 } : item
+            i === existingIndex
+              ? { ...item, quantityPieces: Math.min(item.quantityPieces + quantity, item.availablePieces) }
+              : item
           );
         }
         const newItem: CartItem = {
           stockDetailUuid: detail.uuid,
           medicineUuid: detail.medicine.uuid,
-          quantityPieces: 1,
+          quantityPieces: Math.min(Math.max(1, quantity), available),
           discount: 0,
           medicineName: detail.medicine.name,
           unit: detail.medicine.unit,
@@ -295,14 +298,22 @@ export default function PosPage(): JSX.Element {
   }
 
   // ── Barcode lookup (camera modal, USB scanner, Enter in search) ────────────
-  // Exact barcode match through the unpaginated /stock/details endpoint.
+  // A batch barcode picks that batch; a medicine barcode picks its batch with
+  // the earliest expiry that still has stock (FEFO). The server returns either
+  // the one batch or the medicine's sellable batches, earliest expiry first.
   const addByBarcode = useCallback(
     async (code: string): Promise<boolean> => {
       try {
-        const res = await getStockDetails({ search: code });
-        const match = res.data?.find((item) => item.barcode === code);
+        const res = await getStockDetails({ barcode: code });
+        const batches = res.data ?? [];
+        const match =
+          batches.find((item) => item.barcode === code) ??
+          batches.find((item) => item.availablePieces > 0) ??
+          batches[0];
         if (!match) return false;
-        if (handleAddToCart(match)) {
+        // An item label stands for one box of its batch.
+        const quantity = match.scanMatch === "ITEM" ? Math.max(1, match.quantityPerBox) : 1;
+        if (handleAddToCart(match, quantity)) {
           toast.success(t.posScanAdded.replace("{name}", fmt(match.medicine.name)), { duration: 1500 });
         }
         return true;
