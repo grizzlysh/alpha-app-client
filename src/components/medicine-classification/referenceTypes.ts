@@ -4,6 +4,7 @@ export interface ReferenceItem {
   uuid: string;
   name: string;
   requiredPrescription?: boolean;
+  isControlled?: boolean;
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string;
@@ -57,6 +58,10 @@ export interface ReferenceLabels {
   requiredPrescriptionLabel?: string;
   requiredPrescriptionYes?: string;
   requiredPrescriptionNo?: string;
+  // Controlled (narcotics/psychotropics/precursors; medicine types only)
+  controlledLabel?: string;
+  controlledHint?: string;
+  controlledBadge?: string;
   // Success / error
   createSuccess: (t: Translations) => string;
   updateSuccess: (t: Translations) => string;

@@ -23,6 +23,7 @@ import { SaleCancelModal } from "@/components/sales/SaleCancelModal";
 import { SaleRefundModal } from "@/components/sales/SaleRefundModal";
 import { SalePaymentAddModal } from "@/components/sales/SalePaymentAddModal";
 import { SaleCompleteModal } from "@/components/sales/SaleCompleteModal";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Modal state ───────────────────────────────────────────────────────────────
 
@@ -37,6 +38,7 @@ type ModalState =
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function SalesPage(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
@@ -60,7 +62,7 @@ export default function SalesPage(): JSX.Element {
 
   const patientFilterOptions = [
     { value: "all", label: `${t.saleFilterPatient}: ${t.filterAll}` },
-    ...(customersData?.data ?? []).map((c) => ({ value: c.uuid, label: c.name.toUpperCase() })),
+    ...(customersData?.data ?? []).map((c) => ({ value: c.uuid, label: fmt(c.name) })),
   ];
 
   const { data, isLoading, isFetching } = useQuery({

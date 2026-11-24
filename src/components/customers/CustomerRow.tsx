@@ -147,7 +147,7 @@ export function CustomerRow({
             {getInitials(customer.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium uppercase text-foreground">{customer.name}</p>
+            <p className="truncate font-medium name-case text-foreground">{customer.name}</p>
             {customer.phone && (
               <p className="truncate text-xs text-muted-foreground sm:hidden">
                 {customer.phone}

@@ -22,6 +22,7 @@ import { InvoiceDetailPanel } from "@/components/invoices/InvoiceDetailPanel";
 import { InvoiceFormModal } from "@/components/invoices/InvoiceFormModal";
 import { InvoiceDeleteModal } from "@/components/invoices/InvoiceDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Modal state ───────────────────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ type ModalState =
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function InvoicesPage(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
@@ -58,7 +60,7 @@ export default function InvoicesPage(): JSX.Element {
     { value: "all", label: `${t.invoiceFilterDistributor}: ${t.filterAll}` },
     ...(distributorsData?.data ?? []).map((d) => ({
       value: d.uuid,
-      label: d.name.toUpperCase(),
+      label: fmt(d.name),
     })),
   ];
 

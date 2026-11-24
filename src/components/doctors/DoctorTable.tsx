@@ -11,7 +11,6 @@ import {
 } from "@tanstack/react-table";
 import { Stethoscope, MoreVertical, Eye, Pencil, Trash2 } from "lucide-react";
 
-import { toDoctorName } from "@/utils/stringHelpers";
 
 import type { Translations } from "@/configs/i18n";
 import type { Doctor } from "@/types/doctor";
@@ -20,6 +19,7 @@ import { TableSortIcon } from "@/components/shared/TableSortIcon";
 import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Row action menu ───────────────────────────────────────────────────────────
 
@@ -138,6 +138,7 @@ interface DoctorRowProps {
 }
 
 function DoctorRow({ doctor, t, onDetails, onEdit, onDelete }: DoctorRowProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: Name */}
@@ -147,7 +148,7 @@ function DoctorRow({ doctor, t, onDetails, onEdit, onDelete }: DoctorRowProps): 
             <Stethoscope className="h-4 w-4 text-primary" />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium text-foreground">{toDoctorName(doctor.name)}</p>
+            <p className="truncate font-medium text-foreground">{fmt(doctor.name, { doctor: true })}</p>
             {doctor.specialty && (
               <p className="truncate text-xs text-muted-foreground">{doctor.specialty}</p>
             )}

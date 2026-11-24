@@ -56,7 +56,7 @@ export function SaleRow({
           </div>
           <div className="min-w-0">
             <p className="truncate font-medium text-foreground">{sale.saleNumber}</p>
-            <p className="truncate text-xs uppercase text-muted-foreground">{sale.customer.name}</p>
+            <p className="truncate text-xs name-case text-muted-foreground">{sale.customer.name}</p>
           </div>
         </div>
       </td>

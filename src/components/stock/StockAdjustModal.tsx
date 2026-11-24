@@ -24,7 +24,7 @@ import type { Translations } from "@/configs/i18n";
 import { getApiErrorMessage } from "@/utils/apiError";
 import type { Stock, StockDetail } from "@/types/stock";
 import { adjustStock } from "@/service/stockService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -76,8 +76,9 @@ export function StockAdjustModal({
   });
 
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "PHARMACIST"],
+    // Only pharmacists with an active practice license can sign.
+    queryFn: () => getSigners("PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -139,7 +140,7 @@ export function StockAdjustModal({
           <div className="px-6 py-5">
             {/* Medicine + batch context */}
             <div className="mb-5 rounded-xl bg-muted/50 px-4 py-3">
-              <p className="text-sm font-medium uppercase text-foreground">
+              <p className="text-sm font-medium name-case text-foreground">
                 {stock.medicine.name}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">

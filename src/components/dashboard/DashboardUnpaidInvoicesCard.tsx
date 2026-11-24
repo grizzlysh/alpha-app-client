@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/card";
 import type { Translations } from "@/configs/i18n";
 import type { UnpaidInvoiceSummary } from "@/types/dashboard";
 import { formatCompactCurrency, CHART_TOOLTIP_STYLE } from "./dashboardUtils";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface DashboardUnpaidInvoicesCardProps {
   t: Translations;
@@ -27,6 +28,7 @@ export function DashboardUnpaidInvoicesCard({
   unpaidInvoices,
   isLoading,
 }: DashboardUnpaidInvoicesCardProps): JSX.Element {
+  const fmt = useNameFormat();
   const byDistributor = unpaidInvoices?.byDistributor ?? [];
   const totalOutstanding = unpaidInvoices?.totalOutstanding ?? 0;
   const totalCount = unpaidInvoices?.totalCount ?? 0;
@@ -39,7 +41,7 @@ export function DashboardUnpaidInvoicesCard({
   });
 
   const chartData = sorted.slice(0, 6).map((d) => ({
-    name: d.distributorName.toUpperCase(),
+    name: fmt(d.distributorName),
     value: d.totalOutstanding,
     invoiceCount: d.invoiceCount,
   }));

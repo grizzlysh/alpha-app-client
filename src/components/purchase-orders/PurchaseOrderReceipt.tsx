@@ -3,6 +3,11 @@ import type { JSX } from "react";
 import type { PurchaseOrder, PurchaseOrderPrintData } from "@/types/purchaseOrder";
 import { translations } from "@/configs/i18n";
 import { BiLabel, sl } from "@/utils/bilingualDoc";
+import { formatName } from "@/utils/nameFormat";
+import { currentNameCase } from "@/hooks/useNameFormat";
+
+/** Names follow the pharmacy's display setting; read at render (this may print outside the app tree). */
+const nm = (name: string): string => formatName(name, currentNameCase());
 
 const EN = translations.en;
 const ID = translations.id;
@@ -121,7 +126,7 @@ export function PurchaseOrderReceipt({
       {/* Recipient */}
       <div style={{ marginBottom: "10px", fontSize: "11px" }}>
         <span>{sl(ID.poReceiptKepada, EN.poReceiptKepada)} </span>
-        <span style={{ fontWeight: "bold", textTransform: "uppercase" }}>{order.distributor.name}</span>
+        <span style={{ fontWeight: "bold" }}>{nm(order.distributor.name)}</span>
       </div>
 
       {/* Items table */}
@@ -164,7 +169,7 @@ export function PurchaseOrderReceipt({
                 {i + 1}
               </td>
               <td style={{ padding: "4px 6px", verticalAlign: "top", fontWeight: "bold" }}>
-                <span style={{ textTransform: "uppercase" }}>{item.medicine.name}</span>
+                <span>{nm(item.medicine.name)}</span>
               </td>
               <td style={{ padding: "4px 6px", textAlign: "right", verticalAlign: "top" }}>
                 {item.quantity}

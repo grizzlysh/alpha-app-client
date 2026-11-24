@@ -6,6 +6,8 @@ import type { Customer } from "@/types/customer";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getInitials, getAvatarColor, formatDate } from "./customerUtils";
+import { PurchaseHistory } from "./PurchaseHistory";
+import { useCan } from "@/hooks/usePermission";
 
 function SectionTitle({ title }: { title: string }): JSX.Element {
   return (
@@ -33,6 +35,8 @@ export function CustomerDetailPanel({
   onEdit,
   onDelete,
 }: CustomerDetailPanelProps): JSX.Element {
+  const can = useCan();
+  const showPurchases = !customer.isWalkIn && can("sales.read");
   const isPatient = customer.customerType === "PATIENT";
   const isProfessional = customer.customerType === "PROFESSIONAL";
 
@@ -57,6 +61,7 @@ export function CustomerDetailPanel({
       icon={<UserRound className="h-4 w-4 text-primary" />}
       title={t.customerDetailsTitle}
       onClose={onClose}
+      className={showPurchases ? "sm:max-w-md" : undefined}
       actions={[
         {
           label: t.customerEdit,
@@ -82,7 +87,7 @@ export function CustomerDetailPanel({
           {getInitials(customer.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold uppercase text-foreground">{customer.name}</p>
+          <p className="text-lg font-bold name-case text-foreground">{customer.name}</p>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <StatusBadge
               status={customer.status}
@@ -133,6 +138,15 @@ export function CustomerDetailPanel({
             <InfoPair label={t.professionalProfession} value={customer.professionalDetail.profession} />
             <InfoPair label={t.professionalStrNumber} value={customer.professionalDetail.strNumber} />
             <InfoPair label={t.professionalSipNumber} value={customer.professionalDetail.sipNumber} />
+          </div>
+        </>
+      )}
+
+      {showPurchases && (
+        <>
+          <SectionTitle title={t.purchaseHistoryTitle} />
+          <div className="px-5 pb-6">
+            <PurchaseHistory customerUuid={customer.uuid} />
           </div>
         </>
       )}

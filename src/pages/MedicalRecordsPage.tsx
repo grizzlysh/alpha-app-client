@@ -14,6 +14,7 @@ import { getCustomers } from "@/service/customerService";
 import { cn } from "@/utils/cn";
 import type { Customer } from "@/types/customer";
 import { MedicalRecordPanel } from "@/components/medical-records/MedicalRecordPanel";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 function getInitials(name: string): string {
   return name
@@ -138,6 +139,7 @@ function PatientListItem({
   onClick,
   medicalRecordLabel,
 }: PatientListItemProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <button
       className={cn(
@@ -162,7 +164,7 @@ function PatientListItem({
       </div>
       <div className="min-w-0 flex-1">
         <p className={cn("truncate text-sm font-semibold", isSelected ? "text-primary" : "text-foreground")}>
-          {patient.name.toUpperCase()}
+          {fmt(patient.name)}
         </p>
         <p className="truncate font-mono text-xs text-muted-foreground">
           {patient.medicalRecord?.number

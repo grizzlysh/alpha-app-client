@@ -46,7 +46,7 @@ import {
 } from "@/service/purchaseOrderService";
 import { getDistributorsDropdown } from "@/service/distributorService";
 import { getMedicinesDropdown } from "@/service/medicineService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 
 // ── Main form schema ──────────────────────────────────────────────────────────
 
@@ -445,9 +445,10 @@ export function PurchaseOrderFormModal({
     staleTime: 5 * 60 * 1000,
   });
 
+  // Only people allowed to sign: licensed pharmacists.
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "PHARMACIST"],
+    queryFn: () => getSigners("PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -469,9 +470,12 @@ export function PurchaseOrderFormModal({
   const signerOptions = useMemo(
     () => [
       { value: "", label: t.poSelectSignedBy },
-      ...(usersData?.data ?? []).map((u) => ({ value: u.uuid, label: u.name })),
+      ...(usersData?.data ?? []).map((u) => ({
+        value: u.uuid,
+        label: u.isHeadPharmacist ? `${u.name} · ${t.roleTypeHeadPharmacist}` : u.name,
+      })),
     ],
-    [usersData?.data, t.poSelectSignedBy]
+    [usersData?.data, t.poSelectSignedBy, t.roleTypeHeadPharmacist]
   );
 
   // ── Item sub-form handlers ──────────────────────────────────────────────────
@@ -685,6 +689,7 @@ export function PurchaseOrderFormModal({
                   />
                 )}
               />
+              <p className="text-xs text-muted-foreground">{t.poSignerHint}</p>
             </div>
 
             {/* Description */}

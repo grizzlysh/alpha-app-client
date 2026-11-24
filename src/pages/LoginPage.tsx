@@ -29,6 +29,7 @@ import {
 import { cn } from "@/utils/cn";
 
 import { useLogin } from "@/hooks/useLogin";
+import { ForcePasswordChange } from "@/components/shared/ForcePasswordChange";
 import { useTheme } from "@/hooks/useTheme";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -41,7 +42,7 @@ interface LoginFormValues {
 export default function LoginPage(): JSX.Element {
   const { theme, toggleTheme } = useTheme();
   const { language, t, toggleLanguage } = useLanguage();
-  const { submit, isPending } = useLogin();
+  const { submit, isPending, passwordChangeFor, completePasswordChange, cancelPasswordChange } = useLogin();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -202,7 +203,18 @@ export default function LoginPage(): JSX.Element {
         {/* Centered form — no card, sits directly on background */}
         <main className="relative z-10 flex flex-1 items-center justify-center px-5 pb-12 pt-2">
           <div className="w-full max-w-[400px]">
-
+            {passwordChangeFor ? (
+              <ForcePasswordChange
+                email={passwordChangeFor}
+                isPending={isPending}
+                onSubmit={(pw) => void completePasswordChange(pw)}
+                onCancel={() => {
+                  cancelPasswordChange();
+                  form.setValue("password", "");
+                }}
+              />
+            ) : (
+            <>
             {/* Heading */}
             <div className="mb-8">
               <h1 className="text-[2rem] leading-tight tracking-tight text-foreground">
@@ -356,6 +368,8 @@ export default function LoginPage(): JSX.Element {
                 {t.contactAdmin}
               </button>
             </p>
+            </>
+            )}
 
             {/* Mobile copyright */}
             <p className="mt-8 text-center text-xs text-muted-foreground/50 lg:hidden">

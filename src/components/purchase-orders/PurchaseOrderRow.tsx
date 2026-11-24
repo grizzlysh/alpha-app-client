@@ -71,7 +71,7 @@ export function PurchaseOrderRow({
               {order.orderNumber}
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              <span className="uppercase">{order.distributor.name}</span>
+              <span className="name-case">{order.distributor.name}</span>
             </p>
           </div>
         </div>

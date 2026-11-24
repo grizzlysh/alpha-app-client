@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { JSX } from "react";
 import { useMemo } from "react";
 import { Shapes, Tag, Shield } from "lucide-react";
@@ -11,11 +12,18 @@ import { getMedicineTypes, createMedicineType, updateMedicineType, deleteMedicin
 import { getMedicineClasses, createMedicineClass, updateMedicineClass, deleteMedicineClass } from "@/service/medicineClassService";
 import { ReferenceTabContent } from "@/components/medicine-classification/ReferenceTabContent";
 import type { ReferenceLabels } from "@/components/medicine-classification/referenceTypes";
+import { useCan } from "@/hooks/usePermission";
+import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import { CatalogImportModal } from "@/components/medicine/CatalogImportModal";
+import { downloadCatalog } from "@/components/medicine/catalogFile";
+import { exportCatalog } from "@/service/catalogService";
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MedicineClassificationPage(): JSX.Element {
   const { t } = useLanguage();
+  const [importing, setImporting] = useState(false);
+  const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
 
   const shapeLabels = useMemo<ReferenceLabels>(() => ({
@@ -95,6 +103,9 @@ export default function MedicineClassificationPage(): JSX.Element {
     requiredPrescriptionLabel: t.medicineTypeRequiredPrescription,
     requiredPrescriptionYes: t.medicineTypeRequiredPrescriptionYes,
     requiredPrescriptionNo: t.medicineTypeRequiredPrescriptionNo,
+    controlledLabel: t.medicineTypeControlled,
+    controlledHint: t.medicineTypeControlledHint,
+    controlledBadge: t.medicineTypeControlledBadge,
     createSuccess: (t) => t.medicineTypeCreateSuccess,
     updateSuccess: (t) => t.medicineTypeUpdateSuccess,
     deleteSuccess: (t) => t.medicineTypeDeleteSuccess,
@@ -155,6 +166,20 @@ export default function MedicineClassificationPage(): JSX.Element {
           {t.medicineClassificationSubtitle}
         </p>
       </div>
+
+      {/* Same file as Medicines → Export: medicines plus all classifications */}
+      <div className="flex flex-wrap justify-end gap-2">
+        <DataTransferButtons
+          onExport={async () => {
+            const res = await exportCatalog();
+            if (res.data) downloadCatalog(res.data);
+          }}
+          onImport={can("medicines.create") ? () => setImporting(true) : undefined}
+          exportHint={t.catalogExportHint}
+          importHint={t.catalogImportDesc}
+        />
+      </div>
+      {importing && <CatalogImportModal onClose={() => setImporting(false)} />}
 
       {/* Main card */}
       <Card className="overflow-hidden">

@@ -117,7 +117,7 @@ export function PurchaseOrderDetailPanel({
 
       {/* Info pairs */}
       <div className="divide-y divide-border px-5">
-        <InfoPair label={t.poDistributor} value={order.distributor.name} valueClassName="uppercase" />
+        <InfoPair label={t.poDistributor} value={order.distributor.name} valueClassName="name-case" />
         <InfoPair label={t.poSignedBy} value={order.signedByUser?.name} />
         <InfoPair label={t.poDescription} value={order.description} />
         <InfoPair label={t.poCancellationReason} value={order.cancellationReason} />
@@ -138,7 +138,7 @@ export function PurchaseOrderDetailPanel({
                 key={item.uuid}
                 className="rounded-lg border border-border bg-muted/30 px-3 py-2"
               >
-                <p className="text-sm font-medium uppercase text-foreground">{item.medicine.name}</p>
+                <p className="text-sm font-medium name-case text-foreground">{item.medicine.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {item.quantity} {item.unit}
                   {item.description && ` · ${item.description}`}

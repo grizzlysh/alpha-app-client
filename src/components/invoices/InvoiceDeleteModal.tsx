@@ -78,7 +78,7 @@ export function InvoiceDeleteModal({
             {t.invoiceDeleteConfirmDesc}
           </DialogDescription>
           <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-sm font-medium text-foreground">
-            <span className="uppercase">{invoice.invoiceNumber}</span> · <span className="uppercase">{invoice.distributor.name}</span>
+            <span className="uppercase">{invoice.invoiceNumber}</span> · <span className="name-case">{invoice.distributor.name}</span>
           </p>
         </div>
 

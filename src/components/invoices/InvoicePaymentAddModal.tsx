@@ -172,7 +172,7 @@ export function InvoicePaymentAddModal({
           <div className="space-y-4 px-6 py-5">
             {/* Invoice reference */}
             <div className="rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
-              <span className="uppercase">{invoice.invoiceNumber}</span> · <span className="uppercase">{invoice.distributor.name}</span>
+              <span className="uppercase">{invoice.invoiceNumber}</span> · <span className="name-case">{invoice.distributor.name}</span>
             </div>
 
             {/* Payment method */}

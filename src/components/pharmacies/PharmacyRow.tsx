@@ -67,7 +67,15 @@ export function PharmacyRow({
 
       {/* Status — always */}
       <td className="min-w-[110px] px-5 py-4">
-        <StatusBadge status={pharmacy.status} label={getPharmacyStatusLabel(pharmacy.status, t)} />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <StatusBadge status={pharmacy.status} label={getPharmacyStatusLabel(pharmacy.status, t)} />
+          {/* Onboarding unfinished: nobody can sign in to run it yet. */}
+          {pharmacy.hasOwner === false && (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+              {t.pharmaNoOwner}
+            </span>
+          )}
+        </div>
       </td>
 
       {/* Sticky right: action menu */}

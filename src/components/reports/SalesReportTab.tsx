@@ -15,10 +15,12 @@ import { ReportSection } from "./ReportSection";
 import { ReportTable } from "./ReportTable";
 import { buildDateParams, formatCurrency, formatDate } from "./reportUtils";
 import { exportToCsv, exportToXlsx } from "./reportExport";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 type DetailTab = "transactions" | "daily" | "top-medicines" | "payment";
 
 export function SalesReportTab(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
 
   const [mode, setMode] = useState<ReportFilterMode>("monthly");
@@ -71,7 +73,7 @@ export function SalesReportTab(): JSX.Element {
         const rows = resp.data ?? [];
         exportToCsv("sales-transactions.csv",
           [t.reportSalesSaleNumber, t.reportSalesDate, t.reportSalesPatient, t.reportSalesSaleType, t.reportSalesStatus, t.reportSalesTotalAmount, t.reportSalesDiscountPct, t.reportSalesDiscountAmt, t.reportSalesPPN, t.reportSalesGrandTotal, t.reportSalesPaidAmount, t.reportSalesPaymentStatus],
-          rows.map((r) => [r.saleNumber, r.soldAt, r.customerName, r.saleType, r.status, r.totalAmount, r.discountPercentage, r.discountAmount, r.ppnAmount, r.grandTotal, r.paidAmount, r.paymentStatus])
+          rows.map((r) => [r.saleNumber, r.soldAt, fmt(r.customerName), r.saleType, r.status, r.totalAmount, r.discountPercentage, r.discountAmount, r.ppnAmount, r.grandTotal, r.paidAmount, r.paymentStatus])
         );
       } else if (activeTab === "daily") {
         exportToCsv("sales-daily.csv",
@@ -81,7 +83,7 @@ export function SalesReportTab(): JSX.Element {
       } else if (activeTab === "top-medicines") {
         exportToCsv("sales-top-medicines.csv",
           [t.reportSalesMedicine, t.reportSalesQtyPieces, t.reportSalesRevenue],
-          summary.topMedicines.map((r) => [r.medicineName, r.totalQuantityPieces, r.totalRevenue])
+          summary.topMedicines.map((r) => [fmt(r.medicineName), r.totalQuantityPieces, r.totalRevenue])
         );
       } else {
         exportToCsv("sales-payment.csv",
@@ -104,7 +106,7 @@ export function SalesReportTab(): JSX.Element {
         {
           name: t.reportSalesTransactions,
           headers: [t.reportSalesSaleNumber, t.reportSalesDate, t.reportSalesPatient, t.reportSalesSaleType, t.reportSalesStatus, t.reportSalesTotalAmount, t.reportSalesDiscountPct, t.reportSalesDiscountAmt, t.reportSalesPPN, t.reportSalesGrandTotal, t.reportSalesPaidAmount, t.reportSalesPaymentStatus],
-          rows: txRows.map((r) => [r.saleNumber, r.soldAt, r.customerName, r.saleType, r.status, r.totalAmount, r.discountPercentage, r.discountAmount, r.ppnAmount, r.grandTotal, r.paidAmount, r.paymentStatus]),
+          rows: txRows.map((r) => [r.saleNumber, r.soldAt, fmt(r.customerName), r.saleType, r.status, r.totalAmount, r.discountPercentage, r.discountAmount, r.ppnAmount, r.grandTotal, r.paidAmount, r.paymentStatus]),
         },
         {
           name: t.reportSalesDailyRevenue,
@@ -114,7 +116,7 @@ export function SalesReportTab(): JSX.Element {
         {
           name: t.reportSalesTopMedicines,
           headers: [t.reportSalesMedicine, t.reportSalesQtyPieces, t.reportSalesRevenue],
-          rows: summary.topMedicines.map((r) => [r.medicineName, r.totalQuantityPieces, r.totalRevenue]),
+          rows: summary.topMedicines.map((r) => [fmt(r.medicineName), r.totalQuantityPieces, r.totalRevenue]),
         },
         {
           name: t.reportSalesPaymentBreakdown,
@@ -178,7 +180,7 @@ export function SalesReportTab(): JSX.Element {
                     columns={[
                       { key: "saleNo", header: t.reportSalesSaleNumber, sortValue: (r) => r.saleNumber, render: (r) => r.saleNumber },
                       { key: "date", header: t.reportSalesDate, sortValue: (r) => r.soldAt, render: (r) => r.soldAt },
-                      { key: "patient", header: t.reportSalesPatient, sortValue: (r) => r.customerName, render: (r) => <span className="uppercase">{r.customerName}</span> },
+                      { key: "patient", header: t.reportSalesPatient, sortValue: (r) => r.customerName, render: (r) => <span className="name-case">{r.customerName}</span> },
                       { key: "type", header: t.reportSalesSaleType, sortValue: (r) => r.saleType, render: (r) => r.saleType },
                       { key: "status", header: t.reportSalesStatus, sortValue: (r) => r.status, render: (r) => r.status },
                       { key: "total", header: t.reportSalesTotalAmount, sortValue: (r) => r.totalAmount, render: (r) => formatCurrency(r.totalAmount) },
@@ -225,7 +227,7 @@ export function SalesReportTab(): JSX.Element {
                 emptyLabel={t.reportNoData}
                 columns={[
                   { key: "no", header: "#", className: "w-10", render: (_, i) => i + 1 },
-                  { key: "name", header: t.reportSalesMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                  { key: "name", header: t.reportSalesMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                   { key: "qty", header: t.reportSalesQtyPieces, sortValue: (r) => r.totalQuantityPieces, render: (r) => r.totalQuantityPieces.toLocaleString("id-ID") },
                   { key: "revenue", header: t.reportSalesRevenue, sortValue: (r) => r.totalRevenue, render: (r) => formatCurrency(r.totalRevenue) },
                 ]}

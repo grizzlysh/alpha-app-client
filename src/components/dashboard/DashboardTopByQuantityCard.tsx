@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import type { Translations } from "@/configs/i18n";
 import type { TopProductItem } from "@/types/dashboard";
 import { CHART_TOOLTIP_STYLE } from "./dashboardUtils";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface DashboardTopByQuantityCardProps {
   t: Translations;
@@ -18,6 +19,7 @@ export function DashboardTopByQuantityCard({
   data,
   isLoading,
 }: DashboardTopByQuantityCardProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <Card className="p-4">
       <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -44,7 +46,7 @@ export function DashboardTopByQuantityCard({
                 axisLine={false}
                 width={110}
                 tick={{ fontSize: 10, fill: "currentColor" }}
-                tickFormatter={(v: string) => v.toUpperCase()}
+                tickFormatter={(v: string) => fmt(v)}
                 className="text-muted-foreground"
               />
               <Tooltip

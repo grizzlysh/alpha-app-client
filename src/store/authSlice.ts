@@ -6,6 +6,7 @@ import type {
   SelectPharmacyResponse,
 } from "@/types/auth";
 import { storeToken, clearToken, hasSessionHint } from "@/utils/tokenStore";
+import type { NameCase } from "@/utils/nameFormat";
 
 const initialState: AuthState = {
   // Never persisted; re-issued from the refresh cookie on startup.
@@ -68,6 +69,10 @@ const authSlice = createSlice({
         state.user.name = action.payload.name;
       }
     },
+    /** After the pharmacy changes its name display setting. */
+    setNameCase(state, action: PayloadAction<NameCase>) {
+      if (state.currentPharmacy) state.currentPharmacy.nameCase = action.payload;
+    },
     clearPharmacy(state) {
       state.currentPharmacy = null;
       state.permissions = {};
@@ -89,5 +94,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setLoginCredentials, setPharmacy, setFullAuth, restoreSession, updateUserProfile, clearPharmacy, logout, setAccessToken } = authSlice.actions;
+export const { setLoginCredentials, setPharmacy, setFullAuth, restoreSession, updateUserProfile, setNameCase, clearPharmacy, logout, setAccessToken } = authSlice.actions;
 export const authReducer = authSlice.reducer;

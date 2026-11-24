@@ -159,7 +159,7 @@ export function InvoiceDetailPanel({
                 {data.details.map((item) => (
                   <tr key={item.uuid} className="hover:bg-muted/40">
                     <td className="overflow-hidden px-5 py-3">
-                      <p className="truncate font-semibold uppercase text-foreground">
+                      <p className="truncate font-semibold name-case text-foreground">
                         {item.medicine.name}
                       </p>
                       <p className="mt-0.5 truncate font-mono uppercase text-xs text-muted-foreground">
@@ -261,7 +261,7 @@ export function InvoiceDetailPanel({
 
           {/* Info pairs */}
           <div className="divide-y divide-border px-5">
-            <InfoPair label={t.invoiceDistributor} value={data.distributor.name} valueClassName="uppercase" />
+            <InfoPair label={t.invoiceDistributor} value={data.distributor.name} valueClassName="name-case" />
             <InfoPair label={t.invoiceSignedBy} value={data.signedBy?.name} />
             <InfoPair
               label={t.invoicePurchaseOrder}

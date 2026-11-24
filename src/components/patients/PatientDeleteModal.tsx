@@ -61,7 +61,7 @@ export function PatientDeleteModal({
         </DialogHeader>
 
         <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-          <p className="truncate font-medium uppercase text-foreground">{patient.name}</p>
+          <p className="truncate font-medium name-case text-foreground">{patient.name}</p>
           {patient.phone && (
             <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
               <Phone className="h-3 w-3 flex-shrink-0" />

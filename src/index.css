@@ -220,3 +220,12 @@
     margin: 0;
   }
 }
+
+/* Names (medicines, distributors, patients, doctors, classifications) follow the
+   pharmacy's NAME_DISPLAY_CASE setting; --name-case is set on <html> by
+   useApplyNameCase. Labels and headers keep their own casing. */
+@layer utilities {
+  .name-case {
+    text-transform: var(--name-case, uppercase);
+  }
+}

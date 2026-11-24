@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import { cn } from "@/utils/cn";
-import { toDoctorName } from "@/utils/stringHelpers";
 import type { RootState } from "@/store";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCan } from "@/hooks/usePermission";
@@ -26,6 +25,7 @@ import { PrescriptionDeleteModal } from "@/components/prescriptions/Prescription
 import type { PrescriptionListItem, Prescription } from "@/types/prescription";
 import { getPrescriptions, getPrescriptionsQueue, getPrescription } from "@/service/prescriptionService";
 import { formatDate } from "@/utils/dateHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 type ModalState =
   | { mode: "create" }
@@ -313,6 +313,7 @@ interface QueueViewProps {
 }
 
 function QueueView({ queue, isLoading, t, onOpenDetail }: QueueViewProps): JSX.Element {
+  const fmt = useNameFormat();
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -349,10 +350,10 @@ function QueueView({ queue, isLoading, t, onOpenDetail }: QueueViewProps): JSX.E
 
           {/* Info */}
           <div className="min-w-0 flex-1">
-            <p className="truncate font-medium uppercase text-foreground">{p.customer.name}</p>
+            <p className="truncate font-medium name-case text-foreground">{p.customer.name}</p>
             <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               {p.prescriptionNumber && <span>{p.prescriptionNumber}</span>}
-              {p.doctor && <span>{toDoctorName(p.doctor.name)}</span>}
+              {p.doctor && <span>{fmt(p.doctor.name, { doctor: true })}</span>}
               <span>{formatDate(p.prescribedAt)}</span>
             </div>
           </div>

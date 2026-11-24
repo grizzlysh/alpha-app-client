@@ -29,6 +29,7 @@ import type {
 import { createUser, updateUser } from "@/service/userService";
 import { getPharmaciesDdl } from "@/service/pharmacyService";
 import { getRolesDdl } from "@/service/roleService";
+import { TempPasswordBox } from "@/components/shared/TempPasswordBox";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -267,9 +268,12 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
     queryKey: ["pharmacies-ddl"],
     queryFn: () => getPharmaciesDdl(),
   });
+  // Roles depend on the pharmacy: the global ones plus that pharmacy's own.
+  const pharmacyUuid = form.watch("pharmacyUuid");
   const { data: rolesData } = useQuery({
-    queryKey: ["roles-ddl"],
-    queryFn: () => getRolesDdl(),
+    queryKey: ["roles-ddl", pharmacyUuid],
+    queryFn: () => getRolesDdl(pharmacyUuid),
+    enabled: !!pharmacyUuid,
   });
 
   const pharmacies = pharmaciesData?.data ?? [];
@@ -298,7 +302,10 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
               render={({ field }) => (
                 <Combobox
                   value={field.value ?? ""}
-                  onValueChange={field.onChange}
+                  onValueChange={(v) => {
+                    field.onChange(v);
+                    form.setValue("roleUuid", "");
+                  }}
                   options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name.toUpperCase()} (${p.code})` }))}
                   placeholder={t.placementSelectPharmacy}
                   className={cn(err("pharmacyUuid") && "border-destructive")}
@@ -320,7 +327,8 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
                   value={field.value ?? ""}
                   onValueChange={field.onChange}
                   options={roles.map((r) => ({ value: r.uuid, label: r.name }))}
-                  placeholder={t.placementSelectRole}
+                  placeholder={pharmacyUuid ? t.placementSelectRole : t.userPickPharmacyFirst}
+                  disabled={!pharmacyUuid}
                   className={cn(err("roleUuid") && "border-destructive")}
                 />
               )}
@@ -519,12 +527,15 @@ function UserCreateWizard({ onClose, onSuccess }: UserCreateWizardProps): JSX.El
   const [step2Data, setStep2Data] = useState<Step2Values>({ pharmacyUuid: "", roleUuid: "", joinedAt: "" });
   const [licenseRequired, setLicenseRequired] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [created, setCreated] = useState<{ name: string; email: string; temporaryPassword: string } | null>(null);
 
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
 
   function handleDialogClose(open: boolean): void {
-    if (!open && !isSubmitting) onClose();
+    if (open || isSubmitting) return;
+    if (created) onSuccessRef.current();
+    else onClose();
   }
 
   function handleStep1(values: Step1Values): void {
@@ -562,12 +573,17 @@ function UserCreateWizard({ onClose, onSuccess }: UserCreateWizardProps): JSX.El
           license,
         },
       };
-      await createUser(payload);
+      const res = await createUser(payload);
 
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["users-dropdown"] });
       toast.success(t.userCreateSuccess);
-      onSuccessRef.current();
+      // Hand over the one-time password before closing.
+      if (res.data?.temporaryPassword) {
+        setCreated({ name: res.data.name, email: res.data.email, temporaryPassword: res.data.temporaryPassword });
+      } else {
+        onSuccessRef.current();
+      }
     } catch (err) {
       toast.error(getApiErrorMessage(err, language, t.unexpectedError));
     } finally {
@@ -593,20 +609,38 @@ function UserCreateWizard({ onClose, onSuccess }: UserCreateWizardProps): JSX.El
     <Dialog open onOpenChange={handleDialogClose}>
       <DialogContent
         className="max-w-md p-0"
-        onInteractOutside={(e) => { if (isSubmitting) e.preventDefault(); }}
+        onInteractOutside={(e) => { if (isSubmitting || created) e.preventDefault(); }}
       >
         <DialogHeader className="flex flex-row items-center gap-3 space-y-0 border-b border-border px-6 py-4">
           <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
             <UserCog className="h-4 w-4 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <DialogTitle className="text-base">{t.userAdd}</DialogTitle>
+            <DialogTitle className="text-base">{created ? t.userTempPasswordTitle : t.userAdd}</DialogTitle>
             <p className="text-xs text-muted-foreground">
               {stepLabels[step - 1]} — {step} / {STEP_COUNT}
             </p>
           </div>
         </DialogHeader>
 
+        {created ? (
+          <>
+            <div className="space-y-3 px-6 py-5">
+              <p className="text-sm">
+                <span className="font-medium uppercase">{created.name}</span>
+                <span className="text-muted-foreground"> · {created.email}</span>
+              </p>
+              <p className="text-xs text-muted-foreground">{t.onbTempPasswordDesc}</p>
+              <TempPasswordBox password={created.temporaryPassword} />
+            </div>
+            <div className="flex justify-end border-t border-border px-6 py-4">
+              <Button onClick={() => onSuccessRef.current()} className="min-w-[6rem] rounded-xl">
+                {t.done}
+              </Button>
+            </div>
+          </>
+        ) : (
+        <>
         <StepIndicator current={step} labels={stepLabels} />
 
         {step === 1 && (
@@ -634,6 +668,8 @@ function UserCreateWizard({ onClose, onSuccess }: UserCreateWizardProps): JSX.El
             onSubmit={handleStep3}
             onSkip={handleSkipLicense}
           />
+        )}
+        </>
         )}
       </DialogContent>
     </Dialog>

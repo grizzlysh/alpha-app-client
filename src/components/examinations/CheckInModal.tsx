@@ -16,8 +16,8 @@ import { getCustomersDropdown } from "@/service/customerService";
 import { getDoctorsDropdown } from "@/service/doctorService";
 import { checkInPatient } from "@/service/examinationService";
 import { getApiErrorMessage } from "@/utils/apiError";
-import { toDoctorName, toTitleCase } from "@/utils/stringHelpers";
 import type { Examination } from "@/types/examination";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface CheckInModalProps {
   onClose: () => void;
@@ -25,6 +25,7 @@ export interface CheckInModalProps {
 }
 
 export function CheckInModal({ onClose, onCheckedIn }: CheckInModalProps): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const [patientUuid, setPatientUuid] = useState("");
   const [doctorUuid, setDoctorUuid] = useState("");
@@ -43,15 +44,15 @@ export function CheckInModal({ onClose, onCheckedIn }: CheckInModalProps): JSX.E
     () =>
       (patients?.data ?? [])
         .filter((p) => !p.isWalkIn)
-        .map((p) => ({ value: p.uuid, label: p.phone ? `${toTitleCase(p.name)} · ${p.phone}` : toTitleCase(p.name) })),
-    [patients]
+        .map((p) => ({ value: p.uuid, label: p.phone ? `${fmt(p.name)} · ${p.phone}` : fmt(p.name) })),
+    [fmt, patients]
   );
   const doctorOptions = useMemo(
     () => [
       { value: "", label: t.examDoctorPlaceholder },
-      ...(doctors?.data ?? []).map((d) => ({ value: d.uuid, label: toDoctorName(d.name) })),
+      ...(doctors?.data ?? []).map((d) => ({ value: d.uuid, label: fmt(d.name, { doctor: true }) })),
     ],
-    [doctors, t]
+    [fmt, doctors, t]
   );
 
   const mutation = useMutation({

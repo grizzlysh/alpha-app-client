@@ -53,7 +53,7 @@ export function DashboardExpiringCard({
               className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 px-3 py-2.5"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium uppercase text-foreground">{item.medicineName}</p>
+                <p className="truncate text-sm font-medium name-case text-foreground">{item.medicineName}</p>
                 <p className="text-xs text-muted-foreground">
                   <span className="uppercase">{item.batchNumber}</span> · {item.daysUntilExpiry} {t.dashboardDaysSuffix}
                 </p>

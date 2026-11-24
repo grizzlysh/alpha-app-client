@@ -52,7 +52,7 @@ import {
   updateStockDisposal,
 } from "@/service/stockDisposalService";
 import { getStockDetails } from "@/service/stockService";
-import { getUsers } from "@/service/userService";
+import { getSigners } from "@/service/userService";
 import { formatDate } from "./stockDisposalUtils";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
@@ -207,9 +207,10 @@ export function StockDisposalFormModal({
     staleTime: 0,
   });
 
+  // Only people allowed to sign: the Head Pharmacist.
   const { data: usersData } = useQuery({
-    queryKey: ["users-all"],
-    queryFn: () => getUsers({ limit: 100 }),
+    queryKey: ["users-signers", "HEAD_PHARMACIST"],
+    queryFn: () => getSigners("HEAD_PHARMACIST"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -410,7 +411,7 @@ export function StockDisposalFormModal({
                   <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
                     <FlaskConical className="h-5 w-5 shrink-0 text-primary" />
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium uppercase text-foreground">
+                      <p className="font-medium name-case text-foreground">
                         {selectedDetail.medicine.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -456,7 +457,7 @@ export function StockDisposalFormModal({
                             onClick={() => selectDetail(detail)}
                             className="w-full px-4 py-3 text-left transition-colors hover:bg-accent"
                           >
-                            <p className="text-sm font-medium uppercase text-foreground">
+                            <p className="text-sm font-medium name-case text-foreground">
                               {detail.medicine.name}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -556,7 +557,7 @@ export function StockDisposalFormModal({
                         >
                           <div className="flex items-start gap-2">
                             <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-medium uppercase text-foreground">
+                              <p className="truncate text-sm font-medium name-case text-foreground">
                                 {item.medicineName}
                               </p>
                               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -637,6 +638,7 @@ export function StockDisposalFormModal({
                     />
                   )}
                 />
+                <p className="text-xs text-muted-foreground">{t.sdSignerHint}</p>
               </div>
 
               <div className="space-y-1.5">

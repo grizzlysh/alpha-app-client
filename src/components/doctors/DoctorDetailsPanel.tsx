@@ -6,7 +6,7 @@ import type { Doctor } from "@/types/doctor";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { formatDate } from "@/utils/dateHelpers";
-import { toDoctorName } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface DoctorDetailsPanelProps {
   doctor: Doctor;
@@ -23,6 +23,7 @@ export function DoctorDetailsPanel({
   onEdit,
   onDelete,
 }: DoctorDetailsPanelProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <DetailModal
       icon={<Stethoscope className="h-4 w-4 text-primary" />}
@@ -49,7 +50,7 @@ export function DoctorDetailsPanel({
           <Stethoscope className="h-7 w-7 text-primary" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold text-foreground">{toDoctorName(doctor.name)}</p>
+          <p className="text-lg font-bold text-foreground">{fmt(doctor.name, { doctor: true })}</p>
           {doctor.specialty && (
             <p className="mt-0.5 text-sm text-muted-foreground">{doctor.specialty}</p>
           )}

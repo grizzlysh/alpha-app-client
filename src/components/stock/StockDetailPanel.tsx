@@ -24,7 +24,7 @@ import {
   daysUntilExpiry,
 } from "./stockUtils";
 import { DetailModal, InfoPair, DetailDatesCard } from "@/components/shared/DetailModal";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Batch table ───────────────────────────────────────────────────────────────
 
@@ -141,7 +141,7 @@ function BatchTable({
 
                       {/* Distributor */}
                       <td className="overflow-hidden px-5 py-3">
-                        <p className="truncate uppercase text-muted-foreground" title={detail.distributor.name}>
+                        <p className="truncate name-case text-muted-foreground" title={detail.distributor.name}>
                           {detail.distributor.name}
                         </p>
                       </td>
@@ -254,6 +254,7 @@ export function StockDetailPanel({
   onDispose,
   onReturn,
 }: StockDetailPanelProps): JSX.Element {
+  const fmt = useNameFormat();
   const statusClass = getStockStatusClass(stock);
   const statusLabel = t[getStockStatusKey(stock)];
 
@@ -289,11 +290,11 @@ export function StockDetailPanel({
               {getInitials(stock.medicine.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-lg font-bold uppercase text-foreground">
+              <p className="truncate text-lg font-bold name-case text-foreground">
                 {stock.medicine.name}
               </p>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {toTitleCase(stock.medicine.shape.name)} · {toTitleCase(stock.medicine.type.name)}
+                {fmt(stock.medicine.shape.name)} · {fmt(stock.medicine.type.name)}
               </p>
               <span
                 className={cn(

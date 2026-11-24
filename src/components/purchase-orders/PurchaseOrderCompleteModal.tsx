@@ -82,7 +82,7 @@ export function PurchaseOrderCompleteModal({
               {order.orderNumber}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              <span className="uppercase">{order.distributor.name}</span>
+              <span className="name-case">{order.distributor.name}</span>
               {order.details.length > 0 && (
                 <> · {order.details.length} {order.details.length === 1 ? t.poSingular : t.poPlural}</>
               )}

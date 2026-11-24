@@ -145,7 +145,7 @@ export function DistributorRow({
             {getInitials(distributor.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium uppercase text-foreground">
+            <p className="truncate font-medium name-case text-foreground">
               {distributor.name}
             </p>
             {distributor.contactPerson && (

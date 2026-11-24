@@ -12,7 +12,7 @@ import {
 import type { ReferenceItem, ReferenceLabels } from "./referenceTypes";
 import { getInitials, getAvatarColor } from "./referenceUtils";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 export interface ReferenceRowProps {
   item: ReferenceItem;
@@ -29,6 +29,7 @@ export function ReferenceRow({
   onEdit,
   onDelete,
 }: ReferenceRowProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: avatar + name */}
@@ -42,7 +43,7 @@ export function ReferenceRow({
           >
             {getInitials(item.name)}
           </div>
-          <p className="truncate font-medium text-foreground">{toTitleCase(item.name)}</p>
+          <p className="truncate font-medium text-foreground">{fmt(item.name)}</p>
         </div>
       </td>
 
@@ -57,7 +58,11 @@ export function ReferenceRow({
       {/* Required prescription — sm+, types only */}
       {labels.requiredPrescriptionLabel && (
         <td className="hidden min-w-[160px] px-5 py-4 sm:table-cell">
-          {item.requiredPrescription ? (
+          {item.isControlled ? (
+            <span className="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive">
+              {labels.controlledBadge}
+            </span>
+          ) : item.requiredPrescription ? (
             <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
               {labels.requiredPrescriptionYes}
             </span>

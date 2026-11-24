@@ -22,7 +22,7 @@ function ScheduleRow({ item, isOverdue, daysSuffix }: ScheduleRowProps): JSX.Ele
   return (
     <li className={`flex items-center justify-between gap-3 rounded-lg px-3 py-2 ${isOverdue ? "bg-destructive/5" : "bg-muted/30"}`}>
       <div className="min-w-0">
-        <p className="truncate text-xs font-medium uppercase text-foreground">{item.distributorName}</p>
+        <p className="truncate text-xs font-medium name-case text-foreground">{item.distributorName}</p>
         <p className="text-xs text-muted-foreground">
           <span className="uppercase">{item.invoiceNumber}</span>
           {item.daysUntilDue !== null && (

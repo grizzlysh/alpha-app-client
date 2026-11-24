@@ -71,7 +71,7 @@ export function DashboardSlowMoversCard({
                 {sorted.map((item) => (
                   <tr key={item.medicineUuid} className="group">
                     <td className="py-2 pr-3 font-medium text-foreground">
-                      <p className="max-w-[160px] truncate uppercase">{item.medicineName}</p>
+                      <p className="max-w-[160px] truncate name-case">{item.medicineName}</p>
                     </td>
                     <td className="py-2 text-right text-muted-foreground">{item.totalPieces}</td>
                     <td className="py-2 text-right">

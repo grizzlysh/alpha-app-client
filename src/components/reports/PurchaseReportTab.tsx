@@ -17,10 +17,12 @@ import { ReportSection } from "./ReportSection";
 import { ReportTable } from "./ReportTable";
 import { buildDateParams, formatCurrency, formatDate } from "./reportUtils";
 import { exportToCsv, exportToXlsx } from "./reportExport";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 type DetailTab = "invoices" | "by-distributor";
 
 export function PurchaseReportTab(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
 
   const [mode, setMode] = useState<ReportFilterMode>("monthly");
@@ -61,7 +63,7 @@ export function PurchaseReportTab(): JSX.Element {
 
   const distributorOptions = [
     { value: "all", label: `${t.reportPurchaseFilterDistributor}: ${t.filterAll}` },
-    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: d.name.toUpperCase() })),
+    ...(distributorsData?.data ?? []).map((d) => ({ value: d.uuid, label: fmt(d.name) })),
   ];
 
   function handleFilterChange(): void {
@@ -82,12 +84,12 @@ export function PurchaseReportTab(): JSX.Element {
         const rows = resp.data ?? [];
         exportToCsv("purchase-invoices.csv",
           [t.reportPurchaseInvoiceNumber, t.reportPurchaseDate, t.reportPurchaseDistributor, t.reportPurchasePONumber, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseStatus],
-          rows.map((r) => [r.invoiceNumber, r.invoiceDate, r.distributorName, r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus])
+          rows.map((r) => [r.invoiceNumber, r.invoiceDate, fmt(r.distributorName), r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus])
         );
       } else {
         exportToCsv("purchase-by-distributor.csv",
           [t.reportPurchaseDistributor, t.reportPurchaseInvoiceCount, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseUnpaidAmount],
-          summary.byDistributor.map((r) => [r.distributorName, r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount])
+          summary.byDistributor.map((r) => [fmt(r.distributorName), r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount])
         );
       }
     } finally {
@@ -105,12 +107,12 @@ export function PurchaseReportTab(): JSX.Element {
         {
           name: t.reportPurchaseInvoiceList,
           headers: [t.reportPurchaseInvoiceNumber, t.reportPurchaseDate, t.reportPurchaseDistributor, t.reportPurchasePONumber, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseStatus],
-          rows: rows.map((r) => [r.invoiceNumber, r.invoiceDate, r.distributorName, r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus]),
+          rows: rows.map((r) => [r.invoiceNumber, r.invoiceDate, fmt(r.distributorName), r.purchaseOrderNumber ?? "", r.totalAmount, r.paidAmount, r.paymentStatus]),
         },
         {
           name: t.reportPurchaseByDistributor,
           headers: [t.reportPurchaseDistributor, t.reportPurchaseInvoiceCount, t.reportPurchaseTotalAmount, t.reportPurchasePaidAmount, t.reportPurchaseUnpaidAmount],
-          rows: summary.byDistributor.map((r) => [r.distributorName, r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount]),
+          rows: summary.byDistributor.map((r) => [fmt(r.distributorName), r.invoiceCount, r.totalAmount, r.paidAmount, r.unpaidAmount]),
         },
       ]);
     } finally {
@@ -177,7 +179,7 @@ export function PurchaseReportTab(): JSX.Element {
                     columns={[
                       { key: "number", header: t.reportPurchaseInvoiceNumber, sortValue: (r) => r.invoiceNumber, render: (r) => <span className="uppercase">{r.invoiceNumber}</span> },
                       { key: "date", header: t.reportPurchaseDate, sortValue: (r) => r.invoiceDate, render: (r) => formatDate(r.invoiceDate) },
-                      { key: "distributor", header: t.reportPurchaseDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="uppercase">{r.distributorName}</span> },
+                      { key: "distributor", header: t.reportPurchaseDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="name-case">{r.distributorName}</span> },
                       { key: "po", header: t.reportPurchasePONumber, sortValue: (r) => r.purchaseOrderNumber ?? "", render: (r) => r.purchaseOrderNumber ?? "—" },
                       { key: "total", header: t.reportPurchaseTotalAmount, sortValue: (r) => r.totalAmount, render: (r) => formatCurrency(r.totalAmount) },
                       { key: "paid", header: t.reportPurchasePaidAmount, sortValue: (r) => r.paidAmount, render: (r) => formatCurrency(r.paidAmount) },
@@ -205,7 +207,7 @@ export function PurchaseReportTab(): JSX.Element {
                 keyExtractor={(r) => r.distributorUuid}
                 emptyLabel={t.reportNoData}
                 columns={[
-                  { key: "name", header: t.reportPurchaseDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="uppercase">{r.distributorName}</span> },
+                  { key: "name", header: t.reportPurchaseDistributor, sortValue: (r) => r.distributorName, render: (r) => <span className="name-case">{r.distributorName}</span> },
                   { key: "count", header: t.reportPurchaseInvoiceCount, sortValue: (r) => r.invoiceCount, render: (r) => r.invoiceCount },
                   { key: "total", header: t.reportPurchaseTotalAmount, sortValue: (r) => r.totalAmount, render: (r) => formatCurrency(r.totalAmount) },
                   { key: "paid", header: t.reportPurchasePaidAmount, sortValue: (r) => r.paidAmount, render: (r) => formatCurrency(r.paidAmount) },

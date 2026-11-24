@@ -162,7 +162,7 @@ export function PosPrescriptionModal({
           </div>
           <div className="min-w-0 flex-1">
             <DialogTitle className="text-base">{t.posCreatePrescriptionTitle}</DialogTitle>
-            <p className="truncate text-xs text-muted-foreground">{patientName}</p>
+            <p className="name-case truncate text-xs text-muted-foreground">{patientName}</p>
           </div>
         </DialogHeader>
 

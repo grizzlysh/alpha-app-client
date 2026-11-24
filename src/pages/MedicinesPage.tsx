@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Download, Loader2, Plus, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,11 @@ import { MedicineFormModal } from "@/components/medicine/MedicineFormModal";
 import { MedicineDeleteModal } from "@/components/medicine/MedicineDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Medicine } from "@/types/medicine";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { exportCatalog } from "@/service/catalogService";
+import { getApiErrorMessage } from "@/utils/apiError";
+import { CatalogImportModal } from "@/components/medicine/CatalogImportModal";
+import { downloadCatalog } from "@/components/medicine/catalogFile";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,18 +37,33 @@ type ModalState =
   | { mode: "edit"; medicine: Medicine }
   | { mode: "delete"; medicine: Medicine }
   | { mode: "detail"; medicine: Medicine }
+  | { mode: "import" }
   | null;
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MedicinesPage(): JSX.Element {
-  const { t } = useLanguage();
+  const fmt = useNameFormat();
+  const { t, language } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport(): Promise<void> {
+    setExporting(true);
+    try {
+      const res = await exportCatalog();
+      if (res.data) downloadCatalog(res.data);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, language, t.unexpectedError));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   // ── Filter state ─────────────────────────────────────────────────────────────
   const [filterShape, setFilterShape] = useState("all");
@@ -169,7 +188,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterShape}
               options={[
                 { value: "all", label: `${t.medicineShapeLabel}: ${t.filterAll}` },
-                ...shapes.map((s) => ({ value: s.uuid, label: toTitleCase(s.name) })),
+                ...shapes.map((s) => ({ value: s.uuid, label: fmt(s.name) })),
               ]}
               placeholder={t.medicineShapeLabel}
               className="h-10 w-[11rem] shrink-0 rounded-xl text-sm"
@@ -181,7 +200,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterType}
               options={[
                 { value: "all", label: `${t.medicineTypeLabel}: ${t.filterAll}` },
-                ...types.map((tp) => ({ value: tp.uuid, label: toTitleCase(tp.name) })),
+                ...types.map((tp) => ({ value: tp.uuid, label: fmt(tp.name) })),
               ]}
               placeholder={t.medicineTypeLabel}
               className="h-10 w-[10rem] shrink-0 rounded-xl text-sm"
@@ -193,7 +212,7 @@ export default function MedicinesPage(): JSX.Element {
               onValueChange={handleFilterClass}
               options={[
                 { value: "all", label: `${t.medicineClassLabel}: ${t.filterAll}` },
-                ...classes.map((cl) => ({ value: cl.uuid, label: toTitleCase(cl.name) })),
+                ...classes.map((cl) => ({ value: cl.uuid, label: fmt(cl.name) })),
               ]}
               placeholder={t.medicineClassLabel}
               className="h-10 w-[13rem] shrink-0 rounded-xl text-sm"
@@ -219,6 +238,29 @@ export default function MedicinesPage(): JSX.Element {
               placeholder={t.medicineSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+
+            {/* Export / import the list, e.g. to set up another branch */}
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={exporting}
+              className="shrink-0 gap-2 rounded-xl"
+              title={t.catalogExportHint}
+            >
+              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              <span className="hidden md:inline">{t.catalogExport}</span>
+            </Button>
+            {can("medicines.create") && (
+              <Button
+                variant="outline"
+                onClick={() => setModal({ mode: "import" })}
+                className="shrink-0 gap-2 rounded-xl"
+                title={t.catalogImportDesc}
+              >
+                <Upload className="h-4 w-4" />
+                <span className="hidden md:inline">{t.catalogImport}</span>
+              </Button>
+            )}
 
             {/* Add button */}
             {can("medicines.create") && (
@@ -276,6 +318,8 @@ export default function MedicinesPage(): JSX.Element {
           onSuccess={handleSuccess}
         />
       )}
+
+      {modal?.mode === "import" && <CatalogImportModal onClose={closeModal} />}
 
       {/* Delete confirm */}
       {modal?.mode === "delete" && (

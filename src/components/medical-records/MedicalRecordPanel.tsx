@@ -15,6 +15,7 @@ import {
   ChevronRight,
   FileText,
   ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { PrescriptionFormModal } from "@/components/prescriptions/PrescriptionFo
 import { PrescriptionStatusBadge } from "@/components/prescriptions/PrescriptionTable";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCan } from "@/hooks/usePermission";
+import { PurchaseHistory } from "@/components/customers/PurchaseHistory";
 import { getMedicalRecord, getVisits, removeAllergy, deleteVisit } from "@/service/medicalRecordService";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { cn } from "@/utils/cn";
@@ -36,6 +38,7 @@ import { AllergyFormModal } from "./AllergyFormModal";
 import { VisitFormModal } from "./VisitFormModal";
 import { SEVERITY_DOT, SEVERITY_TEXT, sortBySeverity } from "./severity";
 import { ExamStatusBadge } from "@/components/examinations/examStatus";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 const VISIT_LIMIT = 10;
 
@@ -117,6 +120,7 @@ export interface MedicalRecordPanelProps {
 }
 
 export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const can = useCan();
   const navigate = useNavigate();
@@ -186,7 +190,7 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
             {getInitials(customer.name)}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-foreground">{customer.name.toUpperCase()}</p>
+            <p className="truncate font-semibold text-foreground">{fmt(customer.name)}</p>
             <p className="truncate text-xs text-muted-foreground">
               <span className="font-mono">{record?.number ?? "—"}</span>
               {customer.phone && <> · {customer.phone}</>}
@@ -278,6 +282,12 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                     {t.medicalRecordAllergiesTab}
                     <CountBadge n={allergies.length} alert={hasSevere} />
                   </TabsTrigger>
+                  {can("sales.read") && (
+                    <TabsTrigger value="purchases" className={TAB_TRIGGER}>
+                      <ShoppingBag className="h-4 w-4" />
+                      {t.purchaseTab}
+                    </TabsTrigger>
+                  )}
                 </TabsList>
               </div>
 
@@ -374,6 +384,13 @@ export function MedicalRecordPanel({ customer }: MedicalRecordPanelProps): JSX.E
                   </ul>
                 )}
               </TabsContent>
+
+              {/* Purchases */}
+              {can("sales.read") && (
+                <TabsContent value="purchases" className="min-h-0 flex-1 overflow-y-auto px-5 py-4 data-[state=inactive]:hidden">
+                  <PurchaseHistory customerUuid={customer.uuid} />
+                </TabsContent>
+              )}
             </Tabs>
           </>
         )}
@@ -681,7 +698,7 @@ function VisitCard({
             {visit.doctor && (
               <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <Stethoscope className="h-3 w-3" aria-hidden />
-                {visit.doctor.name}
+                <span className="name-case">{visit.doctor.name}</span>
               </p>
             )}
           </div>

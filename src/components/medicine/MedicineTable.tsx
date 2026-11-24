@@ -17,7 +17,7 @@ import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { MedicineRow } from "./MedicineRow";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── MedicineTable ─────────────────────────────────────────────────────────────
 
@@ -54,6 +54,7 @@ export function MedicineTable({
   onEdit,
   onDelete,
 }: MedicineTableProps): JSX.Element {
+  const fmt = useNameFormat();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo<ColumnDef<Medicine>[]>(
@@ -61,13 +62,13 @@ export function MedicineTable({
       { accessorKey: "name", header: t.medicineName, enableSorting: true },
       {
         id: "medicineShape",
-        accessorFn: (row) => row.medicineShape?.name != null ? toTitleCase(row.medicineShape.name) : "",
+        accessorFn: (row) => row.medicineShape?.name != null ? fmt(row.medicineShape.name) : "",
         header: t.medicineShapeLabel,
         enableSorting: true,
       },
       {
         id: "medicineType",
-        accessorFn: (row) => row.medicineType?.name != null ? toTitleCase(row.medicineType.name) : "",
+        accessorFn: (row) => row.medicineType?.name != null ? fmt(row.medicineType.name) : "",
         header: t.medicineTypeLabel,
         enableSorting: true,
       },
@@ -75,7 +76,7 @@ export function MedicineTable({
       { accessorKey: "status", header: t.medicineStatusLabel, enableSorting: true },
       { id: "actions", enableSorting: false },
     ],
-    [t]
+    [fmt, t]
   );
 
   const table = useReactTable({

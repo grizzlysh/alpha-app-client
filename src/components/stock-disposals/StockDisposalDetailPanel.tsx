@@ -116,7 +116,7 @@ export function StockDisposalDetailPanel({
                 className="rounded-lg border border-border bg-muted/30 px-3 py-2.5"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium uppercase text-foreground">
+                  <p className="text-sm font-medium name-case text-foreground">
                     {item.medicine.name}
                   </p>
                   <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">

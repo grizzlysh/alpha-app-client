@@ -61,7 +61,7 @@ export function PrescriptionDeleteModal({
         </DialogHeader>
 
         <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-          <p className="truncate font-medium text-foreground">{prescription.customer.name}</p>
+          <p className="name-case truncate font-medium text-foreground">{prescription.customer.name}</p>
           {prescription.prescriptionNumber && (
             <p className="mt-0.5 text-xs text-muted-foreground">{prescription.prescriptionNumber}</p>
           )}

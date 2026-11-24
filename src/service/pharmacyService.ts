@@ -6,6 +6,8 @@ import type {
   PharmacyListParams,
   CreatePharmacyPayload,
   UpdatePharmacyPayload,
+  PharmacyCreateResult,
+  PharmacySetupStatus,
 } from "@/types/pharmacy";
 
 const EMPTY_204: ApiResponse<null> = {
@@ -38,10 +40,12 @@ export async function getPharmacy(
 
 export async function createPharmacy(
   payload: CreatePharmacyPayload
-): Promise<ApiResponse<Pharmacy>> {
-  const response = await axiosInstance.post<ApiResponse<Pharmacy>>(
+): Promise<ApiResponse<PharmacyCreateResult>> {
+  // Copying a large catalog from another branch can take a while.
+  const response = await axiosInstance.post<ApiResponse<PharmacyCreateResult>>(
     "/pharmacies",
-    payload
+    payload,
+    { timeout: 90_000 }
   );
   return response.data;
 }
@@ -69,5 +73,11 @@ export async function getPharmaciesDdl(): Promise<ApiResponse<PharmacyDdlItem[]>
   const response = await axiosInstance.get<ApiResponse<PharmacyDdlItem[]>>(
     "/pharmacies/dropdown"
   );
+  return response.data;
+}
+
+/** Onboarding checklist for the selected pharmacy. */
+export async function getPharmacySetupStatus(): Promise<ApiResponse<PharmacySetupStatus>> {
+  const response = await axiosInstance.get<ApiResponse<PharmacySetupStatus>>("/pharmacies/setup-status");
   return response.data;
 }

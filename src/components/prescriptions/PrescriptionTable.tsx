@@ -18,7 +18,7 @@ import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { formatDate } from "@/utils/dateHelpers";
-import { toDoctorName } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 
@@ -188,12 +188,13 @@ function PrescriptionRow({
   onEdit,
   onDelete,
 }: PrescriptionRowProps): JSX.Element {
+  const fmt = useNameFormat();
   return (
     <tr className="group transition-colors hover:bg-accent/40">
       {/* Sticky left: Patient */}
       <td className="md:sticky md:left-0 z-[1] min-w-[220px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="min-w-0">
-          <p className="truncate font-medium uppercase text-foreground">{prescription.customer.name}</p>
+          <p className="truncate font-medium name-case text-foreground">{prescription.customer.name}</p>
           {prescription.prescriptionNumber && (
             <p className="truncate text-xs text-muted-foreground">
               {prescription.prescriptionNumber}
@@ -206,7 +207,7 @@ function PrescriptionRow({
       <td className="hidden min-w-[180px] px-5 py-4 sm:table-cell">
         {prescription.doctor ? (
           <span className="truncate text-sm text-foreground block max-w-[160px]">
-            {toDoctorName(prescription.doctor.name)}
+            {fmt(prescription.doctor.name, { doctor: true })}
           </span>
         ) : (
           <span className="text-muted-foreground/40">—</span>
@@ -274,17 +275,18 @@ export function PrescriptionTable({
   onEdit,
   onDelete,
 }: PrescriptionTableProps): JSX.Element {
+  const fmt = useNameFormat();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo<ColumnDef<PrescriptionListItem>[]>(
     () => [
-      { accessorFn: (row) => row.customer.name.toUpperCase(), id: "patient", header: t.prescriptionPatient, enableSorting: true },
-      { accessorFn: (row) => row.doctor != null ? toDoctorName(row.doctor.name) : "", id: "doctor", header: t.prescriptionDoctor, enableSorting: false },
+      { accessorFn: (row) => fmt(row.customer.name), id: "patient", header: t.prescriptionPatient, enableSorting: true },
+      { accessorFn: (row) => row.doctor != null ? fmt(row.doctor.name, { doctor: true }) : "", id: "doctor", header: t.prescriptionDoctor, enableSorting: false },
       { id: "prescribedAt", header: t.prescriptionPrescribedAt, enableSorting: false },
       { id: "status", header: t.prescriptionStatusLabel, enableSorting: false },
       { id: "actions", enableSorting: false },
     ],
-    [t]
+    [fmt, t]
   );
 
   const table = useReactTable({

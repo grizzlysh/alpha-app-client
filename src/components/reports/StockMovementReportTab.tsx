@@ -16,11 +16,13 @@ import { ReportSection } from "./ReportSection";
 import { ReportTable } from "./ReportTable";
 import { buildDateParams, formatDate } from "./reportUtils";
 import { exportToCsv, exportToXlsx } from "./reportExport";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 type TypeFilter = "IN" | "OUT" | "all";
 type ReasonFilter = "PURCHASE" | "SALE" | "RETURN" | "ADJUSTMENT" | "DISPOSAL" | "DAMAGED" | "TRANSFER" | "DONATION" | "all";
 
 export function StockMovementReportTab(): JSX.Element {
+  const fmt = useNameFormat();
   const { t } = useLanguage();
 
   const [mode, setMode] = useState<ReportFilterMode>("monthly");
@@ -67,7 +69,7 @@ export function StockMovementReportTab(): JSX.Element {
       const rows = resp.data ?? [];
       exportToCsv("stock-movement-list.csv",
         [t.reportSMDate, t.reportSMMedicine, t.reportSMBatch, t.reportSMType, t.reportSMReason, t.reportSMQty, t.reportSMBefore, t.reportSMAfter, t.reportSMReference],
-        rows.map((r) => [r.createdAt, r.medicineName, r.batchNumber, r.type, r.reason, r.quantity, r.quantityBefore, r.quantityAfter, r.referenceNumber ?? ""])
+        rows.map((r) => [r.createdAt, fmt(r.medicineName), r.batchNumber, r.type, r.reason, r.quantity, r.quantityBefore, r.quantityAfter, r.referenceNumber ?? ""])
       );
     } finally {
       setIsExporting(false);
@@ -84,7 +86,7 @@ export function StockMovementReportTab(): JSX.Element {
         {
           name: t.reportSMMovementList,
           headers: [t.reportSMDate, t.reportSMMedicine, t.reportSMBatch, t.reportSMType, t.reportSMReason, t.reportSMQty, t.reportSMBefore, t.reportSMAfter, t.reportSMReference],
-          rows: rows.map((r) => [r.createdAt, r.medicineName, r.batchNumber, r.type, r.reason, r.quantity, r.quantityBefore, r.quantityAfter, r.referenceNumber ?? ""]),
+          rows: rows.map((r) => [r.createdAt, fmt(r.medicineName), r.batchNumber, r.type, r.reason, r.quantity, r.quantityBefore, r.quantityAfter, r.referenceNumber ?? ""]),
         },
       ]);
     } finally {
@@ -169,7 +171,7 @@ export function StockMovementReportTab(): JSX.Element {
                     emptyLabel={t.reportNoData}
                     columns={[
                       { key: "date", header: t.reportSMDate, sortValue: (r) => r.createdAt, render: (r) => formatDate(r.createdAt) },
-                      { key: "medicine", header: t.reportSMMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="uppercase">{r.medicineName}</span> },
+                      { key: "medicine", header: t.reportSMMedicine, sortValue: (r) => r.medicineName, render: (r) => <span className="name-case">{r.medicineName}</span> },
                       { key: "batch", header: t.reportSMBatch, sortValue: (r) => r.batchNumber, render: (r) => <span className="uppercase">{r.batchNumber}</span> },
                       {
                         key: "type",

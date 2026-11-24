@@ -78,7 +78,7 @@ export function PurchaseOrderSubmitModal({
             {t.poSubmitConfirmDesc}
           </DialogDescription>
           <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-sm font-medium text-foreground">
-            {order.orderNumber} · <span className="uppercase">{order.distributor.name}</span>
+            {order.orderNumber} · <span className="name-case">{order.distributor.name}</span>
           </p>
           {order.signedByUser && (
             <p className="mt-1 px-3 text-xs text-muted-foreground">

@@ -1,3 +1,5 @@
+import type { PaymentStatus, SaleStatus } from "./sale";
+import type { PaginationMeta } from "./api";
 export type CustomerType = "PATIENT" | "PROFESSIONAL";
 export type Gender = "MALE" | "FEMALE";
 
@@ -93,4 +95,41 @@ export interface CustomerDropdownItem {
 export interface CustomerDropdownParams {
   search?: string;
   customerType?: CustomerType;
+}
+
+// ── Purchase history ──────────────────────────────────────────────────────────
+
+export interface PurchaseMedicine {
+  uuid: string;
+  name: string;
+  unit: string;
+}
+
+export interface CustomerPurchaseHistory {
+  summary: {
+    /** Completed sales only. */
+    transactionCount: number;
+    totalSpent: number;
+    averageSpent: number;
+    firstPurchaseAt: string | null;
+    lastPurchaseAt: string | null;
+  };
+  /** Most bought medicines in the last 12 months. */
+  frequentItems: {
+    medicine: PurchaseMedicine;
+    timesBought: number;
+    totalPieces: number;
+    lastBoughtAt: string;
+  }[];
+  sales: {
+    uuid: string;
+    saleNumber: string;
+    soldAt: string;
+    status: SaleStatus;
+    paymentStatus: PaymentStatus | null;
+    grandTotal: number;
+    prescription: { uuid: string; prescriptionNumber: string | null } | null;
+    items: { medicine: PurchaseMedicine; quantityPieces: number; totalAmount: number }[];
+  }[];
+  meta: PaginationMeta;
 }

@@ -94,7 +94,7 @@ export function DashboardCreditSalesCard({
                   <tr key={item.saleUuid}>
                     <td className="py-2 pr-2 font-mono text-muted-foreground">{item.saleNumber}</td>
                     <td className="py-2 pr-2 font-medium text-foreground">
-                      <p className="max-w-[100px] truncate uppercase">{item.customerName}</p>
+                      <p className="max-w-[100px] truncate name-case">{item.customerName}</p>
                     </td>
                     <td className="py-2 text-right text-muted-foreground">{formatDate(item.soldAt)}</td>
                     <td className="py-2 text-right text-muted-foreground">{formatCompactCurrency(item.grandTotal)}</td>

@@ -17,7 +17,7 @@ import { TableLoadingSkeleton } from "@/components/shared/TableLoadingSkeleton";
 import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { StockRow } from "./StockRow";
-import { toTitleCase } from "@/utils/stringHelpers";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── StockTable ────────────────────────────────────────────────────────────────
 
@@ -52,6 +52,7 @@ export function StockTable({
   onSetPrice,
   onSetReorder,
 }: StockTableProps): JSX.Element {
+  const fmt = useNameFormat();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo<ColumnDef<Stock>[]>(
@@ -70,7 +71,7 @@ export function StockTable({
       },
       {
         id: "type",
-        accessorFn: (row) => toTitleCase(row.medicine.type.name),
+        accessorFn: (row) => fmt(row.medicine.type.name),
         header: t.medicineTypeLabel,
         enableSorting: true,
       },
@@ -94,7 +95,7 @@ export function StockTable({
       },
       { id: "actions", enableSorting: false },
     ],
-    [t]
+    [fmt, t]
   );
 
   const table = useReactTable({

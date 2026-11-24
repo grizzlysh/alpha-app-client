@@ -95,7 +95,7 @@ export function DashboardStockRunwayCard({
                 {display.map((item) => (
                   <tr key={item.medicineUuid}>
                     <td className="py-2 pr-3 font-medium text-foreground">
-                      <p className="max-w-[140px] truncate uppercase">{item.medicineName}</p>
+                      <p className="max-w-[140px] truncate name-case">{item.medicineName}</p>
                     </td>
                     <td className="py-2 text-right text-muted-foreground">{item.currentPieces}</td>
                     <td className="py-2 text-right text-muted-foreground">

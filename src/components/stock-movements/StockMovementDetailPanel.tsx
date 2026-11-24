@@ -55,7 +55,7 @@ export function StockMovementDetailPanel({
           {getSMInitials(movement.medicine.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-lg font-bold uppercase text-foreground">
+          <p className="truncate text-lg font-bold name-case text-foreground">
             {movement.medicine.name}
           </p>
           <span

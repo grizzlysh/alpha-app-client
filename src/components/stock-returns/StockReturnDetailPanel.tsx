@@ -103,7 +103,7 @@ export function StockReturnDetailPanel({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-lg font-bold text-foreground">{stockReturn.returnNumber}</p>
-          <p className="truncate text-sm uppercase text-muted-foreground">{stockReturn.distributor.name}</p>
+          <p className="truncate text-sm name-case text-muted-foreground">{stockReturn.distributor.name}</p>
           <StatusBadge
             status={stockReturn.status}
             label={getSRStatusLabel(stockReturn.status, t)}
@@ -149,7 +149,7 @@ export function StockReturnDetailPanel({
                 key={item.uuid}
                 className="rounded-lg border border-border bg-muted/30 px-3 py-2.5"
               >
-                <p className="text-sm font-medium uppercase text-foreground">{item.medicine.name}</p>
+                <p className="text-sm font-medium name-case text-foreground">{item.medicine.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {t.srBatchLabel}: <span className="uppercase">{item.stockDetail.batchNumber}</span>
                   {" · "}

@@ -2089,6 +2089,155 @@ export interface Translations {
   examNoPrescription: string;
   examChooseDoctor: string;
   examYears: string;
+  importDistributorsTitle: string;
+  importDistributorsExportHint: string;
+  importPatientsExportHint: string;
+  importSkipExistingDesc: string;
+  importPatientsTitle: string;
+  importPatientsDesc: string;
+  importOpeningStockTitle: string;
+  importOpeningStockBtn: string;
+  importOpeningStockDesc: string;
+  importOpeningStockNote: string;
+  importStockSigner: string;
+  importStockDefaultDistributor: string;
+  importWillAddDistributors: string;
+  importAddedDistributors: string;
+  importWillAddPatients: string;
+  importAddedPatients: string;
+  importWillAddBatches: string;
+  importAddedBatches: string;
+  importStockValue: string;
+  importStockInvoices: string;
+  importDownloadTemplate: string;
+  importCompleteFields: string;
+  importCheck: string;
+  importFileEmpty: string;
+  importDone: string;
+  importReasonName: string;
+  importReasonPhone: string;
+  importReasonDate: string;
+  importReasonMedicine: string;
+  importReasonDistributor: string;
+  importReasonBatch: string;
+  importReasonExpired: string;
+  importReasonQuantity: string;
+  importReasonPrice: string;
+  importReasonBatchExists: string;
+  allergyWarningTitle: string;
+  allergyWarningLine: string;
+  medicineTypeControlled: string;
+  medicineTypeControlledHint: string;
+  medicineTypeControlledBadge: string;
+  nameCaseUpper: string;
+  nameCaseTitle: string;
+  nameCaseLower: string;
+  nameCaseAsTyped: string;
+  nameCaseSample: string;
+  nameCaseAsTypedNote: string;
+  poSignerHint: string;
+  sdSignerHint: string;
+  pharmaNoOwner: string;
+  navPharmacyProfile: string;
+  setupTitle: string;
+  setupProgress: string;
+  setupHide: string;
+  setupLicense: string;
+  setupHeadPharmacist: string;
+  setupStaff: string;
+  setupMedicines: string;
+  setupDistributors: string;
+  setupStorage: string;
+  setupStock: string;
+  catalogExport: string;
+  catalogExportHint: string;
+  catalogImport: string;
+  catalogImportTitle: string;
+  catalogImportDesc: string;
+  catalogPickFile: string;
+  catalogPickFileHint: string;
+  catalogFileEmpty: string;
+  catalogFileUnreadable: string;
+  catalogWillAddMedicines: string;
+  catalogWillAddClassifications: string;
+  catalogDoneMedicines: string;
+  catalogDoneClassifications: string;
+  catalogSkippedExisting: string;
+  catalogInvalidRows: string;
+  catalogRow: string;
+  catalogReasonName: string;
+  catalogReasonUnit: string;
+  catalogReasonShape: string;
+  catalogReasonType: string;
+  catalogReasonClass: string;
+  catalogReasonDuplicate: string;
+  catalogNoStockNote: string;
+  catalogImportBtn: string;
+  catalogImported: string;
+  userPickPharmacyFirst: string;
+  forcePwTitle: string;
+  forcePwDesc: string;
+  forcePwSubmit: string;
+  forcePwBack: string;
+  pharmaCodeRequired: string;
+  pharmaEmailInvalid: string;
+  onbCodeHint: string;
+  onbLicenseHint: string;
+  onbLicenseLater: string;
+  onbStepOwner: string;
+  onbOwnerTitle: string;
+  onbOwnerDesc: string;
+  onbOwnerNew: string;
+  onbOwnerNewDesc: string;
+  onbOwnerExisting: string;
+  onbOwnerExistingDesc: string;
+  onbOwnerLater: string;
+  onbOwnerLaterDesc: string;
+  onbOwnerLaterWarn: string;
+  onbOwnerName: string;
+  onbOwnerNameRequired: string;
+  onbOwnerEmail: string;
+  onbOwnerPhone: string;
+  onbSearchUser: string;
+  onbNoUserFound: string;
+  onbPickUser: string;
+  onbChange: string;
+  onbPharmacyCount: string;
+  onbStartTitle: string;
+  onbStartDesc: string;
+  onbStartTemplate: string;
+  onbStartTemplateDesc: string;
+  onbStartCopy: string;
+  onbStartCopyDesc: string;
+  onbPickPharmacy: string;
+  onbCreate: string;
+  onbDoneTitle: string;
+  onbTempPasswordDesc: string;
+  onbExistingOwnerDesc: string;
+  onbCopiedSummary: string;
+  onbNextTitle: string;
+  onbNext1: string;
+  onbNext2: string;
+  onbNext3: string;
+  onbNext4: string;
+  purchaseHistoryTitle: string;
+  purchaseHistoryShort: string;
+  purchaseTab: string;
+  purchaseToday: string;
+  purchaseYesterday: string;
+  purchaseDaysAgo: string;
+  purchaseEmptyTitle: string;
+  purchaseEmptyDesc: string;
+  purchaseTransactions: string;
+  purchaseTotalSpent: string;
+  purchaseLast: string;
+  purchaseCustomerSince: string;
+  purchaseAverage: string;
+  purchaseFrequent: string;
+  purchaseTimesBought: string;
+  purchaseAdd: string;
+  purchaseSales: string;
+  purchaseLoadMore: string;
   examEditVitals: string;
   examAddAllergy: string;
   examEditAllergy: string;
@@ -4186,6 +4335,155 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "No prescription written",
     examChooseDoctor: "Examining doctor",
     examYears: "{n} y",
+    importDistributorsTitle: "Import distributors",
+    importDistributorsExportHint: "Download all distributors as Excel",
+    importPatientsExportHint: "Download all patients as Excel",
+    importSkipExistingDesc: "Only new ones are added (matched by name); existing data is not changed.",
+    importPatientsTitle: "Import patients",
+    importPatientsDesc: "Matched by phone number, or by name when there is none. Each new patient gets a medical record number.",
+    importOpeningStockTitle: "Import opening stock",
+    importOpeningStockBtn: "Opening stock",
+    importOpeningStockDesc: "The stock you have on hand when starting to use the system, per batch.",
+    importOpeningStockNote: "Medicines and distributors must exist first (import the medicine list from another branch if needed). Each distributor becomes one paid receipt marked \"saldo awal\", so it is not a debt.",
+    importStockSigner: "Counted & signed by",
+    importStockDefaultDistributor: "Distributor for rows without one",
+    importWillAddDistributors: "{n} distributors will be added",
+    importAddedDistributors: "{n} distributors added",
+    importWillAddPatients: "{n} patients will be added",
+    importAddedPatients: "{n} patients added",
+    importWillAddBatches: "{n} batches will be added to stock",
+    importAddedBatches: "{n} batches added to stock",
+    importStockValue: "value {amount}",
+    importStockInvoices: "{n} receipt invoice(s)",
+    importDownloadTemplate: "Download template",
+    importCompleteFields: "Fill in the fields above to check the file.",
+    importCheck: "Check file",
+    importFileEmpty: "No rows found in this file",
+    importDone: "Import finished",
+    importReasonName: "no name",
+    importReasonPhone: "no phone",
+    importReasonDate: "invalid date",
+    importReasonMedicine: "medicine not registered",
+    importReasonDistributor: "distributor not registered",
+    importReasonBatch: "no batch number",
+    importReasonExpired: "already expired",
+    importReasonQuantity: "invalid quantity",
+    importReasonPrice: "invalid price",
+    importReasonBatchExists: "batch already in stock",
+    allergyWarningTitle: "Allergy warning",
+    allergyWarningLine: "allergic to {allergen} ({severity})",
+    medicineTypeControlled: "Controlled medicine",
+    medicineTypeControlledHint: "Narcotics, psychotropics, precursors. Orders, receipts, returns and disposals must be signed by the Head Pharmacist; always needs a prescription.",
+    medicineTypeControlledBadge: "Controlled",
+    nameCaseUpper: "ALL CAPS",
+    nameCaseTitle: "Title Case",
+    nameCaseLower: "all lowercase",
+    nameCaseAsTyped: "As typed",
+    nameCaseSample: "paracetamol 500mg Tablet",
+    nameCaseAsTypedNote: "Names saved before this setting existed were stored in lowercase and will show that way.",
+    poSignerHint: "Pharmacists with an active practice license. Orders with narcotics, psychotropics or precursors must be signed by the Head Pharmacist.",
+    sdSignerHint: "Disposal records are signed by the Head Pharmacist (active practice license).",
+    pharmaNoOwner: "No owner yet",
+    navPharmacyProfile: "Pharmacy profile",
+    setupTitle: "Finish setting up this pharmacy",
+    setupProgress: "{done} of {total} done",
+    setupHide: "Hide",
+    setupLicense: "Add the business license (SIA)",
+    setupHeadPharmacist: "Appoint the Head Pharmacist",
+    setupStaff: "Add staff accounts",
+    setupMedicines: "Add medicines (or import from a branch)",
+    setupDistributors: "Add distributors",
+    setupStorage: "Set up storage cabinets",
+    setupStock: "Add the first stock (invoice or opening stock import)",
+    catalogExport: "Export",
+    catalogExportHint: "Download the medicine list and classifications as Excel — import it at another branch",
+    catalogImport: "Import",
+    catalogImportTitle: "Import medicine list",
+    catalogImportDesc: "From an Excel file exported at another branch. Only medicines and classifications not here yet are added.",
+    catalogPickFile: "Choose an Excel file",
+    catalogPickFileHint: "Sheet \"Obat\": Nama, Satuan, Bentuk, Golongan, Kelas, Komposisi",
+    catalogFileEmpty: "No medicines found in this file",
+    catalogFileUnreadable: "This file can't be read. Use the .xlsx from Export.",
+    catalogWillAddMedicines: "{n} medicines will be added",
+    catalogWillAddClassifications: "{n} new classifications",
+    catalogDoneMedicines: "{n} medicines added",
+    catalogDoneClassifications: "{n} classifications added",
+    catalogSkippedExisting: "{n} already here (skipped)",
+    catalogInvalidRows: "{n} rows skipped",
+    catalogRow: "Row {n}",
+    catalogReasonName: "no name",
+    catalogReasonUnit: "no unit",
+    catalogReasonShape: "no shape",
+    catalogReasonType: "no type",
+    catalogReasonClass: "no class",
+    catalogReasonDuplicate: "duplicate in file",
+    catalogNoStockNote: "Stock, prices and batches are not imported.",
+    catalogImportBtn: "Import",
+    catalogImported: "Medicine list imported",
+    userPickPharmacyFirst: "Choose a pharmacy first",
+    forcePwTitle: "Set your own password",
+    forcePwDesc: "{email} is using a temporary password. Replace it to continue.",
+    forcePwSubmit: "Save and sign in",
+    forcePwBack: "Back to sign in",
+    pharmaCodeRequired: "Code is required",
+    pharmaEmailInvalid: "Invalid email address",
+    onbCodeHint: "Up to 5 letters/digits. Appears on every document number (e.g. INV-APK1-…) and can't be reused.",
+    onbLicenseHint: "The pharmacy's operating license (SIA). You can add it later from the pharmacy detail.",
+    onbLicenseLater: "Add later",
+    onbStepOwner: "Owner & data",
+    onbOwnerTitle: "Owner",
+    onbOwnerDesc: "The owner signs in, appoints the Head Pharmacist and adds the staff.",
+    onbOwnerNew: "New account",
+    onbOwnerNewDesc: "Create the owner's login",
+    onbOwnerExisting: "Existing user",
+    onbOwnerExistingDesc: "e.g. an owner opening another branch",
+    onbOwnerLater: "Later",
+    onbOwnerLaterDesc: "Assign from the Users page",
+    onbOwnerLaterWarn: "Nobody can sign in to this pharmacy until it has an owner. Add one from Users → Placement.",
+    onbOwnerName: "Owner name",
+    onbOwnerNameRequired: "Owner name is required",
+    onbOwnerEmail: "Login email",
+    onbOwnerPhone: "Phone",
+    onbSearchUser: "Search name or email…",
+    onbNoUserFound: "No user found. Choose \"New account\" instead.",
+    onbPickUser: "Choose a user",
+    onbChange: "Change",
+    onbPharmacyCount: "{n} pharmacy(ies)",
+    onbStartTitle: "Starting data",
+    onbStartDesc: "Medicine shapes, types and classes, plus business parameters. Each pharmacy keeps its own copy.",
+    onbStartTemplate: "Standard template",
+    onbStartTemplateDesc: "Common classifications, no medicines yet",
+    onbStartCopy: "Copy from a branch",
+    onbStartCopyDesc: "Medicines, classifications and parameters. Stock and prices are not copied.",
+    onbPickPharmacy: "Choose the source pharmacy",
+    onbCreate: "Create pharmacy",
+    onbDoneTitle: "{name} ({code}) is ready.",
+    onbTempPasswordDesc: "Temporary password — shown only once. Send it to the owner; they must replace it at first sign-in.",
+    onbExistingOwnerDesc: "They can sign in with their current password and will see this pharmacy in their list.",
+    onbCopiedSummary: "Copied {medicines} medicines and {classes} classifications.",
+    onbNextTitle: "Next, the owner:",
+    onbNext1: "Signs in and replaces the temporary password",
+    onbNext2: "Adds the business license (SIA)",
+    onbNext3: "Appoints the Head Pharmacist and adds staff — other staff can't enter until there is one",
+    onbNext4: "Checks business parameters, then adds medicines (or imports them) and distributors",
+    purchaseHistoryTitle: "Purchase history",
+    purchaseHistoryShort: "History",
+    purchaseTab: "Purchases",
+    purchaseToday: "Today",
+    purchaseYesterday: "Yesterday",
+    purchaseDaysAgo: "{n} days ago",
+    purchaseEmptyTitle: "No purchases yet",
+    purchaseEmptyDesc: "Sales made for this customer at the till will show up here.",
+    purchaseTransactions: "Transactions",
+    purchaseTotalSpent: "Total spent",
+    purchaseLast: "Last visit",
+    purchaseCustomerSince: "Customer since {date}",
+    purchaseAverage: "average {amount} per visit",
+    purchaseFrequent: "Often bought",
+    purchaseTimesBought: "{n}× bought",
+    purchaseAdd: "Add",
+    purchaseSales: "Transactions",
+    purchaseLoadMore: "Load more",
     examEditVitals: "Edit",
     examAddAllergy: "Add allergy",
     examEditAllergy: "Edit allergy",
@@ -6279,6 +6577,155 @@ export const translations: Record<Language, Translations> = {
     examNoPrescription: "Tanpa resep",
     examChooseDoctor: "Dokter pemeriksa",
     examYears: "{n} th",
+    importDistributorsTitle: "Impor distributor",
+    importDistributorsExportHint: "Unduh semua distributor (Excel)",
+    importPatientsExportHint: "Unduh semua pasien (Excel)",
+    importSkipExistingDesc: "Hanya yang baru ditambahkan (dicocokkan per nama); data yang sudah ada tidak diubah.",
+    importPatientsTitle: "Impor pasien",
+    importPatientsDesc: "Dicocokkan per nomor telepon, atau per nama jika tanpa telepon. Pasien baru otomatis mendapat nomor rekam medis.",
+    importOpeningStockTitle: "Impor saldo stok awal",
+    importOpeningStockBtn: "Saldo awal",
+    importOpeningStockDesc: "Stok yang ada saat mulai memakai sistem, per batch.",
+    importOpeningStockNote: "Obat dan distributor harus sudah terdaftar (impor daftar obat dari cabang lain bila perlu). Per distributor dibuat satu faktur penerimaan \"saldo awal\" berstatus lunas, jadi tidak menjadi utang.",
+    importStockSigner: "Dihitung & ditandatangani",
+    importStockDefaultDistributor: "Distributor untuk baris yang kosong",
+    importWillAddDistributors: "{n} distributor akan ditambahkan",
+    importAddedDistributors: "{n} distributor ditambahkan",
+    importWillAddPatients: "{n} pasien akan ditambahkan",
+    importAddedPatients: "{n} pasien ditambahkan",
+    importWillAddBatches: "{n} batch akan masuk stok",
+    importAddedBatches: "{n} batch masuk stok",
+    importStockValue: "nilai {amount}",
+    importStockInvoices: "{n} faktur penerimaan",
+    importDownloadTemplate: "Unduh template",
+    importCompleteFields: "Lengkapi isian di atas untuk memeriksa file.",
+    importCheck: "Periksa file",
+    importFileEmpty: "Tidak ada data di file ini",
+    importDone: "Impor selesai",
+    importReasonName: "nama kosong",
+    importReasonPhone: "telepon kosong",
+    importReasonDate: "tanggal tidak valid",
+    importReasonMedicine: "obat belum terdaftar",
+    importReasonDistributor: "distributor belum terdaftar",
+    importReasonBatch: "no. batch kosong",
+    importReasonExpired: "sudah kedaluwarsa",
+    importReasonQuantity: "jumlah tidak valid",
+    importReasonPrice: "harga tidak valid",
+    importReasonBatchExists: "batch sudah ada di stok",
+    allergyWarningTitle: "Peringatan alergi",
+    allergyWarningLine: "alergi {allergen} ({severity})",
+    medicineTypeControlled: "Obat terkendali",
+    medicineTypeControlledHint: "Narkotika, psikotropika, prekursor. Surat pesanan, penerimaan, retur, dan pemusnahan wajib ditandatangani Head Pharmacist; selalu wajib resep.",
+    medicineTypeControlledBadge: "Terkendali",
+    nameCaseUpper: "KAPITAL SEMUA",
+    nameCaseTitle: "Huruf Awal Kapital",
+    nameCaseLower: "huruf kecil semua",
+    nameCaseAsTyped: "Sesuai ketikan",
+    nameCaseSample: "paracetamol 500mg Tablet",
+    nameCaseAsTypedNote: "Nama yang disimpan sebelum ada pengaturan ini tersimpan huruf kecil dan akan tampil begitu.",
+    poSignerHint: "Apoteker dengan SIPA aktif. Pesanan narkotika, psikotropika, atau prekursor wajib ditandatangani Head Pharmacist.",
+    sdSignerHint: "Berita acara pemusnahan ditandatangani Head Pharmacist (SIPA aktif).",
+    pharmaNoOwner: "Belum ada pemilik",
+    navPharmacyProfile: "Profil apotek",
+    setupTitle: "Lengkapi pengaturan apotek",
+    setupProgress: "{done} dari {total} selesai",
+    setupHide: "Sembunyikan",
+    setupLicense: "Tambahkan izin usaha (SIA)",
+    setupHeadPharmacist: "Tunjuk Head Pharmacist",
+    setupStaff: "Tambahkan akun staf",
+    setupMedicines: "Tambahkan obat (atau impor dari cabang)",
+    setupDistributors: "Tambahkan distributor",
+    setupStorage: "Atur lemari penyimpanan",
+    setupStock: "Masukkan stok pertama (faktur atau impor saldo awal)",
+    catalogExport: "Ekspor",
+    catalogExportHint: "Unduh daftar obat & klasifikasi (Excel) — bisa diimpor di cabang lain",
+    catalogImport: "Impor",
+    catalogImportTitle: "Impor daftar obat",
+    catalogImportDesc: "Dari file Excel hasil ekspor cabang lain. Hanya obat & klasifikasi yang belum ada yang ditambahkan.",
+    catalogPickFile: "Pilih file Excel",
+    catalogPickFileHint: "Sheet \"Obat\": Nama, Satuan, Bentuk, Golongan, Kelas, Komposisi",
+    catalogFileEmpty: "Tidak ada data obat di file ini",
+    catalogFileUnreadable: "File tidak bisa dibaca. Gunakan file .xlsx hasil Ekspor.",
+    catalogWillAddMedicines: "{n} obat akan ditambahkan",
+    catalogWillAddClassifications: "{n} klasifikasi baru",
+    catalogDoneMedicines: "{n} obat ditambahkan",
+    catalogDoneClassifications: "{n} klasifikasi ditambahkan",
+    catalogSkippedExisting: "{n} sudah ada (dilewati)",
+    catalogInvalidRows: "{n} baris dilewati",
+    catalogRow: "Baris {n}",
+    catalogReasonName: "nama kosong",
+    catalogReasonUnit: "satuan kosong",
+    catalogReasonShape: "bentuk kosong",
+    catalogReasonType: "golongan kosong",
+    catalogReasonClass: "kelas kosong",
+    catalogReasonDuplicate: "dobel di file",
+    catalogNoStockNote: "Stok, harga, dan batch tidak ikut diimpor.",
+    catalogImportBtn: "Impor sekarang",
+    catalogImported: "Daftar obat berhasil diimpor",
+    userPickPharmacyFirst: "Pilih apotek dulu",
+    forcePwTitle: "Buat kata sandi Anda sendiri",
+    forcePwDesc: "{email} masih memakai kata sandi sementara. Ganti dulu untuk melanjutkan.",
+    forcePwSubmit: "Simpan & masuk",
+    forcePwBack: "Kembali ke halaman masuk",
+    pharmaCodeRequired: "Kode wajib diisi",
+    pharmaEmailInvalid: "Alamat email tidak valid",
+    onbCodeHint: "Maks. 5 huruf/angka. Dipakai di setiap nomor dokumen (mis. INV-APK1-…) dan tidak bisa dipakai ulang.",
+    onbLicenseHint: "Izin operasional apotek (SIA). Bisa juga ditambahkan nanti dari detail apotek.",
+    onbLicenseLater: "Isi nanti",
+    onbStepOwner: "Pemilik & data",
+    onbOwnerTitle: "Pemilik",
+    onbOwnerDesc: "Pemilik yang akan masuk, menunjuk Head Pharmacist, dan menambahkan staf.",
+    onbOwnerNew: "Akun baru",
+    onbOwnerNewDesc: "Buat akun login pemilik",
+    onbOwnerExisting: "Pengguna terdaftar",
+    onbOwnerExistingDesc: "mis. pemilik yang membuka cabang baru",
+    onbOwnerLater: "Nanti",
+    onbOwnerLaterDesc: "Atur dari menu Pengguna",
+    onbOwnerLaterWarn: "Belum ada yang bisa masuk ke apotek ini sampai pemiliknya ditambahkan. Tambahkan dari Pengguna → Penempatan.",
+    onbOwnerName: "Nama pemilik",
+    onbOwnerNameRequired: "Nama pemilik wajib diisi",
+    onbOwnerEmail: "Email login",
+    onbOwnerPhone: "No. telepon",
+    onbSearchUser: "Cari nama atau email…",
+    onbNoUserFound: "Pengguna tidak ditemukan. Pilih \"Akun baru\" saja.",
+    onbPickUser: "Pilih pengguna",
+    onbChange: "Ganti",
+    onbPharmacyCount: "{n} apotek",
+    onbStartTitle: "Data awal",
+    onbStartDesc: "Bentuk, golongan, dan kelas obat, serta parameter bisnis. Setiap apotek punya salinannya sendiri.",
+    onbStartTemplate: "Template standar",
+    onbStartTemplateDesc: "Klasifikasi umum, belum ada daftar obat",
+    onbStartCopy: "Salin dari cabang",
+    onbStartCopyDesc: "Daftar obat, klasifikasi, dan parameter. Stok & harga tidak ikut.",
+    onbPickPharmacy: "Pilih apotek sumber",
+    onbCreate: "Buat apotek",
+    onbDoneTitle: "{name} ({code}) sudah dibuat.",
+    onbTempPasswordDesc: "Kata sandi sementara — hanya ditampilkan sekali. Kirimkan ke pemilik; wajib diganti saat pertama masuk.",
+    onbExistingOwnerDesc: "Pemilik masuk dengan kata sandinya sekarang dan apotek ini langsung muncul di daftarnya.",
+    onbCopiedSummary: "Tersalin {medicines} obat dan {classes} klasifikasi.",
+    onbNextTitle: "Langkah berikutnya untuk pemilik:",
+    onbNext1: "Masuk dan mengganti kata sandi sementara",
+    onbNext2: "Menambahkan izin usaha (SIA)",
+    onbNext3: "Menunjuk Head Pharmacist dan menambah staf — staf lain belum bisa masuk sebelum ada",
+    onbNext4: "Mengecek parameter bisnis, lalu menambah obat (atau impor) dan distributor",
+    purchaseHistoryTitle: "Riwayat pembelian",
+    purchaseHistoryShort: "Riwayat",
+    purchaseTab: "Pembelian",
+    purchaseToday: "Hari ini",
+    purchaseYesterday: "Kemarin",
+    purchaseDaysAgo: "{n} hari lalu",
+    purchaseEmptyTitle: "Belum ada pembelian",
+    purchaseEmptyDesc: "Transaksi pelanggan ini di kasir akan muncul di sini.",
+    purchaseTransactions: "Transaksi",
+    purchaseTotalSpent: "Total belanja",
+    purchaseLast: "Terakhir beli",
+    purchaseCustomerSince: "Pelanggan sejak {date}",
+    purchaseAverage: "rata-rata {amount} per transaksi",
+    purchaseFrequent: "Sering dibeli",
+    purchaseTimesBought: "{n}× dibeli",
+    purchaseAdd: "Tambah",
+    purchaseSales: "Transaksi",
+    purchaseLoadMore: "Muat lagi",
     examEditVitals: "Ubah",
     examAddAllergy: "Tambah alergi",
     examEditAllergy: "Ubah alergi",

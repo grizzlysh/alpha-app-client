@@ -1,11 +1,11 @@
 import type { JSX } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Hospital, Check, Loader2, AlertCircle } from "lucide-react";
+import { Hospital, Check, Loader2, AlertCircle, UserPlus, Users, Clock, LayoutTemplate, Copy, Search, PartyPopper } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
@@ -21,41 +21,34 @@ import {
 import { useLanguage } from "@/hooks/useLanguage";
 import type { Translations } from "@/configs/i18n";
 import { getApiErrorMessage } from "@/utils/apiError";
-import type { PharmacyCategory, CreatePharmacyPayload } from "@/types/pharmacy";
-import type { CreateBusinessLicensePayload } from "@/types/businessLicense";
-import type { CreatePlacementPayload } from "@/types/user";
-import { createPharmacy } from "@/service/pharmacyService";
-import { createBusinessLicense } from "@/service/businessLicenseService";
-import { createPlacement } from "@/service/userService";
-import { getUsersDropdown } from "@/service/userService";
-import { getRolesDdl } from "@/service/roleService";
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function toISOString(dateStr: string): string {
-  return new Date(dateStr).toISOString();
-}
+import type { PharmacyCategory, CreatePharmacyPayload, PharmacyCreateResult, PharmacyOwnerInput } from "@/types/pharmacy";
+import { createPharmacy, getPharmaciesDdl } from "@/service/pharmacyService";
+import { getUsers } from "@/service/userService";
+import { useDebounce } from "use-debounce";
+import { TempPasswordBox } from "@/components/shared/TempPasswordBox";
 
 // ── StepIndicator ─────────────────────────────────────────────────────────────
 
-const STEP_COUNT = 3;
+const STEP_COUNT = 4;
+type Step = 1 | 2 | 3 | 4;
 
 interface StepIndicatorProps {
-  current: 1 | 2 | 3;
-  labels: [string, string, string];
+  current: Step;
+  labels: string[];
 }
 
 function StepIndicator({ current, labels }: StepIndicatorProps): JSX.Element {
   return (
     <div className="px-6 pb-5 pt-3">
       <div className="relative mb-2.5">
-        <div className="pointer-events-none absolute inset-x-[16.67%] top-3.5 flex">
-          <div className={cn("h-px flex-1 transition-colors duration-300", current >= 2 ? "bg-primary" : "bg-border")} />
-          <div className={cn("h-px flex-1 transition-colors duration-300", current >= 3 ? "bg-primary" : "bg-border")} />
+        <div className="pointer-events-none absolute inset-x-[12.5%] top-3.5 flex">
+          {Array.from({ length: STEP_COUNT - 1 }, (_, i) => (
+            <div key={i} className={cn("h-px flex-1 transition-colors duration-300", current >= i + 2 ? "bg-primary" : "bg-border")} />
+          ))}
         </div>
         <div className="flex">
           {Array.from({ length: STEP_COUNT }, (_, i) => {
-            const n = (i + 1) as 1 | 2 | 3;
+            const n = (i + 1) as Step;
             const done = n < current;
             const active = n === current;
             return (
@@ -79,7 +72,7 @@ function StepIndicator({ current, labels }: StepIndicatorProps): JSX.Element {
       </div>
       <div className="flex">
         {labels.map((label, i) => {
-          const n = (i + 1) as 1 | 2 | 3;
+          const n = (i + 1) as Step;
           const done = n < current;
           const active = n === current;
           return (
@@ -134,17 +127,16 @@ function makeStep1Schema(t: Translations) {
     code: z
       .string()
       .trim()
+      .min(1, t.pharmaCodeRequired)
       .max(5, t.pharmaCodeInvalid)
-      .regex(/^[a-zA-Z0-9]*$/, t.pharmaCodeInvalid)
-      .optional()
-      .or(z.literal("")),
+      .regex(/^[a-zA-Z0-9]*$/, t.pharmaCodeInvalid),
     category: z.enum(["APOTEK", "KLINIK", "RUMAH_SAKIT", "PUSKESMAS"] as const, {
       required_error: t.pharmaCategoryRequired,
     }),
     phone: z.string().trim().min(1, t.pharmaPhoneRequired).max(20),
     address: z.string().trim().min(1, t.pharmaAddressRequired).max(500),
     location: z.string().trim().min(1, t.pharmaLocationRequired).max(200),
-    email: z.string().trim().max(200).optional().or(z.literal("")),
+    email: z.string().trim().email(t.pharmaEmailInvalid).max(200).optional().or(z.literal("")),
   });
 }
 
@@ -181,7 +173,9 @@ function Step1Form({ t, defaultValues, onCancel, onNext }: Step1FormProps): JSX.
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="w-code">{t.pharmaCode}</Label>
+              <Label htmlFor="w-code">
+                {t.pharmaCode}<span className="ml-0.5 text-destructive">*</span>
+              </Label>
               <span className="text-xs text-muted-foreground">
                 {(form.watch("code") ?? "").length}/5
               </span>
@@ -205,7 +199,7 @@ function Step1Form({ t, defaultValues, onCancel, onNext }: Step1FormProps): JSX.
                 )}
               />
             )} />
-            <FieldError message={err("code")} />
+            {err("code") ? <FieldError message={err("code")} /> : <p className="text-xs text-muted-foreground">{t.onbCodeHint}</p>}
           </div>
 
           <div className="space-y-1.5">
@@ -265,8 +259,10 @@ function Step1Form({ t, defaultValues, onCancel, onNext }: Step1FormProps): JSX.
           <div className="space-y-1.5">
             <Label htmlFor="w-email">{t.pharmaEmail}</Label>
             <Controller name="email" control={form.control} render={({ field }) => (
-              <Input id="w-email" type="email" placeholder={t.pharmaEmailPlaceholder} {...field} />
+              <Input id="w-email" type="email" placeholder={t.pharmaEmailPlaceholder} {...field}
+                className={cn(err("email") && "border-destructive focus-visible:ring-destructive/30")} />
             )} />
+            <FieldError message={err("email")} />
           </div>
         </div>
       </div>
@@ -283,7 +279,7 @@ function Step1Form({ t, defaultValues, onCancel, onNext }: Step1FormProps): JSX.
   );
 }
 
-// ── Step 2: Business License ───────────────────────────────────────────────────
+// ── Step 2: Business License (optional) ───────────────────────────────────────
 
 interface Step2Values {
   licenseNumber: string;
@@ -308,7 +304,7 @@ interface Step2FormProps {
   t: Translations;
   defaultValues: Step2Values;
   onBack: () => void;
-  onNext: (values: Step2Values) => void;
+  onNext: (values: Step2Values | null) => void;
 }
 
 function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.Element {
@@ -319,7 +315,7 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
   return (
     <form onSubmit={form.handleSubmit(onNext)} className="flex flex-col">
       <div className="px-6 pb-1 pt-0">
-        <p className="text-xs text-muted-foreground">{t.pharmaWizardStep2Hint}</p>
+        <p className="text-xs text-muted-foreground">{t.onbLicenseHint}</p>
       </div>
 
       <div className="max-h-[45vh] overflow-y-auto px-6 py-4">
@@ -335,43 +331,37 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
             <FieldError message={err("licenseNumber")} />
           </div>
 
-          <div className="space-y-1.5">
-            <Label>
-              {t.bizLicenseValidFrom}<span className="ml-0.5 text-destructive">*</span>
-            </Label>
-            <Controller name="validFrom" control={form.control} render={({ field }) => (
-              <DateInput
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                placeholder={t.bizLicenseValidFrom}
-                className={cn(err("validFrom") && "border-destructive")}
-              />
-            )} />
-            <FieldError message={err("validFrom")} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>
-              {t.bizLicenseValidUntil}<span className="ml-0.5 text-destructive">*</span>
-            </Label>
-            <Controller name="validUntil" control={form.control} render={({ field }) => (
-              <DateInput
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                placeholder={t.bizLicenseValidUntil}
-                className={cn(err("validUntil") && "border-destructive")}
-              />
-            )} />
-            <FieldError message={err("validUntil")} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>
+                {t.bizLicenseValidFrom}<span className="ml-0.5 text-destructive">*</span>
+              </Label>
+              <Controller name="validFrom" control={form.control} render={({ field }) => (
+                <DateInput value={field.value} onChange={field.onChange} onBlur={field.onBlur}
+                  placeholder={t.bizLicenseValidFrom} className={cn(err("validFrom") && "border-destructive")} />
+              )} />
+              <FieldError message={err("validFrom")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>
+                {t.bizLicenseValidUntil}<span className="ml-0.5 text-destructive">*</span>
+              </Label>
+              <Controller name="validUntil" control={form.control} render={({ field }) => (
+                <DateInput value={field.value} onChange={field.onChange} onBlur={field.onBlur}
+                  placeholder={t.bizLicenseValidUntil} className={cn(err("validUntil") && "border-destructive")} />
+              )} />
+              <FieldError message={err("validUntil")} />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end gap-2 border-t border-border px-6 py-4">
+      <div className="flex flex-wrap justify-end gap-2 border-t border-border px-6 py-4">
         <Button type="button" variant="outline" onClick={onBack} className="rounded-xl">
           {t.wizardBack}
+        </Button>
+        <Button type="button" variant="ghost" onClick={() => onNext(null)} className="rounded-xl">
+          {t.onbLicenseLater}
         </Button>
         <Button type="submit" className="min-w-[7rem] rounded-xl">
           {t.wizardNext}
@@ -381,184 +371,317 @@ function Step2Form({ t, defaultValues, onBack, onNext }: Step2FormProps): JSX.El
   );
 }
 
-// ── Step 3: User Role ──────────────────────────────────────────────────────────
+// ── Step 3: Owner & starting data ─────────────────────────────────────────────
 
-interface Step3Values {
-  userUuid: string;
-  roleUuid: string;
-  joinedAt: string;
-  licenseNumber: string;
-  validFrom: string;
-  validUntil: string;
+type OwnerMode = "new" | "existing" | "later";
+type StartMode = "template" | "copy";
+
+interface Step3State {
+  ownerMode: OwnerMode;
+  ownerName: string;
+  ownerEmail: string;
+  ownerPhone: string;
+  existingUser: { uuid: string; name: string; email: string } | null;
+  startMode: StartMode;
+  copyFrom: string;
 }
 
-function makeStep3Schema(t: Translations, requiresLicense: boolean) {
-  return z
-    .object({
-      userUuid: z.string().min(1, t.placementUserRequired),
-      roleUuid: z.string().min(1, t.placementRoleRequired),
-      joinedAt: z.string().min(1, t.placementJoinedAtRequired),
-      licenseNumber: requiresLicense
-        ? z.string().trim().min(1, t.licenseNumberRequired).max(100)
-        : z.string().trim().max(100).optional().or(z.literal("")),
-      validFrom: requiresLicense
-        ? z.string().min(1, t.licenseValidFromRequired)
-        : z.string().optional().or(z.literal("")),
-      validUntil: requiresLicense
-        ? z.string().min(1, t.licenseValidUntilRequired)
-        : z.string().optional().or(z.literal("")),
-    })
-    .refine(
-      (d) => !d.validFrom || !d.validUntil || new Date(d.validUntil) > new Date(d.validFrom),
-      { message: t.licenseValidUntilAfterFrom, path: ["validUntil"] }
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function ChoiceCard({
+  active,
+  icon: Icon,
+  title,
+  desc,
+  onClick,
+}: {
+  active: boolean;
+  icon: typeof Users;
+  title: string;
+  desc: string;
+  onClick: () => void;
+}): JSX.Element {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "flex flex-1 items-start gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-colors",
+        active ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:bg-muted/40"
+      )}
+    >
+      <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} aria-hidden />
+      <span className="min-w-0">
+        <span className="block text-sm font-medium text-foreground">{title}</span>
+        <span className="block text-xs leading-snug text-muted-foreground">{desc}</span>
+      </span>
+    </button>
+  );
+}
+
+function ExistingUserPicker({
+  t,
+  value,
+  onChange,
+}: {
+  t: Translations;
+  value: Step3State["existingUser"];
+  onChange: (u: Step3State["existingUser"]) => void;
+}): JSX.Element {
+  const [search, setSearch] = useState("");
+  const [debounced] = useDebounce(search.trim(), 300);
+  const { data, isFetching } = useQuery({
+    queryKey: ["users", "owner-picker", debounced],
+    queryFn: () => getUsers({ search: debounced, limit: 8, status: "ACTIVE" }),
+    enabled: debounced.length >= 2,
+    staleTime: 30_000,
+  });
+  const users = (data?.data ?? []).filter((u) => u.platformRole === null);
+
+  if (value) {
+    return (
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/5 px-3 py-2.5">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium uppercase text-foreground">{value.name}</p>
+          <p className="truncate text-xs text-muted-foreground">{value.email}</p>
+        </div>
+        <Button type="button" variant="ghost" size="sm" className="h-8 rounded-lg text-xs" onClick={() => onChange(null)}>
+          {t.onbChange}
+        </Button>
+      </div>
     );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          autoFocus
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.onbSearchUser}
+          className="h-10 rounded-xl pl-9"
+        />
+        {isFetching && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
+      </div>
+      {debounced.length >= 2 && !isFetching && users.length === 0 && (
+        <p className="px-1 text-xs text-muted-foreground">{t.onbNoUserFound}</p>
+      )}
+      {users.length > 0 && (
+        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border">
+          {users.map((u) => (
+            <li key={u.uuid}>
+              <button
+                type="button"
+                onClick={() => onChange({ uuid: u.uuid, name: u.name, email: u.email })}
+                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-muted/40"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium uppercase text-foreground">{u.name}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{u.email}</span>
+                </span>
+                <span className="shrink-0 text-[11px] text-muted-foreground">
+                  {t.onbPharmacyCount.replace("{n}", String(u.placementCount))}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 interface Step3FormProps {
   t: Translations;
-  pharmacyUuid: string;
   isSubmitting: boolean;
-  onSubmit: (values: Step3Values) => void;
-  onSkip: () => void;
+  onBack: () => void;
+  onSubmit: (state: Step3State) => void;
 }
 
-function Step3Form({ t, pharmacyUuid, isSubmitting, onSubmit, onSkip }: Step3FormProps): JSX.Element {
-  const [requiresLicense, setRequiresLicense] = useState(false);
-  const schema = useMemo(() => makeStep3Schema(t, requiresLicense), [t, requiresLicense]);
-
-  const form = useForm<Step3Values>({
-    resolver: zodResolver(schema),
-    defaultValues: { userUuid: "", roleUuid: "", joinedAt: "", licenseNumber: "", validFrom: "", validUntil: "" },
+function Step3Form({ t, isSubmitting, onBack, onSubmit }: Step3FormProps): JSX.Element {
+  const [state, setState] = useState<Step3State>({
+    ownerMode: "new",
+    ownerName: "",
+    ownerEmail: "",
+    ownerPhone: "",
+    existingUser: null,
+    startMode: "template",
+    copyFrom: "",
   });
-  const err = (k: keyof Step3Values) => form.formState.errors[k]?.message;
+  const [submitted, setSubmitted] = useState(false);
+  const set = (patch: Partial<Step3State>) => setState((s) => ({ ...s, ...patch }));
 
-  const { data: usersData } = useQuery({
-    queryKey: ["users-dropdown", pharmacyUuid],
-    queryFn: () => getUsersDropdown({ pharmacyUuid }),
+  const { data: pharmaciesData } = useQuery({
+    queryKey: ["pharmacies-ddl"],
+    queryFn: getPharmaciesDdl,
     staleTime: 60_000,
   });
-  const { data: rolesData } = useQuery({
-    queryKey: ["roles-ddl", pharmacyUuid],
-    queryFn: () => getRolesDdl(pharmacyUuid),
-    staleTime: 60_000,
-  });
+  const pharmacies = pharmaciesData?.data ?? [];
 
-  const users = usersData?.data ?? [];
-  const roles = rolesData?.data ?? [];
+  const errors = {
+    ownerName: state.ownerMode === "new" && !state.ownerName.trim() ? t.onbOwnerNameRequired : undefined,
+    ownerEmail:
+      state.ownerMode === "new" && !EMAIL_RE.test(state.ownerEmail.trim()) ? t.pharmaEmailInvalid : undefined,
+    existingUser: state.ownerMode === "existing" && !state.existingUser ? t.onbPickUser : undefined,
+    copyFrom: state.startMode === "copy" && !state.copyFrom ? t.onbPickPharmacy : undefined,
+  };
+  const show = (k: keyof typeof errors) => (submitted ? errors[k] : undefined);
 
-  const selectedRoleUuid = form.watch("roleUuid");
-  useEffect(() => {
-    const role = roles.find((r) => r.uuid === selectedRoleUuid);
-    setRequiresLicense(role?.requiresLicense ?? false);
-  }, [selectedRoleUuid, roles]);
+  function submit(e: React.FormEvent): void {
+    e.preventDefault();
+    setSubmitted(true);
+    if (Object.values(errors).some(Boolean)) return;
+    onSubmit(state);
+  }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
-      <div className="px-6 pb-1 pt-0">
-        <p className="text-xs text-muted-foreground">{t.pharmaWizardStep3Hint}</p>
-      </div>
-
-      <div className="max-h-[45vh] overflow-y-auto px-6 py-4">
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>
-              {t.placementUser}<span className="ml-0.5 text-destructive">*</span>
-            </Label>
-            <Controller name="userUuid" control={form.control} render={({ field }) => (
-              <Combobox
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-                options={users.map((u) => ({ value: u.uuid, label: `${u.name} — ${u.email}` }))}
-                placeholder={t.placementSelectUser}
-                className={cn(err("userUuid") && "border-destructive")}
-              />
-            )} />
-            <FieldError message={err("userUuid")} />
+    <form onSubmit={submit} className="flex flex-col">
+      <div className="max-h-[52vh] space-y-6 overflow-y-auto px-6 pb-4 pt-1">
+        {/* ── Owner ── */}
+        <section className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">{t.onbOwnerTitle}</h3>
+            <p className="text-xs text-muted-foreground">{t.onbOwnerDesc}</p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <ChoiceCard active={state.ownerMode === "new"} icon={UserPlus} title={t.onbOwnerNew} desc={t.onbOwnerNewDesc} onClick={() => set({ ownerMode: "new" })} />
+            <ChoiceCard active={state.ownerMode === "existing"} icon={Users} title={t.onbOwnerExisting} desc={t.onbOwnerExistingDesc} onClick={() => set({ ownerMode: "existing" })} />
+            <ChoiceCard active={state.ownerMode === "later"} icon={Clock} title={t.onbOwnerLater} desc={t.onbOwnerLaterDesc} onClick={() => set({ ownerMode: "later" })} />
           </div>
 
-          <div className="space-y-1.5">
-            <Label>
-              {t.placementRole}<span className="ml-0.5 text-destructive">*</span>
-            </Label>
-            <Controller name="roleUuid" control={form.control} render={({ field }) => (
-              <Combobox
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-                options={roles.map((r) => ({ value: r.uuid, label: r.name }))}
-                placeholder={t.placementSelectRole}
-                className={cn(err("roleUuid") && "border-destructive")}
-              />
-            )} />
-            <FieldError message={err("roleUuid")} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>
-              {t.placementJoinedAt}<span className="ml-0.5 text-destructive">*</span>
-            </Label>
-            <Controller name="joinedAt" control={form.control} render={({ field }) => (
-              <DateInput
-                {...field}
-                className={cn(err("joinedAt") && "border-destructive")}
-              />
-            )} />
-            <FieldError message={err("joinedAt")} />
-          </div>
-
-          {requiresLicense && (
-            <>
-              <div className="space-y-1.5">
-                <Label htmlFor="w3-license-num">
-                  {t.licenseNumber}<span className="ml-0.5 text-destructive">*</span>
+          {state.ownerMode === "new" && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="w-owner-name">
+                  {t.onbOwnerName}<span className="ml-0.5 text-destructive">*</span>
                 </Label>
-                <Controller name="licenseNumber" control={form.control} render={({ field }) => (
-                  <Input id="w3-license-num" placeholder={t.licenseNumberPlaceholder} {...field}
-                    className={cn(err("licenseNumber") && "border-destructive focus-visible:ring-destructive/30")} />
-                )} />
-                <FieldError message={err("licenseNumber")} />
+                <Input id="w-owner-name" value={state.ownerName} onChange={(e) => set({ ownerName: e.target.value })}
+                  className={cn(show("ownerName") && "border-destructive")} />
+                <FieldError message={show("ownerName")} />
               </div>
-
               <div className="space-y-1.5">
-                <Label>
-                  {t.licenseValidFrom}<span className="ml-0.5 text-destructive">*</span>
+                <Label htmlFor="w-owner-email">
+                  {t.onbOwnerEmail}<span className="ml-0.5 text-destructive">*</span>
                 </Label>
-                <Controller name="validFrom" control={form.control} render={({ field }) => (
-                  <DateInput
-                    {...field}
-                    className={cn(err("validFrom") && "border-destructive")}
-                  />
-                )} />
-                <FieldError message={err("validFrom")} />
+                <Input id="w-owner-email" type="email" value={state.ownerEmail} onChange={(e) => set({ ownerEmail: e.target.value })}
+                  className={cn(show("ownerEmail") && "border-destructive")} />
+                <FieldError message={show("ownerEmail")} />
               </div>
-
               <div className="space-y-1.5">
-                <Label>
-                  {t.licenseValidUntil}<span className="ml-0.5 text-destructive">*</span>
-                </Label>
-                <Controller name="validUntil" control={form.control} render={({ field }) => (
-                  <DateInput
-                    {...field}
-                    className={cn(err("validUntil") && "border-destructive")}
-                  />
-                )} />
-                <FieldError message={err("validUntil")} />
+                <Label htmlFor="w-owner-phone">{t.onbOwnerPhone}</Label>
+                <Input id="w-owner-phone" value={state.ownerPhone} onChange={(e) => set({ ownerPhone: e.target.value })} />
               </div>
-            </>
+            </div>
           )}
-        </div>
+          {state.ownerMode === "existing" && (
+            <div className="space-y-1.5">
+              <ExistingUserPicker t={t} value={state.existingUser} onChange={(u) => set({ existingUser: u })} />
+              <FieldError message={show("existingUser")} />
+            </div>
+          )}
+          {state.ownerMode === "later" && (
+            <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+              {t.onbOwnerLaterWarn}
+            </p>
+          )}
+        </section>
+
+        {/* ── Starting data ── */}
+        <section className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">{t.onbStartTitle}</h3>
+            <p className="text-xs text-muted-foreground">{t.onbStartDesc}</p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <ChoiceCard active={state.startMode === "template"} icon={LayoutTemplate} title={t.onbStartTemplate} desc={t.onbStartTemplateDesc} onClick={() => set({ startMode: "template" })} />
+            <ChoiceCard active={state.startMode === "copy"} icon={Copy} title={t.onbStartCopy} desc={t.onbStartCopyDesc} onClick={() => set({ startMode: "copy" })} />
+          </div>
+          {state.startMode === "copy" && (
+            <div className="space-y-1.5">
+              <Combobox
+                value={state.copyFrom}
+                onValueChange={(v) => set({ copyFrom: v })}
+                options={pharmacies.map((p) => ({ value: p.uuid, label: `${p.name.toUpperCase()} (${p.code})` }))}
+                placeholder={t.onbPickPharmacy}
+                className={cn(show("copyFrom") && "border-destructive")}
+              />
+              <FieldError message={show("copyFrom")} />
+            </div>
+          )}
+        </section>
       </div>
 
       <div className="flex justify-end gap-2 border-t border-border px-6 py-4">
-        <Button type="button" variant="outline" onClick={onSkip} disabled={isSubmitting} className="rounded-xl">
-          {t.wizardSkip}
+        <Button type="button" variant="outline" onClick={onBack} disabled={isSubmitting} className="rounded-xl">
+          {t.wizardBack}
         </Button>
-        <Button type="submit" disabled={isSubmitting} className="min-w-[7.5rem] rounded-xl">
-          {isSubmitting
-            ? <><Loader2 className="h-4 w-4 animate-spin" /> {t.pharmaSaving}</>
-            : t.pharmaSave}
+        <Button type="submit" disabled={isSubmitting} className="min-w-[8rem] rounded-xl">
+          {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> {t.pharmaSaving}</> : t.onbCreate}
         </Button>
       </div>
     </form>
+  );
+}
+
+// ── Step 4: Done ──────────────────────────────────────────────────────────────
+
+function DoneStep({ t, result, onClose }: { t: Translations; result: PharmacyCreateResult; onClose: () => void }): JSX.Element {
+  const { pharmacy, owner, copied } = result;
+  return (
+    <div className="flex flex-col">
+      <div className="max-h-[55vh] space-y-4 overflow-y-auto px-6 pb-4 pt-1">
+        <div className="flex items-center gap-3 rounded-xl bg-success/10 px-4 py-3">
+          <PartyPopper className="h-5 w-5 shrink-0 text-success" aria-hidden />
+          <p className="text-sm text-foreground">
+            {t.onbDoneTitle.replace("{name}", pharmacy.name.toUpperCase()).replace("{code}", pharmacy.code)}
+          </p>
+        </div>
+
+        {owner && (
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold text-foreground">{t.onbOwnerTitle}</h3>
+            <p className="text-sm">
+              <span className="font-medium uppercase">{owner.name}</span>
+              <span className="text-muted-foreground"> · {owner.email}</span>
+            </p>
+            {owner.temporaryPassword ? (
+              <>
+                <p className="text-xs text-muted-foreground">{t.onbTempPasswordDesc}</p>
+                <TempPasswordBox password={owner.temporaryPassword} />
+              </>
+            ) : (
+              <p className="text-xs text-muted-foreground">{t.onbExistingOwnerDesc}</p>
+            )}
+          </section>
+        )}
+
+        {copied && (
+          <p className="text-xs text-muted-foreground">
+            {t.onbCopiedSummary
+              .replace("{medicines}", String(copied.medicines))
+              .replace("{classes}", String(copied.shapes + copied.types + copied.classes))}
+          </p>
+        )}
+
+        <section className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">{t.onbNextTitle}</h3>
+          <ol className="list-decimal space-y-1 pl-5 text-xs text-muted-foreground">
+            <li>{t.onbNext1}</li>
+            {!pharmacy.activeLicense && <li>{t.onbNext2}</li>}
+            <li>{t.onbNext3}</li>
+            <li>{t.onbNext4}</li>
+          </ol>
+        </section>
+      </div>
+      <div className="flex justify-end border-t border-border px-6 py-4">
+        <Button onClick={onClose} className="min-w-[7rem] rounded-xl">
+          {t.wizardDone}
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -569,106 +692,86 @@ export interface PharmacyWizardModalProps {
   onSuccess: () => void;
 }
 
+/**
+ * Onboarding a pharmacy: details → business license (optional) → owner and
+ * starting data. Everything is sent in one request at the end, so a failure
+ * never leaves a half-created pharmacy behind and retrying is safe.
+ */
 export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalProps): JSX.Element {
   const queryClient = useQueryClient();
   const { t, language } = useLanguage();
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
 
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<Step>(1);
   const [step1Data, setStep1Data] = useState<Step1Values>({
     name: "", code: "", category: undefined as unknown as PharmacyCategory,
     phone: "", address: "", location: "", email: "",
   });
-  const [step2Defaults] = useState<Step2Values>({ licenseNumber: "", validFrom: "", validUntil: "" });
-  const [pharmacyUuid, setPharmacyUuid] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [license, setLicense] = useState<Step2Values | null>(null);
+  const [result, setResult] = useState<PharmacyCreateResult | null>(null);
 
-  const stepLabels: [string, string, string] = [
-    t.pharmaWizardStep1,
-    t.pharmaWizardStep2,
-    t.pharmaWizardStep3,
-  ];
-
-  function handleStep1(values: Step1Values): void {
-    setStep1Data(values);
-    setStep(2);
-  }
-
-  async function handleStep2(licenseValues: Step2Values): Promise<void> {
-    setIsSubmitting(true);
-    try {
-      const pharmaPayload: CreatePharmacyPayload = {
-        name: step1Data.name,
-        code: step1Data.code?.trim().toUpperCase() || undefined,
-        category: step1Data.category,
-        phone: step1Data.phone,
-        address: step1Data.address,
-        location: step1Data.location,
-        email: step1Data.email?.trim() || undefined,
-      };
-      const pharmaRes = await createPharmacy(pharmaPayload);
-      const uuid = pharmaRes.data?.uuid;
-      if (!uuid) throw new Error("Failed to create pharmacy");
-
-      const licensePayload: CreateBusinessLicensePayload = {
-        pharmacyUuid: uuid,
-        licenseNumber: licenseValues.licenseNumber,
-        validFrom: licenseValues.validFrom,
-        validUntil: licenseValues.validUntil,
-      };
-      await createBusinessLicense(licensePayload);
-
+  const mutation = useMutation({
+    mutationFn: (payload: CreatePharmacyPayload) => createPharmacy(payload),
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
-      setPharmacyUuid(uuid);
-      setStep(3);
-    } catch (err) {
-      toast.error(getApiErrorMessage(err, language, t.unexpectedError));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function handleStep3(values: Step3Values): Promise<void> {
-    setIsSubmitting(true);
-    try {
-      const license =
-        values.licenseNumber.trim()
-          ? {
-              licenseNumber: values.licenseNumber.trim(),
-              validFrom: toISOString(values.validFrom),
-              validUntil: toISOString(values.validUntil),
-            }
-          : undefined;
-
-      const payload: CreatePlacementPayload = {
-        pharmacyUuid,
-        roleUuid: values.roleUuid,
-        joinedAt: toISOString(values.joinedAt),
-        license,
-      };
-      await createPlacement(values.userUuid, payload);
-
-      queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
+      queryClient.invalidateQueries({ queryKey: ["pharmacies-ddl"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      onSuccessRef.current();
-    } catch (err) {
-      toast.error(getApiErrorMessage(err, language, t.unexpectedError));
-    } finally {
-      setIsSubmitting(false);
+      if (res.data) {
+        setResult(res.data);
+        setStep(4);
+      }
+    },
+    onError: (err) => toast.error(getApiErrorMessage(err, language, t.unexpectedError)),
+  });
+
+  const stepLabels = [t.pharmaWizardStep1, t.pharmaWizardStep2, t.onbStepOwner, t.wizardDone];
+
+  function handleStep3(state: Step3State): void {
+    let owner: PharmacyOwnerInput | undefined;
+    if (state.ownerMode === "new") {
+      owner = {
+        mode: "new",
+        name: state.ownerName.trim(),
+        email: state.ownerEmail.trim(),
+        phone: state.ownerPhone.trim() || undefined,
+      };
+    } else if (state.ownerMode === "existing" && state.existingUser) {
+      owner = { mode: "existing", userUuid: state.existingUser.uuid };
     }
+
+    mutation.mutate({
+      name: step1Data.name.trim(),
+      code: step1Data.code.trim().toUpperCase(),
+      category: step1Data.category,
+      phone: step1Data.phone.trim(),
+      address: step1Data.address.trim(),
+      location: step1Data.location.trim(),
+      email: step1Data.email?.trim() || undefined,
+      license: license
+        ? { licenseNumber: license.licenseNumber.trim(), validFrom: license.validFrom, validUntil: license.validUntil }
+        : undefined,
+      owner,
+      copyFromPharmacyUuid: state.startMode === "copy" ? state.copyFrom : undefined,
+    });
   }
 
-  function handleSkipStep3(): void {
-    queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
-    onSuccessRef.current();
-  }
+  const done = step === 4;
+  const busy = mutation.isPending;
 
   return (
-    <Dialog open onOpenChange={(open) => { if (!open && !isSubmitting) onClose(); }}>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (open || busy) return;
+        if (done) onSuccessRef.current();
+        else onClose();
+      }}
+    >
       <DialogContent
-        className="max-w-md p-0"
-        onInteractOutside={(e) => { if (isSubmitting) e.preventDefault(); }}
+        className="max-w-lg p-0"
+        // Don't let a stray click discard the only copy of the owner's temporary password.
+        onInteractOutside={(e) => { if (busy || done) e.preventDefault(); }}
       >
         <DialogHeader className="flex flex-row items-center gap-3 space-y-0 border-b border-border px-6 py-4">
           <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
@@ -689,26 +792,27 @@ export function PharmacyWizardModal({ onClose, onSuccess }: PharmacyWizardModalP
             t={t}
             defaultValues={step1Data}
             onCancel={onClose}
-            onNext={handleStep1}
+            onNext={(values) => {
+              setStep1Data(values);
+              setStep(2);
+            }}
           />
         )}
         {step === 2 && (
           <Step2Form
             t={t}
-            defaultValues={step2Defaults}
+            defaultValues={license ?? { licenseNumber: "", validFrom: "", validUntil: "" }}
             onBack={() => setStep(1)}
-            onNext={handleStep2}
+            onNext={(values) => {
+              setLicense(values);
+              setStep(3);
+            }}
           />
         )}
         {step === 3 && (
-          <Step3Form
-            t={t}
-            pharmacyUuid={pharmacyUuid}
-            isSubmitting={isSubmitting}
-            onSubmit={handleStep3}
-            onSkip={handleSkipStep3}
-          />
+          <Step3Form t={t} isSubmitting={busy} onBack={() => setStep(2)} onSubmit={handleStep3} />
         )}
+        {step === 4 && result && <DoneStep t={t} result={result} onClose={() => onSuccessRef.current()} />}
       </DialogContent>
     </Dialog>
   );

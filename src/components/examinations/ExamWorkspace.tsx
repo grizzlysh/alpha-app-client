@@ -26,7 +26,6 @@ import {
 } from "@/service/examinationService";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { cn } from "@/utils/cn";
-import { toDoctorName } from "@/utils/stringHelpers";
 import type { Translations } from "@/configs/i18n";
 import type { AllergyConflict, CompleteExamPayload, Examination, ExamFieldsPayload } from "@/types/examination";
 import { ExamPrescriptionEditor, type RxLine } from "./ExamPrescriptionEditor";
@@ -35,6 +34,7 @@ import { PatientAllergies } from "./PatientAllergies";
 import { TriagePanel, TriageStamp } from "./TriagePanel";
 import { VitalsInputs, VitalsSummary } from "./VitalSigns";
 import { vitalsFormOf, vitalsPayloadOf, type VitalsForm } from "./vitals";
+import { useNameFormat } from "@/hooks/useNameFormat";
 
 // ── Form state ────────────────────────────────────────────────────────────────
 
@@ -100,6 +100,7 @@ export interface ExamWorkspaceProps {
 }
 
 export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
+  const fmt = useNameFormat();
   const { t, language } = useLanguage();
   const can = useCan();
   const navigate = useNavigate();
@@ -247,7 +248,7 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate text-base font-semibold text-foreground">{exam.patient.name.toUpperCase()}</p>
+            <p className="truncate text-base font-semibold text-foreground">{fmt(exam.patient.name)}</p>
             <ExamStatusBadge status={exam.status} t={t} />
           </div>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -257,7 +258,7 @@ export function ExamWorkspace({ exam }: ExamWorkspaceProps): JSX.Element {
           {exam.doctor && (
             <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">
               <Stethoscope className="h-3 w-3" aria-hidden />
-              {toDoctorName(exam.doctor.name)}
+              {fmt(exam.doctor.name, { doctor: true })}
             </p>
           )}
         </div>
@@ -493,14 +494,15 @@ function DoctorPicker({
   fallback?: string;
   t: Translations;
 }): JSX.Element {
+  const fmt = useNameFormat();
   const { data } = useQuery({ queryKey: ["doctors-dropdown"], queryFn: () => getDoctorsDropdown() });
   // "" = let the server decide: the signed-in doctor, else the one picked at check-in.
   const options = useMemo(
     () => [
-      { value: "", label: fallback ? toDoctorName(fallback) : t.examDoctorPlaceholder },
-      ...(data?.data ?? []).map((d) => ({ value: d.uuid, label: toDoctorName(d.name) })),
+      { value: "", label: fallback ? fmt(fallback, { doctor: true }) : t.examDoctorPlaceholder },
+      ...(data?.data ?? []).map((d) => ({ value: d.uuid, label: fmt(d.name, { doctor: true }) })),
     ],
-    [data, fallback, t]
+    [fmt, data, fallback, t]
   );
   return (
     <div className="flex-1 space-y-1.5">
@@ -530,7 +532,7 @@ function ExistingPrescription({ exam, t, onOpen }: { exam: Examination; t: Trans
         {rx.details.map((d) => (
           <li key={d.uuid} className="flex items-baseline justify-between gap-3 px-3 py-2">
             <span className="min-w-0">
-              <span className="font-medium text-foreground">{d.medicineName}</span>
+              <span className="name-case font-medium text-foreground">{d.medicineName}</span>
               {(d.frequency || d.duration) && (
                 <span className="ml-2 text-xs text-muted-foreground">{[d.frequency, d.duration].filter(Boolean).join(" · ")}</span>
               )}
@@ -554,6 +556,7 @@ function RecentVisits({
   t: Translations;
   language: string;
 }): JSX.Element {
+  const fmt = useNameFormat();
   const { data, isLoading } = useQuery({
     queryKey: ["medical-visits", customerUuid, "recent"],
     queryFn: () => getVisits(customerUuid, { page: 1, limit: 4 }),
@@ -575,7 +578,7 @@ function RecentVisits({
                 <span className="font-semibold text-foreground">
                   {new Date(v.visitDate).toLocaleDateString(language === "id" ? "id-ID" : "en-US", { day: "numeric", month: "short", year: "numeric" })}
                 </span>
-                {v.doctor && <span className="truncate text-muted-foreground">{toDoctorName(v.doctor.name)}</span>}
+                {v.doctor && <span className="truncate text-muted-foreground">{fmt(v.doctor.name, { doctor: true })}</span>}
               </div>
               {v.diagnosis && <p className="mt-0.5 font-medium text-foreground">{v.diagnosis}</p>}
               {v.chiefComplaint && <p className="mt-0.5 text-muted-foreground">{v.chiefComplaint}</p>}
