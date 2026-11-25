@@ -2632,6 +2632,23 @@ export interface Translations {
   catalogTemplateDownload: string;
   importTemplateFailed: string;
   importStockTemplateNote: string;
+  printModePerPack: string;
+  printModePerPackHint: string;
+  printModePerBatch: string;
+  printModePerBatchHint: string;
+  printBatches: string;
+  printPacks: string;
+  printTotalLabels: string;
+  printTooMany: string;
+  printEmpty: string;
+  printScanHint: string;
+  printRemoveBatch: string;
+  printLabels: string;
+  printLabelsSelected: string;
+  printAllBatches: string;
+  printSelectMedicine: string;
+  printClearSelection: string;
+  printNotFound: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -5221,6 +5238,23 @@ export const translations: Record<Language, Translations> = {
     catalogTemplateDownload: "Download template",
     importTemplateFailed: "The template could not be made. Please try again.",
     importStockTemplateNote: "The template lists this pharmacy's medicines and distributors as drop-downs.",
+    printModePerPack: "Stick on every pack",
+    printModePerPackHint: "1 pack = 1 label. The number follows the packs in stock and can be changed.",
+    printModePerBatch: "One label per batch",
+    printModePerBatchHint: "1 batch = 1 label, to keep where the batch is stored.",
+    printBatches: "Batches",
+    printPacks: "{n} packs",
+    printTotalLabels: "{n} labels",
+    printTooMany: "At most {n} labels per print. Lower some numbers.",
+    printEmpty: "No batches yet. Scan a barcode, or choose medicines in the stock list.",
+    printScanHint: "Scanning a barcode adds its batch.",
+    printRemoveBatch: "Remove",
+    printLabels: "Print labels",
+    printLabelsSelected: "Print labels ({n})",
+    printAllBatches: "Print labels for all batches",
+    printSelectMedicine: "Select for printing",
+    printClearSelection: "Clear selection",
+    printNotFound: "No batch with this barcode",
   },
   id: {
     appName: "PharmaCare",
@@ -7806,6 +7840,23 @@ export const translations: Record<Language, Translations> = {
     catalogTemplateDownload: "Unduh template",
     importTemplateFailed: "Template gagal dibuat. Silakan coba lagi.",
     importStockTemplateNote: "Template berisi pilihan obat dan distributor apotek ini.",
+    printModePerPack: "Tempel di tiap kemasan",
+    printModePerPackHint: "1 kemasan = 1 label. Jumlahnya mengikuti kemasan di stok dan bisa diubah.",
+    printModePerBatch: "Satu label per batch",
+    printModePerBatchHint: "1 batch = 1 label, ditaruh di tempat batch itu disimpan.",
+    printBatches: "Batch",
+    printPacks: "{n} kemasan",
+    printTotalLabels: "{n} label",
+    printTooMany: "Maksimal {n} label sekali cetak. Kurangi sebagian jumlahnya.",
+    printEmpty: "Belum ada batch. Scan barcode, atau pilih obat di daftar stok.",
+    printScanHint: "Scan barcode untuk menambah batchnya.",
+    printRemoveBatch: "Hapus",
+    printLabels: "Cetak label",
+    printLabelsSelected: "Cetak label ({n})",
+    printAllBatches: "Cetak label semua batch",
+    printSelectMedicine: "Pilih untuk dicetak",
+    printClearSelection: "Batalkan pilihan",
+    printNotFound: "Tidak ada batch dengan barcode ini",
   },
 };
 

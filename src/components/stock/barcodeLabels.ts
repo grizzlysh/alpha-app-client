@@ -3,10 +3,11 @@ import { needsLockedCabinet } from "@/utils/orderLetter";
 import type { BatchLabel, MedicineStockCard } from "@/types/stock";
 
 /**
- * Label kinds: one label for the whole batch, one label per item (box) of the
- * batch, or the medicine's shelf label (one code for every batch).
+ * Every label is a batch label (the batch's own barcode). It is printed either
+ * once per pack, to stick on each pack, or once per batch, to keep where the
+ * batch is stored.
  */
-export type LabelKind = "batch-label" | "item-label" | "medicine-label";
+export type PrintMode = "per-pack" | "per-batch";
 
 /** Label stock: a thermal roll (one label per page) or an A4 sheet of 3 × 8. */
 export type LabelSize = "50x30" | "38x25" | "a4-64x34";
@@ -48,11 +49,10 @@ export interface LabelText {
   page: string;
 }
 
-/** Which lines a label shows. Stock only applies to the batch label. */
+/** Which lines a label shows. */
 export interface LabelFields {
   showStock: boolean;
   showExpiry: boolean;
-  showContents: boolean;
   showPrice: boolean;
 }
 
@@ -67,13 +67,10 @@ export interface SheetOptions {
 
 export type LabelOptions = LabelFields & SheetOptions;
 
-/** One line of a print: `copies` labels of one kind for one batch. */
+/** One line of a print: `copies` labels of one batch. */
 export interface LabelJob {
-  kind: LabelKind;
   data: BatchLabel;
   copies: number;
-  /** Item labels: number of the first item (to continue a batch printed earlier). */
-  startNumber: number;
   fields: LabelFields;
 }
 
@@ -109,10 +106,7 @@ export function drugClassMark(typeName: string, isControlled: boolean, sizeMm = 
 
 // ── Labels ────────────────────────────────────────────────────────────────────
 
-/** The code printed on item n of a batch: the batch code, "-" and a 3-digit number. */
-export const itemCode = (batchBarcode: string, n: number): string => `${batchBarcode}-${String(n).padStart(3, "0")}`;
-
-/** Boxes in a batch: the default number of item labels. */
+/** Packs (boxes) in a batch: the default number of labels when printing one per pack. */
 export const boxCount = (pieces: number, perBox: number): number => Math.max(1, Math.ceil(pieces / Math.max(perBox, 1)));
 
 /** "isi 1 box = 10 strip" for a box, or the unit itself when a batch is not boxed. */
@@ -135,41 +129,24 @@ export function stockBreakdownText(pieces: number, unit: string, perBox: number)
   return `${stockText(pieces, unit)}${parts ? ` (${parts})` : ""}`;
 }
 
-/** One label's inner HTML. `itemNumber` is set for item labels. */
-export function labelHtml(kind: LabelKind, card: BatchLabel, text: LabelText, opts: LabelOptions, itemNumber?: number): string {
+/** One batch label's inner HTML. */
+export function labelHtml(card: BatchLabel, text: LabelText, opts: LabelOptions): string {
   const m = card.medicine;
   const small = opts.size === "38x25";
-  const code =
-    kind === "medicine-label" ? m.barcode : kind === "item-label" ? itemCode(card.batch.barcode, itemNumber ?? 1) : card.batch.barcode;
-  const svg = code ? barcodeSvg(code, { height: small ? 34 : 40, width: 1.4, fontSize: small ? 9 : 10 }) : null;
+  const code = card.batch.barcode;
+  const svg = barcodeSvg(code, { height: small ? 34 : 40, width: 1.4, fontSize: small ? 9 : 10 });
   const mark = drugClassMark(m.type, m.isControlled, small ? 3.4 : 4.4);
   const name = esc(opts.formatName(m.name));
   const locked = needsLockedCabinet(m.orderLetterKind);
 
   const rows: string[] = [];
-  if (kind !== "medicine-label") {
-    const batch = `<span>${text.batch} <b class="mono">${esc(card.batch.batchNumber.toUpperCase())}</b></span>`;
-    const expiry = opts.showExpiry ? `<span>${text.expiry} <b>${monthYear(card.batch.expiryDate)}</b></span>` : "";
-    rows.push(`<div class="row">${batch}${expiry}</div>`);
-  } else {
-    rows.push(`<div class="row"><span>${text.allBatches}</span></div>`);
-  }
-  // One fact per line so nothing gets cut off; the price sits at the end of the last line.
-  const lines: string[] = [];
-  // Contents (per box) only on item labels: an item is one box.
-  const contents = kind === "item-label" && opts.showContents ? esc(contentsText(m.unit, card.batch.quantityPerBox, text)) : "";
-  if (kind === "item-label") lines.push(`<b>${text.item} ${itemNumber ?? 1}</b>${contents ? ` · ${contents}` : ""}`);
-  else if (contents) lines.push(contents);
-  // Batch label: this batch's stock. Medicine label: the total over every batch.
-  if (kind === "batch-label" && opts.showStock) lines.push(`${text.stock} <b>${esc(stockText(card.batch.quantityPieces, m.unit))}</b>`);
-  if (kind === "medicine-label" && opts.showStock) {
-    lines.push(`${text.totalStock} <b>${esc(stockText(card.medicineTotalPieces, m.unit))}</b>`);
-  }
+  const batch = `<span>${text.batch} <b class="mono">${esc(card.batch.batchNumber.toUpperCase())}</b></span>`;
+  const expiry = opts.showExpiry ? `<span>${text.expiry} <b>${monthYear(card.batch.expiryDate)}</b></span>` : "";
+  rows.push(`<div class="row">${batch}${expiry}</div>`);
+  // The stock line ends with the price, so nothing gets cut off.
+  const stock = opts.showStock ? `${text.stock} <b>${esc(stockText(card.batch.quantityPieces, m.unit))}</b>` : "";
   const price = opts.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
-  if (lines.length === 0 && price) lines.push("");
-  lines.forEach((line, i) => {
-    rows.push(`<div class="row"><span class="left">${line}</span>${i === lines.length - 1 ? price : ""}</div>`);
-  });
+  if (stock || price) rows.push(`<div class="row"><span class="left">${stock}</span>${price}</div>`);
 
   return `
     <div class="top">
@@ -181,7 +158,7 @@ export function labelHtml(kind: LabelKind, card: BatchLabel, text: LabelText, op
       ${mark}
     </div>
     ${rows.join("")}
-    <div class="bc">${svg ?? `<span class="mono">${esc(code ?? "")}</span>`}</div>`;
+    <div class="bc">${svg ?? `<span class="mono">${esc(code)}</span>`}</div>`;
 }
 
 const LABEL_CSS = `
@@ -214,24 +191,17 @@ const SIZE_CSS: Record<LabelSize, string> = {
 };
 
 export const MAX_LABELS = 1000;
-const clampCopies = (n: number): number => Math.max(1, Math.min(500, Math.floor(n) || 1));
+export const clampCopies = (n: number): number => Math.max(1, Math.min(500, Math.floor(n) || 1));
 
 /** How many labels the jobs print in total. */
 export const countLabels = (jobs: LabelJob[]): number => jobs.reduce((sum, j) => sum + clampCopies(j.copies), 0);
 
-/**
- * A printable document of every job's labels in order (item labels numbered
- * from each job's start number). `limit` cuts it short, for previews.
- */
+/** A printable document of every job's labels in order. `limit` cuts it short, for previews. */
 export function labelsDocument(jobs: LabelJob[], text: LabelText, sheet: SheetOptions, limit = MAX_LABELS): string {
   const labels: string[] = [];
   for (const job of jobs) {
-    const opts: LabelOptions = { ...job.fields, ...sheet };
-    const start = Math.max(1, Math.floor(job.startNumber));
-    const same = job.kind === "item-label" ? null : `<div class="label">${labelHtml(job.kind, job.data, text, opts)}</div>`;
-    for (let i = 0; i < clampCopies(job.copies) && labels.length < limit; i++) {
-      labels.push(same ?? `<div class="label">${labelHtml(job.kind, job.data, text, opts, start + i)}</div>`);
-    }
+    const label = `<div class="label">${labelHtml(job.data, text, { ...job.fields, ...sheet })}</div>`;
+    for (let i = 0; i < clampCopies(job.copies) && labels.length < limit; i++) labels.push(label);
   }
   let body: string;
   if (sheet.size === "a4-64x34") {

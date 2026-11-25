@@ -28,6 +28,9 @@ export interface StockRowProps {
   onDetails: () => void;
   onSetPrice?: () => void;
   onSetReorder?: () => void;
+  /** Shows a checkbox to pick the medicine for label printing. */
+  selected?: boolean;
+  onToggleSelect?: () => void;
 }
 
 export function StockRow({
@@ -36,6 +39,8 @@ export function StockRow({
   onDetails,
   onSetPrice,
   onSetReorder,
+  selected = false,
+  onToggleSelect,
 }: StockRowProps): JSX.Element {
   const fmt = useNameFormat();
   const lockedCabinet = needsLockedCabinet(stock.medicine.orderLetterKind ?? stock.medicine.type.orderLetterKind);
@@ -47,6 +52,15 @@ export function StockRow({
       {/* Sticky left: avatar + medicine name */}
       <td className="sticky left-0 z-[1] min-w-[170px] sm:min-w-[240px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="flex items-center gap-3">
+          {onToggleSelect && (
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={onToggleSelect}
+              aria-label={`${t.printSelectMedicine}: ${stock.medicine.name}`}
+              className="h-4 w-4 flex-shrink-0 accent-[hsl(var(--primary))]"
+            />
+          )}
           <div
             className={cn(
               "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold",

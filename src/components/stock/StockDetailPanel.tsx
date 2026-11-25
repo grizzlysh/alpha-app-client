@@ -264,6 +264,8 @@ export interface StockDetailPanelProps {
   onReturn?: (detail: StockDetail) => void;
   onPrint?: (detail: StockDetail) => void;
   onPrintStockCard?: () => void;
+  /** Labels for every in-stock batch of this medicine. */
+  onPrintAllBatches?: () => void;
 }
 
 export function StockDetailPanel({
@@ -277,6 +279,7 @@ export function StockDetailPanel({
   onReturn,
   onPrint,
   onPrintStockCard,
+  onPrintAllBatches,
 }: StockDetailPanelProps): JSX.Element {
   const fmt = useNameFormat();
   const statusClass = getStockStatusClass(stock);
@@ -410,6 +413,16 @@ export function StockDetailPanel({
           >
             <ClipboardList className="h-4 w-4" />
             {t.printStockCard}
+          </Button>
+          )}
+          {onPrintAllBatches && stock.details.some((d) => d.quantityPieces > 0) && (
+          <Button
+            variant="outline"
+            className="flex-1 gap-2 rounded-xl"
+            onClick={onPrintAllBatches}
+          >
+            <Printer className="h-4 w-4" />
+            {t.printAllBatches}
           </Button>
           )}
         </div>

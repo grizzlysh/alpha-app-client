@@ -35,6 +35,9 @@ export interface StockTableProps {
   onDetails: (s: Stock) => void;
   onSetPrice?: (s: Stock) => void;
   onSetReorder?: (s: Stock) => void;
+  /** Medicines picked for label printing (by medicine uuid). */
+  selectedMedicineUuids?: string[];
+  onSelectionChange?: (medicineUuids: string[]) => void;
 }
 
 export function StockTable({
@@ -51,8 +54,26 @@ export function StockTable({
   onDetails,
   onSetPrice,
   onSetReorder,
+  selectedMedicineUuids = [],
+  onSelectionChange,
 }: StockTableProps): JSX.Element {
   const fmt = useNameFormat();
+  const pageUuids = stocks.map((s) => s.medicine.uuid);
+
+  function toggleOne(uuid: string): void {
+    onSelectionChange?.(
+      selectedMedicineUuids.includes(uuid) ? selectedMedicineUuids.filter((u) => u !== uuid) : [...selectedMedicineUuids, uuid]
+    );
+  }
+
+  function toggleAll(): void {
+    const allOnPage = pageUuids.every((u) => selectedMedicineUuids.includes(u));
+    onSelectionChange?.(
+      allOnPage
+        ? selectedMedicineUuids.filter((u) => !pageUuids.includes(u))
+        : [...selectedMedicineUuids, ...pageUuids.filter((u) => !selectedMedicineUuids.includes(u))]
+    );
+  }
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo<ColumnDef<Stock>[]>(
@@ -175,25 +196,36 @@ export function StockTable({
                         .filter(Boolean)
                         .join(" ")}
                     >
-                      {canSort ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const current = header.column.getIsSorted();
-                            if (current === false) header.column.toggleSorting(false);
-                            else if (current === "asc") header.column.toggleSorting(true);
-                            else header.column.clearSorting();
-                          }}
-                          className="group flex cursor-pointer items-center gap-1 whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          <TableSortIcon isSorted={isSorted} />
-                        </button>
-                      ) : (
-                        <span className="whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                        </span>
-                      )}
+                      <div className="flex items-center">
+                        {isFirst && onSelectionChange && (
+                          <input
+                            type="checkbox"
+                            checked={pageUuids.length > 0 && pageUuids.every((u) => selectedMedicineUuids.includes(u))}
+                            onChange={toggleAll}
+                            aria-label={t.printSelectMedicine}
+                            className="mr-3 h-4 w-4 flex-shrink-0 accent-[hsl(var(--primary))]"
+                          />
+                        )}
+                        {canSort ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const current = header.column.getIsSorted();
+                              if (current === false) header.column.toggleSorting(false);
+                              else if (current === "asc") header.column.toggleSorting(true);
+                              else header.column.clearSorting();
+                            }}
+                            className="group flex cursor-pointer items-center gap-1 whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            <TableSortIcon isSorted={isSorted} />
+                          </button>
+                        ) : (
+                          <span className="whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </span>
+                        )}
+                      </div>
                     </th>
                   );
                 })}
@@ -209,6 +241,8 @@ export function StockTable({
                 onDetails={() => onDetails(row.original)}
                 onSetPrice={onSetPrice ? () => onSetPrice(row.original) : undefined}
                 onSetReorder={onSetReorder ? () => onSetReorder(row.original) : undefined}
+                selected={selectedMedicineUuids.includes(row.original.medicine.uuid)}
+                onToggleSelect={onSelectionChange ? () => toggleOne(row.original.medicine.uuid) : undefined}
               />
             ))}
           </tbody>

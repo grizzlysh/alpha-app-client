@@ -1,25 +1,23 @@
 import type { Translations } from "@/configs/i18n";
-import { type LabelFields, type LabelKind, type LabelSize, type LabelText, LABEL_SIZES } from "./barcodeLabels";
+import { type LabelFields, type LabelSize, type LabelText, type PrintMode, LABEL_SIZES } from "./barcodeLabels";
 
-const PREFS_KEY = "barcode-print-prefs-v2";
+const PREFS_KEY = "barcode-print-prefs-v3";
 
-/** The fields each label kind can show (stock only means something for the whole batch). */
-export const FIELDS_BY_KIND: Record<LabelKind, (keyof LabelFields)[]> = {
-  "batch-label": ["showStock", "showExpiry", "showPrice"],
-  "item-label": ["showExpiry", "showContents", "showPrice"],
-  "medicine-label": ["showStock", "showPrice"],
-};
+export const LABEL_FIELDS: (keyof LabelFields)[] = ["showStock", "showExpiry", "showPrice"];
 
-const DEFAULT_FIELDS: Record<LabelKind, LabelFields> = {
-  "batch-label": { showStock: true, showExpiry: true, showContents: false, showPrice: false },
-  "item-label": { showStock: false, showExpiry: true, showContents: true, showPrice: false },
-  "medicine-label": { showStock: true, showExpiry: false, showContents: false, showPrice: true },
+/**
+ * The same label either way; a label stuck on a pack leaves out the stock,
+ * which is out of date as soon as a pack is sold.
+ */
+const DEFAULT_FIELDS: Record<PrintMode, LabelFields> = {
+  "per-pack": { showStock: false, showExpiry: true, showPrice: false },
+  "per-batch": { showStock: true, showExpiry: true, showPrice: false },
 };
 
 /** Label size and fields follow the device (each till has its own printer). */
 export interface PrintPrefs {
   size: LabelSize;
-  fields: Record<LabelKind, LabelFields>;
+  fields: Record<PrintMode, LabelFields>;
 }
 
 export function loadPrefs(): PrintPrefs {
@@ -31,9 +29,8 @@ export function loadPrefs(): PrintPrefs {
     return {
       size: p.size && LABEL_SIZES.some((s) => s.value === p.size) ? p.size : fallback.size,
       fields: {
-        "batch-label": { ...DEFAULT_FIELDS["batch-label"], ...p.fields?.["batch-label"], showContents: false },
-        "item-label": { ...DEFAULT_FIELDS["item-label"], ...p.fields?.["item-label"], showStock: false },
-        "medicine-label": { ...DEFAULT_FIELDS["medicine-label"], ...p.fields?.["medicine-label"], showExpiry: false, showContents: false },
+        "per-pack": { ...DEFAULT_FIELDS["per-pack"], ...p.fields?.["per-pack"] },
+        "per-batch": { ...DEFAULT_FIELDS["per-batch"], ...p.fields?.["per-batch"] },
       },
     };
   } catch {
@@ -49,9 +46,9 @@ export function savePrefs(prefs: PrintPrefs): void {
   }
 }
 
-/** Toggles one field of one kind. */
-export function toggleField(prefs: PrintPrefs, kind: LabelKind, field: keyof LabelFields): PrintPrefs {
-  return { ...prefs, fields: { ...prefs.fields, [kind]: { ...prefs.fields[kind], [field]: !prefs.fields[kind][field] } } };
+/** Toggles one field for one print mode. */
+export function toggleField(prefs: PrintPrefs, mode: PrintMode, field: keyof LabelFields): PrintPrefs {
+  return { ...prefs, fields: { ...prefs.fields, [mode]: { ...prefs.fields[mode], [field]: !prefs.fields[mode][field] } } };
 }
 
 /** Text printed on labels and cards, in the user's language. */

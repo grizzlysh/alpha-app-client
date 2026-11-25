@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Printer } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import type { RootState } from "@/store";
@@ -16,7 +18,7 @@ import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import { getStocks } from "@/service/stockService";
 import { StockTable } from "@/components/stock/StockTable";
 import { StockDetailPanel } from "@/components/stock/StockDetailPanel";
-import { BarcodePrintModal } from "@/components/stock/BarcodePrintModal";
+import { LabelPrintModal, type LabelPrintModalProps } from "@/components/stock/LabelPrintModal";
 import { StockCardPrintModal } from "@/components/stock/StockCardPrintModal";
 import { StockAdjustModal } from "@/components/stock/StockAdjustModal";
 import { StockUpdatePriceModal } from "@/components/stock/StockUpdatePriceModal";
@@ -60,7 +62,9 @@ export default function StockPage(): JSX.Element {
   } = useTablePageState();
 
   const [modal, setModal] = useState<ModalState>(null);
-  const [printDetailUuid, setPrintDetailUuid] = useState<string | null>(null);
+  // Label printing: what to start with; null = closed.
+  const [labelPrint, setLabelPrint] = useState<Pick<LabelPrintModalProps, "stockDetailUuids" | "medicineUuids"> | null>(null);
+  const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);
   const [cardStock, setCardStock] = useState<Stock | null>(null);
   const [filter, setFilter] = useState<StockFilter>("all");
 
@@ -176,6 +180,24 @@ export default function StockPage(): JSX.Element {
               placeholder={t.stockSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
+            {/* Labels for the medicines ticked in the table (or empty, to scan batches) */}
+            <Button
+              variant="outline"
+              className="shrink-0 gap-2 rounded-xl"
+              onClick={() => setLabelPrint({ medicineUuids: selectedMedicines })}
+            >
+              <Printer className="h-4 w-4" />
+              <span className="hidden md:inline">
+                {selectedMedicines.length > 0
+                  ? t.printLabelsSelected.replace("{n}", String(selectedMedicines.length))
+                  : t.printLabels}
+              </span>
+            </Button>
+            {selectedMedicines.length > 0 && (
+              <Button variant="ghost" className="shrink-0 rounded-xl" onClick={() => setSelectedMedicines([])}>
+                {t.printClearSelection}
+              </Button>
+            )}
             {/* Day-one stock count for a pharmacy that is new to the system */}
             {can("invoices.create") && (
               <DataTransferButtons
@@ -202,6 +224,8 @@ export default function StockPage(): JSX.Element {
           onDetails={(s) => setModal({ mode: "detail", stock: s })}
           onSetPrice={can("stock.adjust") ? (s) => setModal({ mode: "price", stock: s }) : undefined}
           onSetReorder={can("stock.adjust") ? (s) => setModal({ mode: "reorder", stock: s }) : undefined}
+          selectedMedicineUuids={selectedMedicines}
+          onSelectionChange={setSelectedMedicines}
         />
       </Card>
 
@@ -209,9 +233,7 @@ export default function StockPage(): JSX.Element {
       {modal?.mode === "opening" && <OpeningStockImportModal onClose={() => setModal(null)} />}
 
       {/* Opens on top of the stock detail, which stays open behind it. */}
-      {printDetailUuid && (
-        <BarcodePrintModal stockDetailUuid={printDetailUuid} onClose={() => setPrintDetailUuid(null)} />
-      )}
+      {labelPrint && <LabelPrintModal {...labelPrint} onClose={() => setLabelPrint(null)} />}
       {cardStock && (
         <StockCardPrintModal
           medicineUuid={cardStock.medicine.uuid}
@@ -233,8 +255,9 @@ export default function StockPage(): JSX.Element {
             setModal({ mode: "dispose", stock: modal.stock, stockDetail: detail }) : undefined}
           onReturn={can("stock_return.create") ? (detail) =>
             setModal({ mode: "return", stock: modal.stock, stockDetail: detail }) : undefined}
-          onPrint={(detail) => setPrintDetailUuid(detail.uuid)}
+          onPrint={(detail) => setLabelPrint({ stockDetailUuids: [detail.uuid] })}
           onPrintStockCard={() => setCardStock(modal.stock)}
+          onPrintAllBatches={() => setLabelPrint({ medicineUuids: [modal.stock.medicine.uuid] })}
         />
       )}
 

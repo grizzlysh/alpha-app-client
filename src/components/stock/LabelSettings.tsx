@@ -2,36 +2,29 @@ import type { JSX } from "react";
 
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/hooks/useLanguage";
-import { type LabelFields, type LabelKind, type LabelSize, LABEL_SIZES } from "./barcodeLabels";
-import { FIELDS_BY_KIND, type PrintPrefs, toggleField } from "./printPrefs";
+import { type LabelFields, type LabelSize, type PrintMode, LABEL_SIZES } from "./barcodeLabels";
+import { LABEL_FIELDS, type PrintPrefs, toggleField } from "./printPrefs";
 
 export interface LabelSettingsProps {
   prefs: PrintPrefs;
   onChange: (prefs: PrintPrefs) => void;
-  /** Kinds whose fields are shown; with several, each gets a heading. */
-  kinds: LabelKind[];
+  /** Fields are remembered separately for each print mode. */
+  mode: PrintMode;
 }
 
-/** Label size and, per label kind, which lines are printed. */
-export function LabelSettings({ prefs, onChange, kinds }: LabelSettingsProps): JSX.Element {
+/** Label size and which lines are printed. */
+export function LabelSettings({ prefs, onChange, mode }: LabelSettingsProps): JSX.Element {
   const { t } = useLanguage();
   const sizeLabel: Record<LabelSize, string> = {
     "50x30": t.printSizeThermal5030,
     "38x25": t.printSizeThermal3825,
     "a4-64x34": t.printSizeA4,
   };
-  const kindLabel: Record<LabelKind, string> = {
-    "batch-label": t.printBatchLabel,
-    "item-label": t.printItemLabel,
-    "medicine-label": t.printMedicineLabel,
+  const fieldLabel: Record<keyof LabelFields, string> = {
+    showStock: t.printShowStock,
+    showExpiry: t.printShowExpiry,
+    showPrice: t.printShowPrice,
   };
-  const fieldLabel = (kind: LabelKind, field: keyof LabelFields): string =>
-    ({
-      showStock: kind === "medicine-label" ? t.printShowTotalStock : t.printShowStock,
-      showExpiry: t.printShowExpiry,
-      showContents: t.printShowContents,
-      showPrice: t.printShowPrice,
-    })[field];
 
   return (
     <div className="space-y-4">
@@ -49,24 +42,20 @@ export function LabelSettings({ prefs, onChange, kinds }: LabelSettingsProps): J
         </select>
       </div>
 
-      {kinds.map((kind) => (
-        <fieldset key={kind} className="space-y-2">
-          <legend className="mb-1 text-sm font-medium text-foreground">
-            {kinds.length > 1 ? kindLabel[kind] : t.printFields}
-          </legend>
-          {FIELDS_BY_KIND[kind].map((field) => (
-            <label key={field} className="flex items-center gap-2 text-sm text-foreground">
-              <input
-                type="checkbox"
-                checked={prefs.fields[kind][field]}
-                onChange={() => onChange(toggleField(prefs, kind, field))}
-                className="h-4 w-4 accent-[hsl(var(--primary))]"
-              />
-              {fieldLabel(kind, field)}
-            </label>
-          ))}
-        </fieldset>
-      ))}
+      <fieldset className="space-y-2">
+        <legend className="mb-1 text-sm font-medium text-foreground">{t.printFields}</legend>
+        {LABEL_FIELDS.map((field) => (
+          <label key={field} className="flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={prefs.fields[mode][field]}
+              onChange={() => onChange(toggleField(prefs, mode, field))}
+              className="h-4 w-4 accent-[hsl(var(--primary))]"
+            />
+            {fieldLabel[field]}
+          </label>
+        ))}
+      </fieldset>
     </div>
   );
 }

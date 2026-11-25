@@ -109,6 +109,12 @@ export async function getBatchLabel(stockDetailUuid: string): Promise<ApiRespons
   return response.data;
 }
 
+/** Label data for many batches: the batches named and every in-stock batch of the medicines named. */
+export async function getBatchLabels(payload: { stockDetailUuids?: string[]; medicineUuids?: string[] }): Promise<ApiResponse<BatchLabel[]>> {
+  const response = await axiosInstance.post<ApiResponse<BatchLabel[]>>("/stock/labels", payload);
+  return response.data;
+}
+
 export async function getMedicineStockCard(
   medicineUuid: string,
   params?: MedicineStockCardParams
