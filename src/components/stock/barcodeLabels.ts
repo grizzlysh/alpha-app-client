@@ -56,8 +56,18 @@ export interface LabelFields {
   showPrice: boolean;
 }
 
+/**
+ * Fixed per print mode, not a setting: a label stuck on a pack leaves out the
+ * stock, which is out of date as soon as that pack is sold.
+ */
+export const MODE_FIELDS: Record<PrintMode, LabelFields> = {
+  "per-pack": { showStock: false, showExpiry: true, showPrice: true },
+  "per-batch": { showStock: true, showExpiry: true, showPrice: true },
+};
+
 /** Settings shared by every label in one print. */
 export interface SheetOptions {
+  mode: PrintMode;
   size: LabelSize;
   /** "id-ID" or "en-GB": dates and money. */
   locale: string;
@@ -65,13 +75,10 @@ export interface SheetOptions {
   formatName: (name: string) => string;
 }
 
-export type LabelOptions = LabelFields & SheetOptions;
-
 /** One line of a print: `copies` labels of one batch. */
 export interface LabelJob {
   data: BatchLabel;
   copies: number;
-  fields: LabelFields;
 }
 
 const esc = (s: string): string =>
@@ -130,8 +137,9 @@ export function stockBreakdownText(pieces: number, unit: string, perBox: number)
 }
 
 /** One batch label's inner HTML. */
-export function labelHtml(card: BatchLabel, text: LabelText, opts: LabelOptions): string {
+export function labelHtml(card: BatchLabel, text: LabelText, opts: SheetOptions): string {
   const m = card.medicine;
+  const fields = MODE_FIELDS[opts.mode];
   const small = opts.size === "38x25";
   const code = card.batch.barcode;
   const svg = barcodeSvg(code, { height: small ? 34 : 40, width: 1.4, fontSize: small ? 9 : 10 });
@@ -141,11 +149,11 @@ export function labelHtml(card: BatchLabel, text: LabelText, opts: LabelOptions)
 
   const rows: string[] = [];
   const batch = `<span>${text.batch} <b class="mono">${esc(card.batch.batchNumber.toUpperCase())}</b></span>`;
-  const expiry = opts.showExpiry ? `<span>${text.expiry} <b>${monthYear(card.batch.expiryDate)}</b></span>` : "";
+  const expiry = fields.showExpiry ? `<span>${text.expiry} <b>${monthYear(card.batch.expiryDate)}</b></span>` : "";
   rows.push(`<div class="row">${batch}${expiry}</div>`);
   // The stock line ends with the price, so nothing gets cut off.
-  const stock = opts.showStock ? `${text.stock} <b>${esc(stockText(card.batch.quantityPieces, m.unit))}</b>` : "";
-  const price = opts.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
+  const stock = fields.showStock ? `${text.stock} <b>${esc(stockText(card.batch.quantityPieces, m.unit))}</b>` : "";
+  const price = fields.showPrice ? `<b class="price">${rupiah(card.sellingPrice)}</b>` : "";
   if (stock || price) rows.push(`<div class="row"><span class="left">${stock}</span>${price}</div>`);
 
   return `
@@ -173,20 +181,21 @@ const LABEL_CSS = `
   .sub { color: #444; }
   .row { display: flex; justify-content: space-between; gap: 1mm; margin-top: .3mm; white-space: nowrap; }
   .row .left { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .bc { margin-top: auto; height: var(--bc-h); display: flex; justify-content: center; }
+  /* Centred in the room under the text: the gap above the barcode equals the gap to the paper's bottom edge. */
+  .bc { margin: auto 0; height: var(--bc-h); display: flex; justify-content: center; }
   .bc svg { width: 100%; height: 100%; }
 `;
 
 const SIZE_CSS: Record<LabelSize, string> = {
   "50x30": `@page { size: 50mm 30mm; margin: 0; }
-    .label { width: 50mm; height: 30mm; padding: 1.5mm 2mm 1.2mm; break-after: page; --bc-h: 11mm; }
+    .label { width: 50mm; height: 30mm; padding: 1.5mm 2mm .4mm; break-after: page; --bc-h: 11mm; }
     .name { font-size: 7.8pt; } .sub, .row { font-size: 5.6pt; } .price { font-size: 6.8pt; }`,
   "38x25": `@page { size: 38mm 25mm; margin: 0; }
-    .label { width: 38mm; height: 25mm; padding: 1.3mm 1.5mm 1mm; break-after: page; --bc-h: 10mm; }
+    .label { width: 38mm; height: 25mm; padding: 1.3mm 1.5mm .2mm; break-after: page; --bc-h: 10mm; }
     .name { font-size: 6.4pt; -webkit-line-clamp: 1; } .row { font-size: 5pt; } .price { font-size: 5.6pt; }`,
   "a4-64x34": `@page { size: A4; margin: 6mm 7mm; }
     .sheet { display: grid; grid-template-columns: repeat(3, 64mm); grid-auto-rows: 34mm; column-gap: 2.5mm; break-after: page; }
-    .label { width: 64mm; height: 34mm; padding: 2mm 2.4mm 1.4mm; --bc-h: 12mm; }
+    .label { width: 64mm; height: 34mm; padding: 2mm 2.4mm .55mm; --bc-h: 12mm; }
     .name { font-size: 8pt; } .sub, .row { font-size: 6pt; } .shop { font-size: 5.6pt; } .price { font-size: 7.4pt; }`,
 };
 
@@ -200,7 +209,7 @@ export const countLabels = (jobs: LabelJob[]): number => jobs.reduce((sum, j) =>
 export function labelsDocument(jobs: LabelJob[], text: LabelText, sheet: SheetOptions, limit = MAX_LABELS): string {
   const labels: string[] = [];
   for (const job of jobs) {
-    const label = `<div class="label">${labelHtml(job.data, text, { ...job.fields, ...sheet })}</div>`;
+    const label = `<div class="label">${labelHtml(job.data, text, sheet)}</div>`;
     for (let i = 0; i < clampCopies(job.copies) && labels.length < limit; i++) labels.push(label);
   }
   let body: string;

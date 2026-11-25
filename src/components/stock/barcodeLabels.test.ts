@@ -6,7 +6,7 @@ import { boxCount, labelsDocument, type LabelText } from "./barcodeLabels";
 vi.mock("@/utils/barcode", () => ({ barcodeSvg: (code: string) => `<svg data-code="${code}"></svg>` }));
 
 const TEXT = { batch: "Batch", expiry: "ED", stock: "Stok", lockedCabinet: "Lemari khusus" } as LabelText;
-const SHEET = { size: "50x30" as const, locale: "id-ID", formatName: (n: string) => n };
+const SHEET = { mode: "per-pack" as const, size: "50x30" as const, locale: "id-ID", formatName: (n: string) => n };
 
 const label = (batchNumber: string, barcode: string, quantityPieces: number, quantityPerBox: number): BatchLabel => ({
   pharmacy: { name: "Apotek Uji", code: "UJI" },
@@ -29,8 +29,8 @@ describe("batch labels", () => {
   it("prints each batch's own barcode, as many times as asked", () => {
     const html = labelsDocument(
       [
-        { data: label("b1", "1111", 30, 10), copies: 3, fields: { showStock: false, showExpiry: true, showPrice: true } },
-        { data: label("b2", "2222", 5, 1), copies: 1, fields: { showStock: false, showExpiry: true, showPrice: true } },
+        { data: label("b1", "1111", 30, 10), copies: 3 },
+        { data: label("b2", "2222", 5, 1), copies: 1 },
       ],
       TEXT,
       SHEET
@@ -43,15 +43,15 @@ describe("batch labels", () => {
     expect(html).not.toContain("Stok <b>");
   });
 
-  it("the stock and price lines follow the field switches", () => {
-    const html = labelsDocument([{ data: label("b1", "1111", 30, 10), copies: 1, fields: { showStock: true, showExpiry: false, showPrice: false } }], TEXT, SHEET);
+  it("one per batch adds the stock; ED and price are on both", () => {
+    const html = labelsDocument([{ data: label("b1", "1111", 30, 10), copies: 1 }], TEXT, { ...SHEET, mode: "per-batch" });
     expect(html).toContain("Stok <b>30 strip</b>");
-    expect(html).not.toContain("ED <b>");
-    expect(html).not.toContain("Rp ");
+    expect(html).toContain("ED <b>12/2027</b>");
+    expect(html).toContain("Rp 5.000");
   });
 
   it("a preview limit cuts the document short", () => {
-    const html = labelsDocument([{ data: label("b1", "1111", 300, 1), copies: 300, fields: { showStock: false, showExpiry: true, showPrice: false } }], TEXT, SHEET, 3);
+    const html = labelsDocument([{ data: label("b1", "1111", 300, 1), copies: 300 }], TEXT, SHEET, 3);
     expect(count(html)).toBe(3);
   });
 });

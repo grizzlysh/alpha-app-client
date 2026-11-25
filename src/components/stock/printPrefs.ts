@@ -1,38 +1,20 @@
 import type { Translations } from "@/configs/i18n";
-import { type LabelFields, type LabelSize, type LabelText, type PrintMode, LABEL_SIZES } from "./barcodeLabels";
+import { type LabelSize, type LabelText, LABEL_SIZES } from "./barcodeLabels";
 
-const PREFS_KEY = "barcode-print-prefs-v3";
+const PREFS_KEY = "barcode-print-prefs-v4";
 
-export const LABEL_FIELDS: (keyof LabelFields)[] = ["showStock", "showExpiry", "showPrice"];
-
-/**
- * The same label either way; a label stuck on a pack leaves out the stock,
- * which is out of date as soon as a pack is sold.
- */
-const DEFAULT_FIELDS: Record<PrintMode, LabelFields> = {
-  "per-pack": { showStock: false, showExpiry: true, showPrice: false },
-  "per-batch": { showStock: true, showExpiry: true, showPrice: false },
-};
-
-/** Label size and fields follow the device (each till has its own printer). */
+/** The label size follows the device (each till has its own printer). */
 export interface PrintPrefs {
   size: LabelSize;
-  fields: Record<PrintMode, LabelFields>;
 }
 
 export function loadPrefs(): PrintPrefs {
-  const fallback: PrintPrefs = { size: "50x30", fields: DEFAULT_FIELDS };
+  const fallback: PrintPrefs = { size: "50x30" };
   try {
-    const raw = localStorage.getItem(PREFS_KEY);
+    const raw = localStorage.getItem(PREFS_KEY) ?? localStorage.getItem("barcode-print-prefs-v3");
     if (!raw) return fallback;
     const p = JSON.parse(raw) as Partial<PrintPrefs>;
-    return {
-      size: p.size && LABEL_SIZES.some((s) => s.value === p.size) ? p.size : fallback.size,
-      fields: {
-        "per-pack": { ...DEFAULT_FIELDS["per-pack"], ...p.fields?.["per-pack"] },
-        "per-batch": { ...DEFAULT_FIELDS["per-batch"], ...p.fields?.["per-batch"] },
-      },
-    };
+    return { size: p.size && LABEL_SIZES.some((s) => s.value === p.size) ? p.size : fallback.size };
   } catch {
     return fallback;
   }
@@ -44,11 +26,6 @@ export function savePrefs(prefs: PrintPrefs): void {
   } catch {
     // not remembered; printing still works
   }
-}
-
-/** Toggles one field for one print mode. */
-export function toggleField(prefs: PrintPrefs, mode: PrintMode, field: keyof LabelFields): PrintPrefs {
-  return { ...prefs, fields: { ...prefs.fields, [mode]: { ...prefs.fields[mode], [field]: !prefs.fields[mode][field] } } };
 }
 
 /** Text printed on labels and cards, in the user's language. */

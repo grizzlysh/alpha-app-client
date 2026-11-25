@@ -100,9 +100,9 @@ export function LabelPrintModal({ stockDetailUuids = [], medicineUuids = [], onC
   function documentHtml(limit?: number): string | null {
     if (labels.length === 0) return null;
     return labelsDocument(
-      labels.map((l) => ({ data: l, copies: copiesOf(l), fields: prefs.fields[mode] })),
+      labels.map((l) => ({ data: l, copies: copiesOf(l) })),
       text,
-      { size: prefs.size, locale, formatName: fmt },
+      { mode, size: prefs.size, locale, formatName: fmt },
       limit
     );
   }
@@ -115,9 +115,9 @@ export function LabelPrintModal({ stockDetailUuids = [], medicineUuids = [], onC
   }
 
   const preview = documentHtml(prefs.size === "a4-64x34" ? 24 : 3);
-  const modes: { value: PrintMode; label: string; hint: string; icon: JSX.Element }[] = [
-    { value: "per-pack", label: t.printModePerPack, hint: t.printModePerPackHint, icon: <Package className="h-4 w-4" /> },
-    { value: "per-batch", label: t.printModePerBatch, hint: t.printModePerBatchHint, icon: <Layers className="h-4 w-4" /> },
+  const modes: { value: PrintMode; label: string; hint: string; contents: string; icon: JSX.Element }[] = [
+    { value: "per-pack", label: t.printModePerPack, hint: t.printModePerPackHint, contents: t.printContentsPerPack, icon: <Package className="h-5 w-5" /> },
+    { value: "per-batch", label: t.printModePerBatch, hint: t.printModePerBatchHint, contents: t.printContentsPerBatch, icon: <Layers className="h-5 w-5" /> },
   ];
 
   return (
@@ -130,102 +130,116 @@ export function LabelPrintModal({ stockDetailUuids = [], medicineUuids = [], onC
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-          {/* Options */}
-          <div className="space-y-4">
-            <div className="space-y-1.5" role="radiogroup" aria-label={t.printLabels}>
-              {modes.map((m) => (
-                <button
-                  key={m.value}
-                  type="button"
-                  role="radio"
-                  aria-checked={mode === m.value}
-                  onClick={() => switchMode(m.value)}
+        {/* How many: one per pack or one per batch. The label is the same. */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label={t.printLabels}>
+          {modes.map((m) => {
+            const active = mode === m.value;
+            return (
+              <button
+                key={m.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => switchMode(m.value)}
+                className={cn(
+                  "flex items-start gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                  active ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-primary/40 hover:bg-muted/40"
+                )}
+              >
+                <span
                   className={cn(
-                    "flex w-full items-start gap-3 rounded-xl border px-3 py-2 text-left transition-colors",
-                    mode === m.value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
+                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+                    active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   )}
                 >
-                  <span className={cn("mt-0.5", mode === m.value ? "text-primary" : "text-muted-foreground")}>{m.icon}</span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium text-foreground">{m.label}</span>
-                    <span className="block text-xs text-muted-foreground">{m.hint}</span>
+                  {m.icon}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-foreground">{m.label}</span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">{m.hint}</span>
+                  <span className="mt-1.5 block text-[11px] text-muted-foreground">
+                    <span className="font-medium text-foreground/80">{t.printContentsTitle}:</span> {m.contents}
                   </span>
-                </button>
-              ))}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,19rem)]">
+          {/* Batches */}
+          <section className="min-w-0 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {t.printBatches} {labels.length > 0 && `(${labels.length})`}
+              </p>
+              <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                {isFetching || scan.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ScanBarcode className="h-3.5 w-3.5" />}
+                {t.printScanHint}
+              </p>
             </div>
-            <LabelSettings prefs={prefs} onChange={updatePrefs} mode={mode} />
-          </div>
+            {isLoading && hasRequest ? (
+              <div className="flex h-24 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+            ) : labels.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">{t.printEmpty}</p>
+            ) : (
+              <ul className="max-h-80 divide-y divide-border overflow-y-auto rounded-xl border border-border">
+                {labels.map((l) => (
+                  <li key={l.batch.uuid} className="flex items-center gap-3 px-3 py-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-foreground name-case">{fmt(l.medicine.name)}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        <span className="font-mono">{l.batch.batchNumber.toUpperCase()}</span>
+                        {" · "}ED {new Date(l.batch.expiryDate).toLocaleDateString(locale, { month: "2-digit", year: "numeric" })}
+                        {" · "}{t.printPacks.replace("{n}", String(boxCount(l.batch.quantityPieces, l.batch.quantityPerBox)))}
+                      </p>
+                    </div>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      max={500}
+                      aria-label={`${t.printCopies} · ${l.batch.batchNumber}`}
+                      title={t.printCopies}
+                      value={copies[l.batch.uuid] ?? String(defaultCopies(l))}
+                      onChange={(e) => setCopies((c) => ({ ...c, [l.batch.uuid]: e.target.value }))}
+                      className="h-9 w-20 rounded-lg border border-input bg-card px-2 text-right text-sm tabular-nums text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setRemoved((r) => [...r, l.batch.uuid])}
+                      aria-label={`${t.printRemoveBatch} ${l.batch.batchNumber}`}
+                      className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
-          {/* Batches and preview */}
-          <div className="min-w-0 space-y-4">
-            <section className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {t.printBatches} {labels.length > 0 && `(${labels.length})`}
-                </p>
-                <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                  {isFetching || scan.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ScanBarcode className="h-3.5 w-3.5" />}
-                  {t.printScanHint}
-                </p>
-              </div>
-              {isLoading && hasRequest ? (
-                <div className="flex h-24 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
-              ) : labels.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">{t.printEmpty}</p>
-              ) : (
-                <ul className="max-h-60 divide-y divide-border overflow-y-auto rounded-xl border border-border">
-                  {labels.map((l) => (
-                    <li key={l.batch.uuid} className="flex items-center gap-3 px-3 py-2">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground name-case">{fmt(l.medicine.name)}</p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          <span className="font-mono">{l.batch.batchNumber.toUpperCase()}</span>
-                          {" · "}ED {new Date(l.batch.expiryDate).toLocaleDateString(locale, { month: "2-digit", year: "numeric" })}
-                          {" · "}{t.printPacks.replace("{n}", String(boxCount(l.batch.quantityPieces, l.batch.quantityPerBox)))}
-                        </p>
-                      </div>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        min={1}
-                        max={500}
-                        aria-label={`${t.printCopies} · ${l.batch.batchNumber}`}
-                        value={copies[l.batch.uuid] ?? String(defaultCopies(l))}
-                        onChange={(e) => setCopies((c) => ({ ...c, [l.batch.uuid]: e.target.value }))}
-                        className="h-9 w-20 rounded-lg border border-input bg-card px-2 text-right text-sm tabular-nums text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setRemoved((r) => [...r, l.batch.uuid])}
-                        aria-label={`${t.printRemoveBatch} ${l.batch.batchNumber}`}
-                        className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section className="space-y-2">
+          {/* Preview, with the paper it is printed on */}
+          <section className="min-w-0 space-y-2">
+            <div className="flex items-center justify-between gap-2">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t.printPreview}</p>
-              <div className="flex min-h-[12rem] items-center justify-center overflow-auto rounded-xl border border-border bg-muted/40 p-4">
-                {preview ? (
-                  <PrintPreview
-                    html={preview}
-                    title={t.printPreview}
-                    zoom={previewZoom(prefs.size)}
-                    alignStart={prefs.size === "a4-64x34"}
-                    className={prefs.size === "a4-64x34" ? "h-[22rem]" : "h-[16rem]"}
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground">—</p>
-                )}
-              </div>
-            </section>
-          </div>
+              <LabelSettings prefs={prefs} onChange={updatePrefs} />
+            </div>
+            <div className="flex min-h-[12rem] items-center justify-center overflow-auto rounded-xl border border-border bg-muted/40 p-4">
+              {preview ? (
+                <PrintPreview
+                  html={preview}
+                  title={t.printPreview}
+                  zoom={previewZoom(prefs.size)}
+                  alignStart={prefs.size === "a4-64x34"}
+                  className={prefs.size === "a4-64x34" ? "h-[20rem]" : "h-[14rem]"}
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">—</p>
+              )}
+            </div>
+          </section>
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-3">
