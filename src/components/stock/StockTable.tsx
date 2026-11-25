@@ -18,6 +18,7 @@ import { TableEmptyState } from "@/components/shared/TableEmptyState";
 import { TablePaginationFooter } from "@/components/shared/TablePaginationFooter";
 import { StockRow } from "./StockRow";
 import { useNameFormat } from "@/hooks/useNameFormat";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // ── StockTable ────────────────────────────────────────────────────────────────
 
@@ -198,12 +199,15 @@ export function StockTable({
                     >
                       <div className="flex items-center">
                         {isFirst && onSelectionChange && (
-                          <input
-                            type="checkbox"
+                          <Checkbox
                             checked={pageUuids.length > 0 && pageUuids.every((u) => selectedMedicineUuids.includes(u))}
+                            indeterminate={
+                              pageUuids.some((u) => selectedMedicineUuids.includes(u)) &&
+                              !pageUuids.every((u) => selectedMedicineUuids.includes(u))
+                            }
                             onChange={toggleAll}
                             aria-label={t.printSelectMedicine}
-                            className="mr-3 h-4 w-4 flex-shrink-0 accent-[hsl(var(--primary))]"
+                            className="mr-3"
                           />
                         )}
                         {canSort ? (

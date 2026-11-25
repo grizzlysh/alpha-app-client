@@ -21,6 +21,7 @@ import {
 import { LockedCabinetBadge } from "@/components/shared/LockedCabinetBadge";
 import { needsLockedCabinet } from "@/utils/orderLetter";
 import { useNameFormat } from "@/hooks/useNameFormat";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export interface StockRowProps {
   stock: Stock;
@@ -53,12 +54,10 @@ export function StockRow({
       <td className="sticky left-0 z-[1] min-w-[170px] sm:min-w-[240px] border-r border-border/40 bg-card px-5 py-4 transition-colors group-hover:bg-accent">
         <div className="flex items-center gap-3">
           {onToggleSelect && (
-            <input
-              type="checkbox"
+            <Checkbox
               checked={selected}
               onChange={onToggleSelect}
               aria-label={`${t.printSelectMedicine}: ${stock.medicine.name}`}
-              className="h-4 w-4 flex-shrink-0 accent-[hsl(var(--primary))]"
             />
           )}
           <div

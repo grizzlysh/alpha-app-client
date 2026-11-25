@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AlertTriangle, CheckCircle2, Download, FileSpreadsheet, Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMedicineNameFormat } from "@/hooks/useNameFormat";
@@ -124,11 +125,10 @@ export function CatalogImportModal({ onClose }: { onClose: () => void }): JSX.El
             <section className="space-y-2 rounded-2xl border border-border px-4 py-3">
               <p className="text-sm font-medium text-foreground">{t.catalogTemplateTitle}</p>
               <label className="flex items-start gap-2 text-sm text-foreground">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={structuredTemplate}
                   onChange={(e) => setStructuredTemplate(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 accent-[hsl(var(--primary))]"
+                  className="mt-0.5"
                 />
                 <span>
                   {t.catalogTemplateStructured}

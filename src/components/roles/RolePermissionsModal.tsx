@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Key, Loader2, Search } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -228,14 +229,10 @@ export function RolePermissionsModal({
                   {/* Group header */}
                   <div className="flex items-center gap-3 bg-muted/40 px-5 py-2.5">
                     <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={groupAllChecked}
-                        ref={(el) => {
-                          if (el) el.indeterminate = groupSomeChecked;
-                        }}
+                        indeterminate={groupSomeChecked}
                         onChange={() => toggleGroupAll(group.permissions)}
-                        className="h-4 w-4 rounded accent-primary"
                       />
                       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         {group.module}
@@ -255,11 +252,10 @@ export function RolePermissionsModal({
                         key={perm.uuid}
                         className="flex cursor-pointer items-start gap-3 px-5 py-3 transition-colors hover:bg-accent/40"
                       >
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={selected.has(perm.uuid)}
                           onChange={() => togglePermission(perm.uuid)}
-                          className="mt-0.5 h-4 w-4 rounded accent-primary"
+                          className="mt-0.5"
                         />
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-foreground">

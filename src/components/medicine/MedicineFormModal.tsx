@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Pill, Loader2, Plus, Trash2, AlertCircle, Wand2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { generateInStoreEan13 } from "@/utils/barcode";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
@@ -280,10 +281,8 @@ export function MedicineFormModal({
                     <span className="ml-0.5 text-destructive">*</span>
                   </Label>
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       {...form.register("isCustomName")}
-                      className="h-4 w-4 accent-[hsl(var(--primary))]"
                     />
                     {t.medicineCustomName}
                   </label>

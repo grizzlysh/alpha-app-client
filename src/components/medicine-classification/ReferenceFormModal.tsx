@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -241,11 +242,10 @@ export function ReferenceFormModal({
                 control={form.control}
                 render={({ field }) => (
                   <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border px-3 py-2.5">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={field.value}
                       onChange={(e) => field.onChange(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 accent-primary"
+                      className="mt-0.5"
                     />
                     <span>
                       <span className="block text-sm font-medium text-foreground">{labels.controlledLabel}</span>

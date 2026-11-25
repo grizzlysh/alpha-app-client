@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -325,13 +326,11 @@ export default function LoginPage(): JSX.Element {
                   name="rememberMe"
                   render={({ field }) => (
                     <div className="flex items-center gap-2.5">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="rememberMe"
                         checked={field.value}
                         onChange={field.onChange}
                         disabled={isPending}
-                        className="h-4 w-4 flex-shrink-0 cursor-pointer rounded border-border accent-primary disabled:cursor-not-allowed"
                       />
                       <label
                         htmlFor="rememberMe"

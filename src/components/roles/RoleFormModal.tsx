@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShieldCheck, Loader2, Search, AlertCircle } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -168,14 +169,11 @@ function PermissionsSection({
               >
                 <div className="flex items-center gap-2 bg-muted/40 px-3 py-2">
                   <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={groupAllChecked}
-                      ref={(el) => {
-                        if (el) el.indeterminate = groupSomeChecked;
-                      }}
+                      indeterminate={groupSomeChecked}
                       onChange={() => onToggleGroup(group.permissions)}
-                      className="h-3.5 w-3.5 rounded accent-primary"
+                      size="sm"
                     />
                     <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       {group.module}
@@ -194,11 +192,11 @@ function PermissionsSection({
                       key={perm.uuid}
                       className="flex cursor-pointer items-start gap-2.5 px-3 py-2.5 transition-colors hover:bg-accent/40"
                     >
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={selected.has(perm.uuid)}
                         onChange={() => onToggle(perm.uuid)}
-                        className="mt-0.5 h-3.5 w-3.5 rounded accent-primary"
+                        className="mt-0.5"
+                        size="sm"
                       />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-foreground">

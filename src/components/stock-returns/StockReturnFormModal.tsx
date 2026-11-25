@@ -24,6 +24,7 @@ import {
 
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -343,12 +344,11 @@ function InvoiceItemRow({
       )}
     >
       <div className="flex items-start gap-3">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={checked}
           onChange={(e) => onCheck(e.target.checked)}
           disabled={isPending || noStock}
-          className="mt-1 h-4 w-4 shrink-0 accent-primary"
+          className="mt-1"
         />
 
         <div className="min-w-0 flex-1 space-y-1.5">

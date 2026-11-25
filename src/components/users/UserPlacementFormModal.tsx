@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Check, Hospital, Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox } from "@/components/ui/combobox";
 import { DateInput } from "@/components/ui/date-input";
 import { Input } from "@/components/ui/input";
@@ -141,9 +142,8 @@ function HeadPharmacistToggle({ t, checked, forced, onChange }: HeadPharmacistTo
         forced && "cursor-default"
       )}
     >
-      <input
-        type="checkbox"
-        className="mt-0.5 h-4 w-4 accent-[hsl(var(--primary))]"
+      <Checkbox
+        className="mt-0.5"
         checked={on}
         disabled={forced}
         onChange={(e) => onChange(e.target.checked)}
