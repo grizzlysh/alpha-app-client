@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { JSX } from "react";
 import { useMemo } from "react";
-import { Shapes, Tag, Shield } from "lucide-react";
+import { Download, Shapes, Shield, Tag, Upload } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -13,7 +13,7 @@ import { getMedicineClasses, createMedicineClass, updateMedicineClass, deleteMed
 import { ReferenceTabContent } from "@/components/medicine-classification/ReferenceTabContent";
 import type { ReferenceLabels } from "@/components/medicine-classification/referenceTypes";
 import { useCan } from "@/hooks/usePermission";
-import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import type { ToolbarMoreMenuProps } from "@/components/shared/ToolbarMoreMenu";
 import { CatalogImportModal } from "@/components/medicine/CatalogImportModal";
 import { downloadCatalog } from "@/components/medicine/catalogFile";
 import { exportCatalog } from "@/service/catalogService";
@@ -25,6 +25,21 @@ export default function MedicineClassificationPage(): JSX.Element {
   const [importing, setImporting] = useState(false);
   const can = useCan();
   const pageTitleRef = useScrollAwareTitle();
+
+  // Same file as Medicines → Export: medicines plus every classification.
+  const moreActions = useMemo<ToolbarMoreMenuProps["actions"]>(() => [
+    {
+      key: "export", icon: Download, label: t.toolbarExportExcel, description: t.toolbarExportCatalogDesc,
+      onSelect: async () => {
+        const res = await exportCatalog();
+        if (res.data) await downloadCatalog(res.data);
+      },
+    },
+    can("medicines.create") && {
+      key: "import", icon: Upload, label: t.toolbarImportExcel, description: t.toolbarImportCatalogDesc,
+      onSelect: () => setImporting(true),
+    },
+  ], [t, can]);
 
   const shapeLabels = useMemo<ReferenceLabels>(() => ({
     pageSubtitle: t.medicineShapesSubtitle,
@@ -168,18 +183,6 @@ export default function MedicineClassificationPage(): JSX.Element {
         </p>
       </div>
 
-      {/* Same file as Medicines → Export: medicines plus all classifications */}
-      <div className="flex flex-wrap justify-end gap-2">
-        <DataTransferButtons
-          onExport={async () => {
-            const res = await exportCatalog();
-            if (res.data) await downloadCatalog(res.data);
-          }}
-          onImport={can("medicines.create") ? () => setImporting(true) : undefined}
-          exportHint={t.catalogExportHint}
-          importHint={t.catalogImportDesc}
-        />
-      </div>
       {importing && <CatalogImportModal onClose={() => setImporting(false)} />}
 
       {/* Main card */}
@@ -223,6 +226,7 @@ export default function MedicineClassificationPage(): JSX.Element {
               createFn={createMedicineShape}
               updateFn={updateMedicineShape}
               deleteFn={deleteMedicineShape}
+              moreActions={moreActions}
             />
           </TabsContent>
 
@@ -235,6 +239,7 @@ export default function MedicineClassificationPage(): JSX.Element {
               createFn={createMedicineType}
               updateFn={updateMedicineType}
               deleteFn={deleteMedicineType}
+              moreActions={moreActions}
             />
           </TabsContent>
 
@@ -247,6 +252,7 @@ export default function MedicineClassificationPage(): JSX.Element {
               createFn={createMedicineClass}
               updateFn={updateMedicineClass}
               deleteFn={deleteMedicineClass}
+              moreActions={moreActions}
             />
           </TabsContent>
         </Tabs>

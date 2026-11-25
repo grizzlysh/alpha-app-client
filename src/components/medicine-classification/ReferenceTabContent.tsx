@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import { SearchInput } from "@/components/shared/SearchInput";
+import { ToolbarMoreMenu, type ToolbarMoreMenuProps } from "@/components/shared/ToolbarMoreMenu";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import type { ApiResponse } from "@/types/api";
 import type { ReferenceListParams, ReferencePayload } from "@/types/medicine";
@@ -37,6 +38,8 @@ export interface ReferenceTabContentProps {
   createFn: (payload: ReferencePayload) => Promise<ApiResponse<ReferenceItem>>;
   updateFn: (uuid: string, payload: ReferencePayload) => Promise<ApiResponse<ReferenceItem>>;
   deleteFn: (uuid: string) => Promise<ApiResponse<null>>;
+  /** Secondary actions for the "⋮" menu next to Add (export, import, …). */
+  moreActions?: ToolbarMoreMenuProps["actions"];
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -49,6 +52,7 @@ export function ReferenceTabContent({
   createFn,
   updateFn,
   deleteFn,
+  moreActions = [],
 }: ReferenceTabContentProps): JSX.Element {
   // Query keys mirror permission modules: "medicine-shapes" → "medicine_shapes.*".
   const permissionModule = queryKey.replace(/-/g, "_");
@@ -122,6 +126,8 @@ export function ReferenceTabContent({
           placeholder={labels.searchPlaceholder}
           isFetching={isFetching && !isLoading}
         />
+
+        <ToolbarMoreMenu actions={moreActions} />
 
         {/* Add button */}
         <Button

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, Loader2, Plus, Upload } from "lucide-react";
+import { Download, Plus, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { useCan } from "@/hooks/usePermission";
 import { useScrollAwareTitle } from "@/hooks/useScrollAwareTitle";
 import { useTablePageState } from "@/hooks/useTablePageState";
 import { SearchInput } from "@/components/shared/SearchInput";
+import { ToolbarMoreMenu } from "@/components/shared/ToolbarMoreMenu";
 import { getMedicines } from "@/service/medicineService";
 import { getMedicineShapesDropdown } from "@/service/medicineShapeService";
 import { getMedicineTypesDropdown } from "@/service/medicineTypeService";
@@ -25,7 +26,6 @@ import { MedicineDeleteModal } from "@/components/medicine/MedicineDeleteModal";
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Medicine } from "@/types/medicine";
 import { exportCatalog } from "@/service/catalogService";
-import { getApiErrorMessage } from "@/utils/apiError";
 import { CatalogImportModal } from "@/components/medicine/CatalogImportModal";
 import { downloadCatalog } from "@/components/medicine/catalogFile";
 import { useNameFormat } from "@/hooks/useNameFormat";
@@ -44,25 +44,17 @@ type ModalState =
 
 export default function MedicinesPage(): JSX.Element {
   const fmt = useNameFormat();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const can = useCan();
   const pharmacyUuid = useSelector((state: RootState) => state.auth.currentPharmacy?.uuid);
   const pageTitleRef = useScrollAwareTitle();
 
   const { searchInput, debouncedSearch, page, setPage, limit, handleLimitChange, handleSearchChange } = useTablePageState();
   const [modal, setModal] = useState<ModalState>(null);
-  const [exporting, setExporting] = useState(false);
 
   async function handleExport(): Promise<void> {
-    setExporting(true);
-    try {
-      const res = await exportCatalog();
-      if (res.data) await downloadCatalog(res.data);
-    } catch (err) {
-      toast.error(getApiErrorMessage(err, language, t.unexpectedError));
-    } finally {
-      setExporting(false);
-    }
+    const res = await exportCatalog();
+    if (res.data) await downloadCatalog(res.data);
   }
 
   // ── Filter state ─────────────────────────────────────────────────────────────
@@ -239,28 +231,16 @@ export default function MedicinesPage(): JSX.Element {
               isFetching={isFetching && !isLoading}
             />
 
-            {/* Export / import the list, e.g. to set up another branch */}
-            <Button
-              variant="outline"
-              onClick={handleExport}
-              disabled={exporting}
-              className="shrink-0 gap-2 rounded-xl"
-              title={t.catalogExportHint}
-            >
-              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              <span className="hidden md:inline">{t.catalogExport}</span>
-            </Button>
-            {can("medicines.create") && (
-              <Button
-                variant="outline"
-                onClick={() => setModal({ mode: "import" })}
-                className="shrink-0 gap-2 rounded-xl"
-                title={t.catalogImportDesc}
-              >
-                <Upload className="h-4 w-4" />
-                <span className="hidden md:inline">{t.catalogImport}</span>
-              </Button>
-            )}
+            {/* Secondary actions (export, import) — always right before Add */}
+            <ToolbarMoreMenu
+              actions={[
+                { key: "export", icon: Download, label: t.toolbarExportExcel, description: t.toolbarExportCatalogDesc, onSelect: handleExport },
+                can("medicines.create") && {
+                  key: "import", icon: Upload, label: t.toolbarImportExcel, description: t.toolbarImportCatalogDesc,
+                  onSelect: () => setModal({ mode: "import" }),
+                },
+              ]}
+            />
 
             {/* Add button */}
             {can("medicines.create") && (

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Printer } from "lucide-react";
+import { Printer, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -26,7 +26,7 @@ import { StockUpdateReorderModal } from "@/components/stock/StockUpdateReorderMo
 import { StockDisposalFormModal } from "@/components/stock-disposals/StockDisposalFormModal";
 import { StockReturnFormModal } from "@/components/stock-returns/StockReturnFormModal";
 import type { Stock, StockDetail } from "@/types/stock";
-import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import { ToolbarMoreMenu } from "@/components/shared/ToolbarMoreMenu";
 import { OpeningStockImportModal } from "@/components/data-transfer/ImportModals";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -199,13 +199,14 @@ export default function StockPage(): JSX.Element {
               </Button>
             )}
             {/* Day-one stock count for a pharmacy that is new to the system */}
-            {can("invoices.create") && (
-              <DataTransferButtons
-                onImport={() => setModal({ mode: "opening" })}
-                importLabel={t.importOpeningStockBtn}
-                importHint={t.importOpeningStockDesc}
-              />
-            )}
+            <ToolbarMoreMenu
+              actions={[
+                can("invoices.create") && {
+                  key: "opening", icon: Upload, label: t.toolbarImportOpeningStock, description: t.importOpeningStockDesc,
+                  onSelect: () => setModal({ mode: "opening" }),
+                },
+              ]}
+            />
           </div>
         </div>
 

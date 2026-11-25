@@ -2649,6 +2649,17 @@ export interface Translations {
   printSelectMedicine: string;
   printClearSelection: string;
   printNotFound: string;
+  toolbarMoreActions: string;
+  toolbarExportExcel: string;
+  toolbarImportExcel: string;
+  toolbarExportCatalogDesc: string;
+  toolbarImportCatalogDesc: string;
+  toolbarImportPatientsDesc: string;
+  toolbarImportDistributorsDesc: string;
+  toolbarImportOpeningStock: string;
+  printContentsTitle: string;
+  printContentsPerPack: string;
+  printContentsPerBatch: string;
 }
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "id"];
@@ -5255,6 +5266,17 @@ export const translations: Record<Language, Translations> = {
     printSelectMedicine: "Select for printing",
     printClearSelection: "Clear selection",
     printNotFound: "No batch with this barcode",
+    toolbarMoreActions: "More actions",
+    toolbarExportExcel: "Export to Excel",
+    toolbarImportExcel: "Import from Excel",
+    toolbarExportCatalogDesc: "Medicines and every classification, to set up another branch",
+    toolbarImportCatalogDesc: "From the template or another branch's export",
+    toolbarImportPatientsDesc: "Add patients from the template",
+    toolbarImportDistributorsDesc: "Add distributors from the template",
+    toolbarImportOpeningStock: "Import opening stock",
+    printContentsTitle: "On the label",
+    printContentsPerPack: "Name · batch · ED · price · barcode",
+    printContentsPerBatch: "Name · batch · ED · price · stock · barcode",
   },
   id: {
     appName: "PharmaCare",
@@ -7857,6 +7879,17 @@ export const translations: Record<Language, Translations> = {
     printSelectMedicine: "Pilih untuk dicetak",
     printClearSelection: "Batalkan pilihan",
     printNotFound: "Tidak ada batch dengan barcode ini",
+    toolbarMoreActions: "Aksi lainnya",
+    toolbarExportExcel: "Ekspor ke Excel",
+    toolbarImportExcel: "Impor dari Excel",
+    toolbarExportCatalogDesc: "Daftar obat & semua klasifikasi, untuk dipakai di cabang lain",
+    toolbarImportCatalogDesc: "Dari template atau file ekspor cabang lain",
+    toolbarImportPatientsDesc: "Tambah pasien dari template",
+    toolbarImportDistributorsDesc: "Tambah distributor dari template",
+    toolbarImportOpeningStock: "Impor saldo awal stok",
+    printContentsTitle: "Isi label",
+    printContentsPerPack: "Nama · batch · ED · harga · barcode",
+    printContentsPerBatch: "Nama · batch · ED · harga · stok · barcode",
   },
 };
 

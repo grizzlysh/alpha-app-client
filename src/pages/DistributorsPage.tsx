@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Download, Plus, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,7 +20,7 @@ import { DeleteConfirmModal } from "@/components/distributor/DeleteConfirmModal"
 import { LiveToastMessage } from "@/components/shared/LiveToastMessage";
 import type { Distributor } from "@/types/distributor";
 import { getDistributors } from "@/service/distributorService";
-import { DataTransferButtons } from "@/components/data-transfer/DataTransferButtons";
+import { ToolbarMoreMenu } from "@/components/shared/ToolbarMoreMenu";
 import { DistributorImportModal } from "@/components/data-transfer/ImportModals";
 import { downloadDistributors } from "@/components/data-transfer/columns";
 
@@ -92,10 +92,11 @@ export default function DistributorsPage(): JSX.Element {
               placeholder={t.distributorSearchPlaceholder}
               isFetching={isFetching && !isLoading}
             />
-            <DataTransferButtons
-              onExport={can("distributors.read") ? () => downloadDistributors(pharmacyName) : undefined}
-              onImport={can("distributors.create") ? () => setModal({ mode: "import" }) : undefined}
-              exportHint={t.importDistributorsExportHint}
+            <ToolbarMoreMenu
+              actions={[
+                can("distributors.read") && { key: "export", icon: Download, label: t.toolbarExportExcel, description: t.importDistributorsExportHint, onSelect: () => downloadDistributors(pharmacyName) },
+                can("distributors.create") && { key: "import", icon: Upload, label: t.toolbarImportExcel, description: t.toolbarImportDistributorsDesc, onSelect: () => setModal({ mode: "import" }) },
+              ]}
             />
             {can("distributors.create") && (
             <Button
