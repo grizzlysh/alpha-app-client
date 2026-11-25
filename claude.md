@@ -631,6 +631,43 @@ Use conventional commit messages:
 
 ---
 
+## 13. UI Patterns (fixed rules)
+
+```
+# List page toolbar (.table-toolbar, one row on desktop)
+Order, left → right:
+  1. Filters (Combobox)
+  2. Search (SearchInput, fills the rest)
+  3. Contextual buttons that act on the current view/selection
+     e.g. "Cetak label (n)" + "Batalkan pilihan" on Stock — only these may be visible outline buttons
+  4. "⋮" ToolbarMoreMenu — secondary actions
+  5. Primary "Tambah" button (variant="success"), always last
+- Component: src/components/shared/ToolbarMoreMenu.tsx
+- Put in "⋮": export, import, download template, opening balance, and any other
+  rarely used action. Never as separate buttons in the toolbar.
+- Each item: icon + label + one short description line.
+  Labels: "Ekspor ke Excel", "Impor dari Excel", "Impor <what>".
+- An item that needs input (import, settings) opens a modal; an item that needs
+  none (export) runs at once — the ⋮ button shows a spinner, errors become a toast.
+- Pass actions the user may not do as `false` (can("x.create") && {...});
+  the menu hides itself when nothing is left.
+- Pages with tabs (e.g. Medicine Classification) put the same ⋮ in each tab's toolbar,
+  next to that tab's Add button — not above the card.
+
+# Row actions
+- The "⋮" at the end of a table row holds that row's actions (detail, edit, delete).
+
+# Checkbox
+- Always use <Checkbox> from src/components/ui/checkbox.tsx — never a raw
+  <input type="checkbox">. size="sm" for dense lists; `indeterminate` for
+  "some of a group" (select-all headers, permission groups).
+
+# Choice between a few modes
+- Big radio cards (icon + title + hint), as in the print-label modal — not a select.
+```
+
+---
+
 ## 14. Do Not
 
 ```
